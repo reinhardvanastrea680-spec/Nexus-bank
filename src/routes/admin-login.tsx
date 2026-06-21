@@ -3,6 +3,7 @@ import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { Eye, EyeOff, Lock, Mail, AlertTriangle, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "../admin/hooks/useAdminAuth";
+import { AdminInstallPrompt } from "../dashboard/components/AdminInstallPrompt";
 import {
   isRateLimited,
   getLockoutSeconds,
@@ -17,6 +18,9 @@ export const Route = createFileRoute("/admin-login")({
     meta: [
       { title: "Admin Login - Nexus Bank" },
       { name: "robots", content: "noindex, nofollow" },
+    ],
+    links: [
+      { rel: "manifest", href: "/admin-manifest.json" },
     ],
   }),
 });
@@ -228,6 +232,7 @@ function AdminLoginPage() {
           </p>
         </div>
       </div>
+      <AdminInstallPrompt />
     </div>
   );
 }

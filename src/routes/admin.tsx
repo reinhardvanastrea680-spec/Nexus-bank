@@ -23,6 +23,7 @@ import { useAdminNotifications } from "../admin/hooks/useAdminNotifications";
 import { db } from "../firebase/config";
 import { collection, onSnapshot } from "firebase/firestore";
 import { startSessionWatcher, touchSession } from "../utils/adminSecurity";
+import { AdminInstallPrompt } from "../dashboard/components/AdminInstallPrompt";
 import { startSessionWatcher, touchSession } from "../utils/adminSecurity";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -341,6 +342,7 @@ function AdminLayout() {
         <main className="p-6 min-h-[calc(100vh-64px)]">
           <Outlet />
         </main>
+        <AdminInstallPrompt />
       </div>
     </div>
   );
