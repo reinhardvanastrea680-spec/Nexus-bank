@@ -22,6 +22,8 @@ import { useAdminTransactions } from "../admin/hooks/useAdminTransactions";
 import { useAdminNotifications } from "../admin/hooks/useAdminNotifications";
 import { db } from "../firebase/config";
 import { collection, onSnapshot } from "firebase/firestore";
+import { startSessionWatcher, touchSession } from "../utils/adminSecurity";
+import { startSessionWatcher, touchSession } from "../utils/adminSecurity";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import {
@@ -112,12 +114,35 @@ function AdminLayout() {
     prevPendingCountRef.current = pendingCount;
   }, [pendingCount, navigate]);
 
+  // Session timeout — auto-logout after 30 min inactivity
+  useEffect(() => {
+    if (!admin) return;
+    touchSession();
+    const cleanup = startSessionWatcher(async () => {
+      toast.error("Session expired — please sign in again");
+      await adminLogout();
+      navigate({ to: "/admin-login" });
+    });
+    return cleanup;
+  }, [admin]);
+
   // Redirect if not admin
   useEffect(() => {
     if (!loading && !admin) {
       navigate({ to: "/admin-login" });
     }
   }, [loading, admin, navigate]);
+
+  // Session timeout watcher — auto logout after 30 min inactivity
+  useEffect(() => {
+    if (!admin) return;
+    touchSession();
+    const cleanup = startSessionWatcher(() => {
+      toast.warning("Session expired — please sign in again.");
+      adminLogout().finally(() => navigate({ to: "/admin-login" }));
+    });
+    return cleanup;
+  }, [admin]);
 
   const handleLogout = async () => {
     try {
