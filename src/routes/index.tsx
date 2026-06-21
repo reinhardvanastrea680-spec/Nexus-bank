@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
   Bell, User, Eye, EyeOff, Copy,
@@ -56,6 +56,21 @@ function HomePage() {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [cardBalanceVisible, setCardBalanceVisible] = useState(true);
   const [currentAccount, setCurrentAccount] = useState(0);
+
+  // Touch swipe support for account card
+  const touchStartX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0 && currentAccount < accounts.length - 1) setCurrentAccount((p) => p + 1);
+      if (diff < 0 && currentAccount > 0) setCurrentAccount((p) => p - 1);
+    }
+    touchStartX.current = null;
+  };
 
   // ── Theme palette ──────────────────────────────────────────────────────
   const dark = theme === "dark";
@@ -162,6 +177,8 @@ function HomePage() {
             background: cardAccent,
             boxShadow: dark ? "0 8px 32px rgba(0,0,0,0.4)" : "0 8px 32px rgba(14,165,233,0.25)",
           }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Decorative circles */}
           <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-10"
