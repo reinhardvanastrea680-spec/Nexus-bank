@@ -1,0 +1,1 @@
+function r(){const t=Math.floor(Math.random()*9)+1,n=Math.floor(Math.random()*1e9).toString().padStart(9,"0");return`${t}${n}`}function a(){return Math.random().toString(36).substring(2,10).toUpperCase()}export{a,r as g};

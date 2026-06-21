@@ -1,0 +1,1 @@
+import{k as o,f as c,b as s,n as l,e as d}from"./index-dwZaoLzq.js";async function u(a,i,t=null,r=null,e={}){try{await o(c(s,"adminActivityLog"),{action:a,description:i,targetUserId:t,targetUserName:r,meta:e,timestamp:d(),adminId:l.currentUser?.uid??"admin"})}catch(n){console.error("Activity log write failed:",n)}}export{u as l};

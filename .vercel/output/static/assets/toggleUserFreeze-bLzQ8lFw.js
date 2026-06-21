@@ -1,0 +1,1 @@
+import{i as s,d as i,b as n}from"./index-dwZaoLzq.js";import{l as r}from"./logAdminAction-CotGYw90.js";async function z(t,a,e){const o=e==="active"?"frozen":"active";await s(i(n,"users",t),{status:o}),await r(o==="frozen"?"USER_FROZEN":"USER_UNFROZEN",`${o==="frozen"?"Froze":"Unfroze"} account for ${a}`,t,a,{previousStatus:e,newStatus:o})}export{z as t};
