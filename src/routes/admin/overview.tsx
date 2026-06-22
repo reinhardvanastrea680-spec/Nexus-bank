@@ -172,14 +172,14 @@ function AdminOverviewPage() {
                     to={`/admin/accounts?user=${user.id}`}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all group"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                       {index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-medium text-sm truncate">{user.fullName}</p>
                       <p className="text-blue-300/60 text-xs truncate">{user.email}</p>
                     </div>
-                    <p className="text-white font-mono text-sm font-semibold">
+                    <p className="text-white font-mono text-xs font-semibold flex-shrink-0 ml-2 whitespace-nowrap">
                       ${((user.checkingBalance || 0) + (user.savingsBalance || 0)).toLocaleString()}
                     </p>
                   </Link>
@@ -205,30 +205,27 @@ function AdminOverviewPage() {
                   return (
                     <div
                       key={tx.id}
-                      className="flex items-start gap-3 p-2 rounded-lg hover:bg-white/5"
+                      className="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5"
                     >
                       <div
-                        className={`w-2 h-2 rounded-full mt-2 ${tx.type === "credit" ? "bg-green-400" : "bg-red-400"}`}
-                      ></div>
+                        className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${tx.type === "credit" ? "bg-green-400" : "bg-red-400"}`}
+                      />
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm">{tx.description}</p>
-                        <p className="text-blue-300/60 text-xs">
+                        <p className="text-white text-sm truncate">{tx.description}</p>
+                        <p className="text-blue-300/60 text-xs truncate">
                           {tx.userFullName || "Unknown User"}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col items-end gap-0.5 flex-shrink-0 ml-2">
                         <span
-                          className={`font-mono text-sm font-semibold ${tx.type === "credit" ? "text-green-400" : "text-red-400"}`}
+                          className={`font-mono text-xs font-semibold whitespace-nowrap ${tx.type === "credit" ? "text-green-400" : "text-red-400"}`}
                         >
-                          {tx.type === "credit" ? "+" : ""}$
+                          {tx.type === "credit" ? "+" : "-"}$
                           {Math.abs(tx.amount || 0).toLocaleString()}
                         </span>
-                        <div className="flex items-center gap-1 text-blue-300/50 text-xs">
-                          <Clock size={12} />
-                          {tx.createdAt?.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                        <div className="flex items-center gap-1 text-blue-300/50 text-xs whitespace-nowrap">
+                          <Clock size={10} />
+                          {tx.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </div>
                       </div>
                     </div>

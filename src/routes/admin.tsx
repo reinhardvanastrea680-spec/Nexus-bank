@@ -171,10 +171,10 @@ function AdminLayout() {
         <div className="orb orb-2"></div>
       </div>
 
-      {/* Sidebar — hidden on mobile, visible on lg+, completely hidden when collapsed on desktop */}
+      {/* Sidebar — COMPLETELY HIDDEN on mobile (<1024px), visible on desktop */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 hidden lg:flex flex-col ${
-          sidebarCollapsed ? "w-0 overflow-hidden border-0" : "w-[260px]"
+        className={`fixed left-0 top-0 h-full bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 flex-col ${
+          sidebarCollapsed ? "w-0 overflow-hidden border-0 !hidden" : "w-[260px] hidden lg:flex"
         }`}
         aria-label="Admin sidebar"
       >
