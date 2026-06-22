@@ -54,7 +54,7 @@ function Login() {
         {/* ── Back to landing page ── */}
         <div className="px-8 pt-5 pb-0">
           <a
-            href={import.meta.env.VITE_LANDING_URL || "http://localhost:5174"}
+            href={import.meta.env.VITE_LANDING_URL || "https://nexus-bank-landing.vercel.app"}
             className="inline-flex items-center gap-2 text-sm font-medium hover:opacity-70 transition-opacity"
             style={{ color: "#64748B" }}
           >
