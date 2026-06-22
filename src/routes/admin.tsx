@@ -63,6 +63,7 @@ function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { admin, loading, adminLogout } = useAdminAuth();
   const { pendingCount } = useAdminTransactions("pending");
   const { unreadCount: unreadNotifCount } = useAdminNotifications();
@@ -170,11 +171,12 @@ function AdminLayout() {
         <div className="orb orb-2"></div>
       </div>
 
-      {/* Sidebar */}
+      {/* Sidebar — hidden on mobile, visible on lg+ */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 ${
+        className={`fixed left-0 top-0 h-full bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 hidden lg:flex flex-col ${
           sidebarCollapsed ? "w-[72px]" : "w-[260px]"
         }`}
+        aria-label="Admin sidebar"
       >
         <div className="p-4 border-b border-[rgba(255,255,255,0.05)]">
           <div className="flex items-center gap-3">
@@ -187,11 +189,9 @@ function AdminLayout() {
           </div>
         </div>
 
-        <nav className="p-3 space-y-1">
+        <nav className="p-3 space-y-1" aria-label="Admin navigation">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
-
-            // Determine badge count per nav item
             let badge = 0;
             if (item.to === "/admin/notifications")        badge = unreadNotifCount;
             if (item.to === "/admin/pending-transactions") badge = pendingCount;
@@ -202,34 +202,29 @@ function AdminLayout() {
               <Link
                 key={item.to}
                 to={item.to}
+                aria-label={`${item.label}${badge > 0 ? ` (${badge} new)` : ""}`}
+                aria-current={isActive ? "page" : undefined}
+                onClick={() => setMobileSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
                   isActive
-                    ? "bg-[rgba(0,198,255,0.07)] text-white border-l-3 border-l-cyan-500"
+                    ? "bg-[rgba(0,198,255,0.07)] text-white border-l-[3px] border-cyan-500"
                     : "text-blue-300/70 hover:text-white hover:bg-white/5"
                 }`}
               >
-                {/* Icon with badge dot */}
                 <div className="relative flex-shrink-0">
-                  <item.icon size={20} className={isActive ? "text-cyan-400" : ""} />
+                  <item.icon size={20} className={isActive ? "text-cyan-400" : ""} aria-hidden="true" />
                   {badge > 0 && (
-                    <span
-                      className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center text-[10px] font-bold"
-                      style={{ background: "#FF4D6A", color: "#FFFFFF" }}
-                    >
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                      style={{ background: "#FF4D6A", color: "#FFFFFF" }} aria-hidden="true">
                       {badge > 99 ? "99+" : badge}
                     </span>
                   )}
                 </div>
-
-                {/* Label with inline badge */}
                 {!sidebarCollapsed && (
                   <span className="font-medium flex-1 flex items-center justify-between">
                     {item.label}
                     {badge > 0 && (
-                      <span
-                        className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold"
-                        style={{ background: "#FF4D6A", color: "#FFFFFF" }}
-                      >
+                      <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold" style={{ background: "#FF4D6A", color: "#FFFFFF" }} aria-hidden="true">
                         {badge > 99 ? "99+" : badge}
                       </span>
                     )}
@@ -242,81 +237,127 @@ function AdminLayout() {
 
         <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-[rgba(255,255,255,0.05)]">
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center flex-shrink-0" aria-hidden="true">
               <User size={18} className="text-white" />
             </div>
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-white font-medium truncate">Admin</p>
-                <p className="text-blue-300/60 text-xs truncate">
-                  {admin?.email || "admin@nexusbank.com"}
-                </p>
+                <p className="text-blue-300/60 text-xs truncate">{admin?.email || "admin@nexusbank.com"}</p>
               </div>
             )}
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all mt-1"
-          >
-            <LogOut size={20} />
+          <button onClick={handleLogout} aria-label="Sign out"
+            className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all mt-1">
+            <LogOut size={20} aria-hidden="true" />
             {!sidebarCollapsed && <span className="font-medium">Sign Out</span>}
           </button>
         </div>
       </aside>
 
+      {/* Mobile sidebar overlay */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileSidebarOpen(false)} aria-hidden="true" />
+          <aside className="absolute left-0 top-0 h-full w-[260px] bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] flex flex-col overflow-y-auto">
+            <div className="p-4 border-b border-[rgba(255,255,255,0.05)] flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-lg" aria-hidden="true">N</span>
+                </div>
+                <span className="text-white font-bold text-lg">Admin Console</span>
+              </div>
+              <button onClick={() => setMobileSidebarOpen(false)} aria-label="Close menu"
+                className="p-2 rounded-lg text-blue-300 hover:text-white hover:bg-white/10">
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
+            <nav className="p-3 space-y-1 flex-1" aria-label="Admin navigation">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.to;
+                let badge = 0;
+                if (item.to === "/admin/notifications")        badge = unreadNotifCount;
+                if (item.to === "/admin/pending-transactions") badge = pendingCount;
+                if (item.to === "/admin/chat")                 badge = unreadChatCount;
+                if (item.to === "/admin/prospective-users")    badge = prospectiveCount;
+                return (
+                  <Link key={item.to} to={item.to}
+                    aria-label={`${item.label}${badge > 0 ? ` (${badge} new)` : ""}`}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? "bg-[rgba(0,198,255,0.07)] text-white border-l-[3px] border-cyan-500" : "text-blue-300/70 hover:text-white hover:bg-white/5"}`}>
+                    <div className="relative flex-shrink-0">
+                      <item.icon size={20} className={isActive ? "text-cyan-400" : ""} aria-hidden="true" />
+                      {badge > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: "#FF4D6A", color: "#FFFFFF" }} aria-hidden="true">{badge > 99 ? "99+" : badge}</span>}
+                    </div>
+                    <span className="font-medium flex-1 flex items-center justify-between">
+                      {item.label}
+                      {badge > 0 && <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold" style={{ background: "#FF4D6A", color: "#FFFFFF" }} aria-hidden="true">{badge > 99 ? "99+" : badge}</span>}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="p-3 border-t border-[rgba(255,255,255,0.05)]">
+              <button onClick={handleLogout} aria-label="Sign out"
+                className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg">
+                <LogOut size={20} aria-hidden="true" />
+                <span className="font-medium">Sign Out</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
       {/* Main content */}
-      <div className={`flex-1 transition-all ${sidebarCollapsed ? "ml-[72px]" : "ml-[260px]"}`}>
+      <div className={`flex-1 transition-all min-w-0 ${sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-[260px]"} ml-0`}>
         {/* Header */}
-        <header className="h-[64px] bg-[#0D1625]/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.05)] sticky top-0 z-30 px-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
+        <header className="h-[64px] bg-[#0D1625]/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.05)] sticky top-0 z-30 px-4 md:px-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Mobile hamburger */}
+            <button onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu"
+              className="lg:hidden p-2 rounded-lg text-blue-300 hover:text-white hover:bg-white/10">
+              <Menu size={20} aria-hidden="true" />
+            </button>
+            {/* Desktop collapse */}
+            <Button variant="ghost" size="icon" aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="text-blue-300 hover:text-white"
-            >
-              {sidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
+              className="hidden lg:flex text-blue-300 hover:text-white">
+              {sidebarCollapsed ? <Menu size={20} aria-hidden="true" /> : <X size={20} aria-hidden="true" />}
             </Button>
-            <div>
-              <h1 className="text-white font-semibold text-lg">Nexus Control Centre</h1>
-              <p className="text-blue-300/60 text-xs">
+            <div className="min-w-0">
+              <h1 className="text-white font-semibold text-base md:text-lg truncate">Nexus Control Centre</h1>
+              <p className="text-blue-300/60 text-xs hidden sm:block">
                 {navItems.find((item) => location.pathname === item.to)?.label || "Dashboard"}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-300/50" />
-              <Input
-                placeholder="Search users, transactions..."
-                className="w-80 pl-10 h-10 bg-[#070B14] border-[rgba(255,255,255,0.1)] text-white placeholder:text-blue-300/50 focus:ring-cyan-500"
-              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-300/50" aria-hidden="true" />
+              <Input placeholder="Search users, transactions..." aria-label="Search admin dashboard"
+                className="w-48 lg:w-80 pl-10 h-10 bg-[#070B14] border-[rgba(255,255,255,0.1)] text-white placeholder:text-blue-300/50 focus:ring-cyan-500" />
             </div>
-
-            <div className="text-right hidden sm:block">
-              <p className="text-white font-mono text-sm">
+            <div className="text-right hidden lg:block">
+              <p className="text-white font-mono text-sm" aria-live="polite" aria-label="Current time">
                 {currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </p>
               <p className="text-blue-300/60 text-xs">{currentTime.toLocaleDateString()}</p>
             </div>
-
-            <Link
-              to="/admin/notifications"
-              className="relative w-10 h-10 rounded-lg flex items-center justify-center bg-white/5 hover:bg-white/10 transition-all"
-            >
-              <Bell className="text-white w-5 h-5" />
+            <Link to="/admin/notifications" aria-label={`Notifications${unreadNotifCount > 0 ? `, ${unreadNotifCount} unread` : ""}`}
+              className="relative w-10 h-10 rounded-lg flex items-center justify-center bg-white/5 hover:bg-white/10 transition-all">
+              <Bell className="text-white w-5 h-5" aria-hidden="true" />
               {unreadNotifCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-0.5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-0.5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white" aria-hidden="true">
                   {unreadNotifCount > 99 ? "99+" : unreadNotifCount}
                 </span>
               )}
             </Link>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 px-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center">
+                <Button variant="ghost" className="flex items-center gap-2 px-2" aria-label="Admin account menu">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center" aria-hidden="true">
                     <User size={16} className="text-white" />
                   </div>
                 </Button>
@@ -327,10 +368,7 @@ function AdminLayout() {
                 <DropdownMenuItem className="hover:bg-white/10">Profile</DropdownMenuItem>
                 <DropdownMenuItem className="hover:bg-white/10">Settings</DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.1)]" />
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                >
+                <DropdownMenuItem onClick={handleLogout} className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -339,7 +377,7 @@ function AdminLayout() {
         </header>
 
         {/* Main */}
-        <main className="p-6 min-h-[calc(100vh-64px)]">
+        <main className="p-4 md:p-6 min-h-[calc(100vh-64px)] overflow-x-hidden">
           <Outlet />
         </main>
         <AdminInstallPrompt />
