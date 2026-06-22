@@ -1,26 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Route as AdminRootRoute } from "../admin";
-import {
-  Users,
-  Wallet,
-  MessageSquare,
-  ArrowUpRight,
-  ArrowDownRight,
-  Clock,
-  Activity,
-} from "lucide-react";
+import { Users, Wallet, MessageSquare, Clock, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 import { useUsers } from "../../admin/hooks/useUsers";
 import { useTransactions } from "../../admin/hooks/useTransactions";
 

@@ -171,10 +171,10 @@ function AdminLayout() {
         <div className="orb orb-2"></div>
       </div>
 
-      {/* Sidebar — hidden on mobile, visible on lg+ */}
+      {/* Sidebar — hidden on mobile, visible on lg+, completely hidden when collapsed on desktop */}
       <aside
         className={`fixed left-0 top-0 h-full bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 hidden lg:flex flex-col ${
-          sidebarCollapsed ? "w-[72px]" : "w-[260px]"
+          sidebarCollapsed ? "w-0 overflow-hidden border-0" : "w-[260px]"
         }`}
         aria-label="Admin sidebar"
       >
@@ -310,7 +310,7 @@ function AdminLayout() {
       )}
 
       {/* Main content */}
-      <div className={`flex-1 transition-all min-w-0 ${sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-[260px]"} ml-0`}>
+      <div className={`flex-1 transition-all min-w-0 ${sidebarCollapsed ? "lg:ml-0" : "lg:ml-[260px]"} ml-0`}>
         {/* Header */}
         <header className="h-[64px] bg-[#0D1625]/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.05)] sticky top-0 z-30 px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -319,8 +319,8 @@ function AdminLayout() {
               className="lg:hidden p-2 rounded-lg text-blue-300 hover:text-white hover:bg-white/10">
               <Menu size={20} aria-hidden="true" />
             </button>
-            {/* Desktop collapse */}
-            <Button variant="ghost" size="icon" aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            {/* Desktop collapse/expand */}
+            <Button variant="ghost" size="icon" aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="hidden lg:flex text-blue-300 hover:text-white">
               {sidebarCollapsed ? <Menu size={20} aria-hidden="true" /> : <X size={20} aria-hidden="true" />}
