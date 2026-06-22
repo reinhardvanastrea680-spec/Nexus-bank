@@ -24,7 +24,6 @@ import { db } from "../firebase/config";
 import { collection, onSnapshot } from "firebase/firestore";
 import { startSessionWatcher, touchSession } from "../utils/adminSecurity";
 import { AdminInstallPrompt } from "../dashboard/components/AdminInstallPrompt";
-import { startSessionWatcher, touchSession } from "../utils/adminSecurity";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import {

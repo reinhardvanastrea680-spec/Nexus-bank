@@ -1,4 +1,4 @@
-import { j as jsxRuntimeExports, r as reactExports } from "./react.mjs";
+import { r as reactExports, j as jsxRuntimeExports } from "./react.mjs";
 import { r as reactDomExports } from "./react-dom.mjs";
 import { c as clamp } from "./radix-ui__number.mjs";
 import { c as composeEventHandlers } from "./radix-ui__primitive.mjs";
@@ -10,7 +10,7 @@ import { D as DismissableLayer } from "./@radix-ui/react-dismissable-layer+[...]
 import { u as useFocusGuards } from "./radix-ui__react-focus-guards.mjs";
 import { F as FocusScope } from "./radix-ui__react-focus-scope.mjs";
 import { u as useId } from "./radix-ui__react-id.mjs";
-import { R as Root2, A as Anchor, c as createPopperScope, C as Content, a as Arrow } from "./radix-ui__react-popper.mjs";
+import { A as Anchor, c as createPopperScope, C as Content, R as Root2, a as Arrow } from "./radix-ui__react-popper.mjs";
 import { P as Portal } from "./radix-ui__react-portal.mjs";
 import { P as Presence } from "./radix-ui__react-presence.mjs";
 import { P as Primitive } from "./radix-ui__react-primitive.mjs";
@@ -394,7 +394,7 @@ var SelectContentImpl = reactExports.forwardRef(
       const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem) {
-        setTimeout(() => nextItem.ref.current.focus());
+        setTimeout(() => nextItem.ref.current?.focus());
       }
     });
     const itemRefCallback = reactExports.useCallback(
@@ -833,11 +833,6 @@ var SelectItem = reactExports.forwardRef(
         context.onOpenChange(false);
       }
     };
-    if (value === "") {
-      throw new Error(
-        "A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
-      );
-    }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       SelectItemContextProvider,
       {
@@ -935,7 +930,7 @@ var SelectItemText = reactExports.forwardRef(
     }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
-      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
+      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren && !shouldShowPlaceholder(context.value) ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
     ] });
   }
 );
@@ -1086,6 +1081,9 @@ var SelectBubbleInput = reactExports.forwardRef(
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? "";
     const prevValue = usePrevious(selectValue);
+    const hasEmptyValueOption = Array.from(nativeOptions).some(
+      (option) => (option.props.value ?? "") === ""
+    );
     reactExports.useEffect(() => {
       const select = ref.current;
       if (!select) return;
@@ -1117,7 +1115,7 @@ var SelectBubbleInput = reactExports.forwardRef(
         ref: composedRefs,
         defaultValue: selectValue,
         children: [
-          shouldShowPlaceholder(value) ? /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "" }) : null,
+          shouldShowPlaceholder(value) && !hasEmptyValueOption ? /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "" }) : null,
           Array.from(nativeOptions)
         ]
       },
@@ -1173,18 +1171,18 @@ function wrapArray(array, startIndex) {
   return array.map((_, index) => array[(startIndex + index) % array.length]);
 }
 export {
-  Select as S,
-  SelectValue as a,
-  SelectTrigger as b,
-  SelectIcon as c,
+  SelectTrigger as S,
+  SelectIcon as a,
+  SelectScrollUpButton as b,
+  SelectScrollDownButton as c,
   SelectPortal as d,
   SelectContent as e,
   SelectViewport as f,
-  SelectItem as g,
-  SelectItemIndicator as h,
-  SelectItemText as i,
-  SelectScrollUpButton as j,
-  SelectScrollDownButton as k,
-  SelectLabel as l,
-  SelectSeparator as m
+  SelectLabel as g,
+  SelectItem as h,
+  SelectItemIndicator as i,
+  SelectItemText as j,
+  SelectSeparator as k,
+  Select as l,
+  SelectValue as m
 };

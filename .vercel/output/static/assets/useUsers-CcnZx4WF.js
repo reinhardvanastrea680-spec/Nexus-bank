@@ -1,1 +1,0 @@
-import{r as e,q as d,o as i,f as b,b as f,h as p}from"./index-dwZaoLzq.js";function q(){const[t,a]=e.useState([]),[r,o]=e.useState(!0);return e.useEffect(()=>{const n=d(b(f,"users"),i("createdAt","desc"));return p(n,u=>{const c=u.docs.map(s=>({id:s.id,...s.data(),createdAt:s.data().createdAt?.toDate()??new Date}));a(c),o(!1)})},[]),{users:t,loading:r}}export{q as u};

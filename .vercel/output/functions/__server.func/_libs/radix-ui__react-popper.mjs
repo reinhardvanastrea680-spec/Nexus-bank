@@ -83,7 +83,7 @@ var PopperContent = reactExports.forwardRef(
       alignOffset = 0,
       arrowPadding = 0,
       avoidCollisions = true,
-      collisionBoundary,
+      collisionBoundary = [],
       collisionPadding: collisionPaddingProp = 0,
       sticky = "partial",
       hideWhenDetached = false,
@@ -100,11 +100,11 @@ var PopperContent = reactExports.forwardRef(
     const arrowHeight = arrowSize?.height ?? 0;
     const desiredPlacement = side + (align !== "center" ? "-" + align : "");
     const collisionPadding = typeof collisionPaddingProp === "number" ? collisionPaddingProp : { top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp };
-    const boundary = collisionBoundary ? Array.isArray(collisionBoundary) ? collisionBoundary : [collisionBoundary] : void 0;
-    const hasExplicitBoundaries = boundary !== void 0 && boundary.length > 0;
+    const boundary = Array.isArray(collisionBoundary) ? collisionBoundary : [collisionBoundary];
+    const hasExplicitBoundaries = boundary.length > 0;
     const detectOverflowOptions = {
       padding: collisionPadding,
-      boundary: boundary?.filter(isNotNull),
+      boundary: boundary.filter(isNotNull),
       // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
       altBoundary: hasExplicitBoundaries
     };
@@ -143,7 +143,18 @@ var PopperContent = reactExports.forwardRef(
         }),
         arrow$1 && arrow({ element: arrow$1, padding: arrowPadding }),
         transformOrigin({ arrowWidth, arrowHeight }),
-        hideWhenDetached && hide({ strategy: "referenceHidden", ...detectOverflowOptions })
+        hideWhenDetached && hide({
+          strategy: "referenceHidden",
+          ...detectOverflowOptions,
+          // `hide` detects whether the anchor (reference) is clipped, so when
+          // no explicit `collisionBoundary` is set we fall back to Floating
+          // UI's default clipping ancestors (e.g. a scrollable menu). This
+          // lets an occluded submenu hide once its anchor scrolls out of view
+          // (#3237). The collision/size middlewares deliberately keep the
+          // viewport-based default to avoid clamping content rendered inside
+          // transformed or overflow-clipping portal containers.
+          boundary: hasExplicitBoundaries ? detectOverflowOptions.boundary : void 0
+        })
       ]
     });
     const setPlacementState = context.setPlacementState;

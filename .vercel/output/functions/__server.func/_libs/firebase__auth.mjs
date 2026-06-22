@@ -3146,12 +3146,12 @@ const browserLocalPersistence = inMemoryPersistence;
 AuthImpl.prototype.setPersistence = async () => {
 };
 export {
-  signOut as a,
-  browserLocalPersistence as b,
-  signInWithEmailAndPassword as c,
-  createUserWithEmailAndPassword as d,
+  signInWithEmailAndPassword as a,
+  setPersistence as b,
+  createUserWithEmailAndPassword as c,
+  browserLocalPersistence as d,
   getAuth as g,
   onAuthStateChanged as o,
-  setPersistence as s,
+  signOut as s,
   updateProfile as u
 };

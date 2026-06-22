@@ -1,13 +1,13 @@
 import { r as reactExports, j as jsxRuntimeExports } from "./react.mjs";
 import { c as composeEventHandlers } from "./radix-ui__primitive.mjs";
 import { c as createCollection } from "./radix-ui__react-collection.mjs";
-import { u as useComposedRefs, c as composeRefs } from "./radix-ui__react-compose-refs.mjs";
+import { c as composeRefs, u as useComposedRefs } from "./radix-ui__react-compose-refs.mjs";
 import { c as createContextScope } from "./radix-ui__react-context.mjs";
 import { u as useDirection } from "./radix-ui__react-direction.mjs";
 import { D as DismissableLayer } from "./@radix-ui/react-dismissable-layer+[...].mjs";
 import { u as useFocusGuards } from "./radix-ui__react-focus-guards.mjs";
 import { F as FocusScope } from "./radix-ui__react-focus-scope.mjs";
-import { R as Root2, A as Anchor, c as createPopperScope, C as Content, a as Arrow } from "./radix-ui__react-popper.mjs";
+import { c as createPopperScope, A as Anchor, C as Content, R as Root2, a as Arrow } from "./radix-ui__react-popper.mjs";
 import { P as Portal$1 } from "./radix-ui__react-portal.mjs";
 import { P as Presence } from "./radix-ui__react-presence.mjs";
 import { P as Primitive, d as dispatchDiscreteCustomEvent } from "./radix-ui__react-primitive.mjs";
@@ -60,6 +60,14 @@ var Menu = (props) => {
       document.removeEventListener("pointermove", handlePointer, { capture: true });
     };
   }, []);
+  reactExports.useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const handleBlur = () => handleOpenChange(false);
+    window.addEventListener("blur", handleBlur);
+    return () => window.removeEventListener("blur", handleBlur);
+  }, [open, handleOpenChange]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
     MenuProvider,
     {
@@ -799,14 +807,14 @@ export {
   Item2 as I,
   Label as L,
   Portal as P,
-  Root3 as R,
-  Separator as S,
-  CheckboxItem as a,
-  RadioGroup as b,
-  createMenuScope as c,
-  RadioItem as d,
-  ItemIndicator as e,
-  Arrow2 as f,
-  SubTrigger as g,
-  SubContent as h
+  RadioItem as R,
+  SubTrigger as S,
+  SubContent as a,
+  CheckboxItem as b,
+  ItemIndicator as c,
+  Separator as d,
+  createMenuScope as e,
+  Root3 as f,
+  RadioGroup as g,
+  Arrow2 as h
 };
