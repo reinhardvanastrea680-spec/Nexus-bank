@@ -7,10 +7,8 @@ export function useTheme() {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("nexus-bank-theme");
       if (stored === "light" || stored === "dark") return stored;
-      // Check user's system preference
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
     }
-    return "light";
+    return "dark"; // Default to dark theme
   });
 
   useEffect(() => {

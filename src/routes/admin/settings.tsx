@@ -10,6 +10,9 @@ import {
   Upload,
   Lock,
   Plus,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -27,6 +30,7 @@ import {
 import { Textarea } from "../../components/ui/textarea";
 import { Badge } from "../../components/ui/badge";
 import { toast } from "sonner";
+import { useTheme } from "../../hooks/use-theme";
 
 // Mock system settings data
 const initialSystemSettings = {
@@ -44,6 +48,8 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 function AdminSettingsPage() {
+  const { theme, setTheme } = useTheme();
+
   // State management
   const [adminName, setAdminName] = useState("Admin User");
   const [quickReplies, setQuickReplies] = useState(initialQuickReplies);
@@ -92,13 +98,14 @@ function AdminSettingsPage() {
 
   // Sections for left sub-nav
   const sections = [
-    { id: "profile", icon: User, label: "Admin Profile" },
-    { id: "replies", icon: MessageSquare, label: "Quick Replies" },
-    { id: "controls", icon: Shield, label: "System Controls" },
-    { id: "danger", icon: AlertTriangle, label: "Danger Zone" },
+    { id: "appearance", icon: Sun, label: "Appearance" },
+    { id: "profile",    icon: User, label: "Admin Profile" },
+    { id: "replies",    icon: MessageSquare, label: "Quick Replies" },
+    { id: "controls",   icon: Shield, label: "System Controls" },
+    { id: "danger",     icon: AlertTriangle, label: "Danger Zone" },
   ];
 
-  const [activeSection, setActiveSection] = useState("profile");
+  const [activeSection, setActiveSection] = useState("appearance");
 
   return (
     <div className="space-y-4">
@@ -133,6 +140,124 @@ function AdminSettingsPage() {
 
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-4">
+          {/* Appearance Section */}
+          {activeSection === "appearance" && (
+            <Card className="glass-card border-0 bg-[#111827]">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Sun size={20} className="text-[#38BDF8]" />
+                  Appearance
+                </CardTitle>
+                <p className="text-sm text-[#8A9BB5] mt-1">Customize how the admin console looks</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Theme selector */}
+                <div>
+                  <Label className="text-white font-semibold mb-4 block">Theme</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                      {
+                        id: "dark",
+                        label: "Dark",
+                        icon: Moon,
+                        desc: "Deep navy — default",
+                        bg: "#070B14",
+                        accent: "#38BDF8",
+                      },
+                      {
+                        id: "light",
+                        label: "Light",
+                        icon: Sun,
+                        desc: "Clean white",
+                        bg: "#F0F4F8",
+                        accent: "#0EA5E9",
+                      },
+                    ].map((t) => {
+                      const Icon = t.icon;
+                      const isActive = theme === t.id;
+                      return (
+                        <button
+                          key={t.id}
+                          onClick={() => {
+                            setTheme(t.id as "dark" | "light");
+                            toast.success(`Switched to ${t.label} theme`);
+                          }}
+                          className="relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all text-center"
+                          style={{
+                            borderColor: isActive ? t.accent : "rgba(255,255,255,0.08)",
+                            background: isActive ? `${t.accent}15` : "rgba(255,255,255,0.02)",
+                            boxShadow: isActive ? `0 0 0 1px ${t.accent}40, 0 4px 20px ${t.accent}20` : "none",
+                          }}
+                        >
+                          {/* Mini preview */}
+                          <div
+                            className="w-full h-16 rounded-xl flex items-center justify-center mb-1 overflow-hidden"
+                            style={{ background: t.bg }}
+                          >
+                            <div className="flex gap-2 items-center">
+                              <div className="w-6 h-10 rounded" style={{ background: t.id === "dark" ? "#0A1020" : "#FFFFFF", border: `1px solid ${t.accent}40` }} />
+                              <div className="space-y-1.5">
+                                <div className="h-1.5 w-10 rounded" style={{ background: t.accent }} />
+                                <div className="h-1.5 w-8 rounded" style={{ background: t.id === "dark" ? "#1A2438" : "#E4EAF2" }} />
+                                <div className="h-1.5 w-6 rounded" style={{ background: t.id === "dark" ? "#1A2438" : "#E4EAF2" }} />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <Icon size={16} style={{ color: isActive ? t.accent : "#8A9BB5" }} />
+                            <span className="font-semibold text-sm" style={{ color: isActive ? t.accent : "#FFFFFF" }}>
+                              {t.label}
+                            </span>
+                          </div>
+                          <span className="text-xs" style={{ color: "#8A9BB5" }}>{t.desc}</span>
+
+                          {isActive && (
+                            <span
+                              className="absolute top-2 right-2 text-xs font-bold px-2 py-0.5 rounded-full"
+                              style={{ background: `${t.accent}20`, color: t.accent }}
+                            >
+                              Active
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Quick toggle */}
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="flex items-center gap-3">
+                    {theme === "dark"
+                      ? <Moon size={20} style={{ color: "#38BDF8" }} />
+                      : <Sun size={20} style={{ color: "#F59E0B" }} />
+                    }
+                    <div>
+                      <p className="text-white font-medium text-sm">Current theme</p>
+                      <p className="text-[#8A9BB5] text-xs">{theme === "dark" ? "Dark mode — navy background" : "Light mode — white background"}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const next = theme === "dark" ? "light" : "dark";
+                      setTheme(next);
+                      toast.success(`Switched to ${next} theme`);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+                    style={{
+                      background: theme === "dark" ? "rgba(56,189,248,0.1)" : "rgba(245,158,11,0.1)",
+                      color: theme === "dark" ? "#38BDF8" : "#F59E0B",
+                      border: `1px solid ${theme === "dark" ? "rgba(56,189,248,0.2)" : "rgba(245,158,11,0.2)"}`,
+                    }}
+                  >
+                    {theme === "dark" ? <><Sun size={14} /> Switch to Light</> : <><Moon size={14} /> Switch to Dark</>}
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Admin Profile Section */}
           {activeSection === "profile" && (
             <Card className="glass-card border-0 bg-[#111827]">
