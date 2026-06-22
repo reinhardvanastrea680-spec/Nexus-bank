@@ -186,52 +186,23 @@ function AdminUsersPage() {
 
           {/* ── Mobile card list (hidden on md+) ── */}
           <div className="space-y-2 md:hidden">
-            {pagedUsers.map((user, i) => (
+            {pagedUsers.map((user) => (
               <div key={user.id}
-                className="p-4 rounded-2xl cursor-pointer transition-all active:scale-[0.99]"
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98]"
                 style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.06)" }}
                 onClick={() => navigate({ to: `/admin/users/${user.id}` })}
                 role="button" tabIndex={0} aria-label={`View ${user.fullName}`}
                 onKeyDown={(e) => e.key === "Enter" && navigate({ to: `/admin/users/${user.id}` })}>
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold flex-shrink-0" aria-hidden="true">
-                    {user.fullName.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white font-semibold text-sm truncate">{user.fullName}</p>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${user.status === "active" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-                        {user.status}
-                      </span>
-                    </div>
-                    <p className="text-blue-300/60 text-xs truncate mt-0.5">{user.email}</p>
-                    <div className="flex gap-4 mt-2">
-                      <div>
-                        <p className="text-xs text-blue-300/50">Checking</p>
-                        <p className="text-white text-xs font-mono">${(user.checkingBalance || 0).toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-blue-300/50">Savings</p>
-                        <p className="text-white text-xs font-mono">${(user.savingsBalance || 0).toLocaleString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                    <ChevronRight size={16} className="text-blue-300/40" aria-hidden="true" />
-                    <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                      <button aria-label={`${user.status === "active" ? "Freeze" : "Unfreeze"} ${user.fullName}`}
-                        onClick={(e) => handleToggleFreeze(user, e)}
-                        className="p-1.5 rounded-lg text-blue-300 hover:bg-white/10">
-                        <Snowflake size={14} aria-hidden="true" />
-                      </button>
-                      <button aria-label={`Delete ${user.fullName}`}
-                        onClick={(e) => handleDelete(user, e)}
-                        className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10">
-                        <Trash2 size={14} aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
+                {/* Avatar */}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0" aria-hidden="true">
+                  {user.fullName.charAt(0).toUpperCase()}
                 </div>
+                {/* Name only */}
+                <p className="flex-1 text-white font-semibold text-sm truncate">{user.fullName}</p>
+                {/* Status dot */}
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${user.status === "active" ? "bg-green-400" : "bg-red-400"}`} />
+                {/* Chevron */}
+                <ChevronRight size={16} className="text-blue-300/40 flex-shrink-0" aria-hidden="true" />
               </div>
             ))}
           </div>
