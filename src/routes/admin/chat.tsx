@@ -106,11 +106,11 @@ function AdminChatPage() {
   // ── Chat list panel ──────────────────────────────────────────────────────
   const ChatList = () => (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-[rgba(255,255,255,0.05)]">
+      <div className="p-3 border-b border-[rgba(255,255,255,0.05)]">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-white font-semibold">
-            <Users size={18} className="text-cyan-400" aria-hidden="true" />
-            Customer Chats
+          <div className="flex items-center gap-2 text-white font-semibold text-sm">
+            <Users size={16} className="text-cyan-400" aria-hidden="true" />
+            Chats
           </div>
           {totalUnread > 0 && (
             <span className="px-2 py-0.5 rounded-full text-xs font-bold"
@@ -128,30 +128,27 @@ function AdminChatPage() {
           </div>
         ) : chats.map((chat) => (
           <button key={chat.id} onClick={() => openChat(chat.id)}
-            className={`w-full p-3 rounded-xl cursor-pointer transition-all text-left ${
+            className={`w-full p-2.5 rounded-xl cursor-pointer transition-all text-left ${
               selectedUserId === chat.id
                 ? "bg-gradient-to-r from-cyan-500/10 to-violet-600/10 border border-cyan-500/30"
                 : "hover:bg-white/5 border border-transparent"
             }`}
             aria-label={`Chat with ${chat.userFullName}${chat.unreadByAdmin > 0 ? `, ${chat.unreadByAdmin} unread` : ""}`}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-semibold flex-shrink-0" aria-hidden="true">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0" aria-hidden="true">
                 {chat.userFullName.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-1">
                   <p className="text-white font-medium truncate text-sm">{chat.userFullName}</p>
                   {chat.unreadByAdmin > 0 && (
-                    <span className="ml-1 min-w-[20px] h-5 px-1.5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                    <span className="min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                       style={{ background: "#38BDF8", color: "#0B1120" }} aria-hidden="true">
                       {chat.unreadByAdmin}
                     </span>
                   )}
                 </div>
-                <p className="text-blue-300/60 text-xs truncate">{chat.lastMessage || chat.userEmail}</p>
-                <p className="text-blue-300/40 text-xs mt-0.5">
-                  {chat.lastMessageAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </p>
+                <p className="text-blue-300/50 text-xs truncate">{chat.lastMessage || chat.userEmail}</p>
               </div>
             </div>
           </button>
@@ -256,12 +253,12 @@ function AdminChatPage() {
       {/* Desktop: side by side | Mobile: conditional panels */}
       <div className="flex-1 flex min-h-0 rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.05)]" style={{ minHeight: "calc(100vh - 200px)" }}>
 
-        {/* Chat list — always visible on desktop, hidden on mobile when chat is open */}
-        <div className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-80 xl:w-96 flex-shrink-0 border-r border-[rgba(255,255,255,0.05)] bg-[#0A1020]`}>
+        {/* Chat list — narrow sidebar, always visible on desktop */}
+        <div className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 border-r border-[rgba(255,255,255,0.05)] bg-[#0A1020]`}>
           <ChatList />
         </div>
 
-        {/* Chat window — always visible on desktop, shown on mobile when chat is selected */}
+        {/* Chat window — takes all remaining space */}
         <div className={`${showMobileChat ? "flex" : "hidden"} lg:flex flex-col flex-1 min-w-0 bg-[#0A1020]`}>
           <ChatWindow />
         </div>
