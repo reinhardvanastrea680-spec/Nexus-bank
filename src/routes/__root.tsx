@@ -89,6 +89,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       {
+        rel: "preconnect",
+        href: "https://firestore.googleapis.com",
+      },
+      {
+        rel: "preconnect",
+        href: "https://firebase.googleapis.com",
+      },
+      {
+        rel: "dns-prefetch",
+        href: "https://firestore.googleapis.com",
+      },
+      {
         rel: "stylesheet",
         href: appCss,
       },
@@ -115,7 +127,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Apply saved theme
+    // Apply saved theme immediately (before first paint)
     const stored = localStorage.getItem("nexus-bank-theme");
     if (stored === "light" || stored === "dark") {
       document.documentElement.classList.add(stored);
@@ -134,6 +146,12 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* Inline critical theme script — prevents flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('nexus-bank-theme');if(t==='light'||t==='dark'){document.documentElement.classList.add(t);}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>
