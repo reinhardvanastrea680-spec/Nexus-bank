@@ -13,7 +13,7 @@ import { useUsers } from "../../admin/hooks/useUsers";
 import { db } from "../../firebase/config";
 import {
   collection, addDoc, doc, updateDoc, deleteDoc,
-  increment, Timestamp,
+  increment, Timestamp, getDocs, query as fsQuery, where,
 } from "firebase/firestore";
 import { exportToCSV } from "../../utils/exportToCSV";
 import { generateTransactionRef } from "../../utils/generateTransactionRef";
@@ -159,9 +159,23 @@ function AdminTransactionsPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
+      // Delete from top-level transactions collection
       await deleteDoc(doc(db, "transactions", deleteTarget.id));
+
+      // Also delete from user's subcollection if userId available
+      if (deleteTarget.userId) {
+        try {
+          const userTxQuery = fsQuery(
+            collection(db, "users", deleteTarget.userId, "transactions"),
+            where("transactionRef", "==", deleteTarget.transactionRef)
+          );
+          const snap = await getDocs(userTxQuery);
+          await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+        } catch { /* subcollection may not exist */ }
+      }
+
       await logAdminAction("TRANSACTION_DELETED", `Deleted transaction ${deleteTarget.transactionRef}`, deleteTarget.userId, deleteTarget.userFullName, {});
-      toast.success("Transaction deleted");
+      toast.success("Transaction deleted from all records");
       setDeleteTarget(null);
     } catch (err: any) {
       toast.error(err?.message || "Failed to delete");

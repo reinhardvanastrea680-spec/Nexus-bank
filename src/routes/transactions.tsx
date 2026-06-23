@@ -158,34 +158,6 @@ function Transactions() {
         </div>
       )}
 
-      {/* Summary */}
-      <div className="px-5 mb-6">
-        <div className="flex gap-3">
-          <div className="flex-1 p-4 rounded-2xl" style={{ background: t.cardBg2 }}>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "rgba(0,230,118,0.2)" }}>
-                <ArrowDown size={14} style={{ color: t.accentGreen }} />
-              </div>
-              <span className="text-xs" style={{ color: t.textMuted }}>Total Credits</span>
-            </div>
-            <p className="text-lg font-mono font-bold" style={{ color: t.accentGreen }}>
-              ${formatCurrency(filteredTransactions.filter((tx: any) => tx.type === "credit" || tx.type === "check_deposit" || tx.type === "crypto_deposit").reduce((sum: number, tx: any) => sum + tx.amount, 0))}
-            </p>
-          </div>
-          <div className="flex-1 p-4 rounded-2xl" style={{ background: t.cardBg2 }}>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "rgba(255,77,106,0.2)" }}>
-                <ArrowUp size={14} style={{ color: t.accentRed }} />
-              </div>
-              <span className="text-xs" style={{ color: t.textMuted }}>Total Debits</span>
-            </div>
-            <p className="text-lg font-mono font-bold" style={{ color: t.accentRed }}>
-              ${formatCurrency(filteredTransactions.filter((tx: any) => tx.type === "debit" || tx.type === "wire_transfer" || tx.type === "local_transfer" || tx.type === "internal_transfer" || tx.type === "buy_crypto" || tx.type === "bill_payment").reduce((sum: number, tx: any) => sum + tx.amount, 0))}
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Transactions List */}
       <div className="px-5 flex-1 space-y-6 overflow-y-auto">
         {loading ? (
