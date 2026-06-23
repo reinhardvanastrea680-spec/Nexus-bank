@@ -5,7 +5,7 @@ import {
   ArrowUpRight, ArrowLeftRight, Building2, Bitcoin,
   Receipt, UserPlus, FileCheck, Settings,
   Home as HomeIcon, History, Headphones,
-  ChevronLeft, ChevronRight, ArrowUp, ArrowDown, LogOut,
+  ChevronLeft, ChevronRight, ArrowUp, ArrowDown,
 } from "lucide-react";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
@@ -48,7 +48,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const navigate = useNavigate();
-  const { user, loading: authLoading, userLogout } = useUserAuth();
+  const { user, loading: authLoading } = useUserAuth();
   const { account, loading: accountLoading } = useUserAccount();
   const { transactions, loading: txLoading } = useUserTransactions();
   const { theme } = useTheme();
@@ -115,11 +115,6 @@ function HomePage() {
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
   const accountData = accounts[currentAccount];
 
-  const handleLogout = async () => {
-    try { await userLogout(); navigate({ to: "/login" }); }
-    catch (e) { console.error(e); }
-  };
-
   if (authLoading || accountLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: pageBg }}>
@@ -138,9 +133,9 @@ function HomePage() {
       <div className="px-5 pt-10 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: iconBg }}>
+            <Link to="/settings" className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: iconBg }}>
               <User size={20} style={{ color: accentCyan }} />
-            </div>
+            </Link>
             <div>
               <p className="text-xs" style={{ color: textMuted }}>Welcome back</p>
               <p className="text-lg font-bold" style={{ color: textPrimary }}>
@@ -155,9 +150,6 @@ function HomePage() {
               </div>
               <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full" style={{ background: "#FFAB00" }} />
             </Link>
-            <button onClick={handleLogout} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: iconBg }}>
-              <LogOut size={20} style={{ color: "#EF4444" }} />
-            </button>
           </div>
         </div>
       </div>

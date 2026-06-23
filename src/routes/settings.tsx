@@ -45,6 +45,7 @@ function Settings() {
   const [language] = useState("English");
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [biometricsEnabled, setBiometricsEnabled] = useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -539,18 +540,64 @@ function Settings() {
           </div>
         </div>
 
-        {/* Logout */}
+        {/* Sign Out */}
         <button
-          onClick={handleLogout}
+          onClick={() => setShowSignOutConfirm(true)}
           className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl"
           style={{ background: "rgba(255,77,106,0.1)" }}
         >
           <LogOut size={18} style={{ color: "#FF4D6A" }} />
           <span className="text-sm font-semibold" style={{ color: "#FF4D6A" }}>
-            Log Out
+            Sign Out
           </span>
         </button>
       </div>
+
+      {/* Sign Out Confirmation Modal */}
+      {showSignOutConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center px-5 pb-10"
+          style={{ background: "rgba(0,0,0,0.55)" }}
+          onClick={() => setShowSignOutConfirm(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl p-6 space-y-5"
+            style={{ background: t.cardBg }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(255,77,106,0.12)" }}
+              >
+                <LogOut size={26} style={{ color: "#FF4D6A" }} />
+              </div>
+              <h2 className="text-lg font-bold" style={{ color: t.textPrimary }}>
+                Sign Out
+              </h2>
+              <p className="text-sm" style={{ color: t.textMuted }}>
+                Are you sure you want to sign out?
+              </p>
+            </div>
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => setShowSignOutConfirm(false)}
+                className="flex-1 py-3 rounded-2xl text-sm font-semibold"
+                style={{ background: t.inputBg, color: t.textPrimary }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 py-3 rounded-2xl text-sm font-semibold"
+                style={{ background: "#FF4D6A", color: "#FFFFFF" }}
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
             <BottomNav active="settings" />
     </div>
