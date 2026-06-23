@@ -133,8 +133,8 @@ function HomePage() {
       <div className="px-5 pt-10 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/settings" className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: iconBg }}>
-              <User size={20} style={{ color: accentCyan }} />
+            <Link to="/profile" className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: "#EF4444", color: "#fff" }}>
+              {(account?.fullName || "U").split(" ").slice(0,2).map((w: string) => w[0]?.toUpperCase()).join("") || <User size={20} />}
             </Link>
             <div>
               <p className="text-xs" style={{ color: textMuted }}>Welcome back</p>

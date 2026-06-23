@@ -84,30 +84,26 @@ function Settings() {
           >
             Profile
           </p>
-          <button
-            className="w-full flex items-center justify-between p-4 rounded-2xl"
-            style={{ background: t.cardBg }}
-          >
+          <Link to="/profile" className="w-full flex items-center justify-between p-4 rounded-2xl"
+            style={{ background: t.cardBg }}>
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: "#38BDF8", color: "#0B1120" }}
+                style={{ background: "#EF4444", color: "#fff" }}
               >
-                <User size={18} />
+                <span className="text-sm font-bold">
+                  {(account?.fullName || "U").split(" ").slice(0,2).map((w: string) => w[0]).join("").toUpperCase()}
+                </span>
               </div>
               <div className="text-left">
-                <p
-                  className="text-sm font-semibold"
-                  style={{ color: t.textPrimary }}
-                >
+                <p className="text-sm font-semibold" style={{ color: t.textPrimary }}>
                   {account?.fullName || "User Name"}
                 </p>
-                <p className="text-xs" style={{ color: t.textMuted }}>
-                  {user?.email}
-                </p>
+                <p className="text-xs" style={{ color: t.textMuted }}>{user?.email}</p>
               </div>
             </div>
-          </button>
+            <span className="text-xs" style={{ color: t.textMuted }}>›</span>
+          </Link>
 
           <div
             className="p-4 rounded-2xl space-y-4"

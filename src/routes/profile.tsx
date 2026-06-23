@@ -1,0 +1,211 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useUserAuth } from "../dashboard/hooks/useUserAuth";
+import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useTheme } from "../hooks/use-theme";
+import { themeColors } from "../utils/theme";
+import { BottomNav } from "../dashboard/components/BottomNav";
+
+export const Route = createFileRoute("/profile")({
+  head: () => ({ meta: [{ title: "Profile - Nexus Bank" }] }),
+  component: ProfilePage,
+});
+
+function InfoRow({
+  label,
+  value,
+  masked,
+}: {
+  label: string;
+  value: string;
+  masked?: boolean;
+}) {
+  const { theme } = useTheme();
+  const t = themeColors(theme);
+
+  return (
+    <div
+      className="flex items-center justify-between py-3"
+      style={{ borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)"}` }}
+    >
+      <span className="text-sm" style={{ color: t.textMuted }}>{label}</span>
+      <span className="text-sm font-medium" style={{ color: t.textPrimary }}>
+        {masked ? "••••••••" : value || "—"}
+      </span>
+    </div>
+  );
+}
+
+function SectionHeader({
+  title,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
+  const { theme } = useTheme();
+  const t = themeColors(theme);
+
+  return (
+    <div className="flex items-center justify-between mb-2 mt-6">
+      <p className="text-base font-bold" style={{ color: t.textPrimary }}>
+        {title}
+      </p>
+      {actionLabel && (
+        <button
+          onClick={onAction}
+          className="text-sm font-semibold"
+          style={{ color: "#EF4444" }}
+        >
+          {actionLabel}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ProfilePage() {
+  const navigate = useNavigate();
+  const { user } = useUserAuth();
+  const { account, loading } = useUserAccount();
+  const { theme } = useTheme();
+  const t = themeColors(theme);
+  const [showSecurity, setShowSecurity] = useState(false);
+
+  // Derive initials from fullName
+  const fullName: string = account?.fullName || user?.displayName || "User";
+  const initials = fullName
+    .split(" ")
+    .slice(0, 2)
+    .map((w: string) => w.charAt(0).toUpperCase())
+    .join("");
+
+  // Split name parts
+  const nameParts = fullName.split(" ");
+  const firstName  = nameParts[0] || "";
+  const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : "";
+  const lastName   = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: t.pageBg }}>
+        <div className="text-sm animate-pulse" style={{ color: t.textMuted }}>Loading profile…</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: t.pageBg }}>
+
+      {/* Header */}
+      <div className="px-5 pt-10 pb-4 flex items-center gap-3">
+        <button onClick={() => navigate({ to: "/settings" })} className="p-2 -ml-2">
+          <ArrowLeft size={22} style={{ color: t.textPrimary }} />
+        </button>
+        <div>
+          <h1 className="text-lg font-bold" style={{ color: t.textPrimary }}>Profile</h1>
+          <p className="text-xs" style={{ color: t.textMuted }}>View or update account information</p>
+        </div>
+      </div>
+
+      <div className="px-5 flex-1">
+
+        {/* Avatar card */}
+        <div
+          className="flex items-center gap-4 p-4 rounded-2xl mb-2"
+          style={{
+            background: theme === "dark"
+              ? "linear-gradient(135deg, #1a0a0a 0%, #2d1515 100%)"
+              : "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)",
+            border: `1px solid ${theme === "dark" ? "rgba(239,68,68,0.2)" : "rgba(239,68,68,0.15)"}`,
+          }}
+        >
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0"
+            style={{ background: "#EF4444" }}
+          >
+            {initials}
+          </div>
+          <div>
+            <p className="text-xs" style={{ color: t.textMuted }}>Full Name</p>
+            <p className="text-base font-bold" style={{ color: t.textPrimary }}>{fullName}</p>
+          </div>
+        </div>
+
+        {/* Basic Information */}
+        <SectionHeader title="Basic Information" />
+        <div
+          className="rounded-2xl px-4"
+          style={{ background: t.cardBg }}
+        >
+          <InfoRow label="First Name"   value={firstName} />
+          <InfoRow label="Middle Name"  value={middleName} />
+          <InfoRow label="Last Name"    value={lastName} />
+        </div>
+
+        {/* Contact Information */}
+        <SectionHeader title="Contact Information" actionLabel="Update" />
+        <div
+          className="rounded-2xl px-4"
+          style={{ background: t.cardBg }}
+        >
+          <InfoRow label="Mobile Number"  value={account?.phone || account?.phoneNumber || "—"} />
+          <InfoRow label="Email Address"  value={user?.email || account?.email || "—"} />
+        </div>
+
+        {/* Security Information */}
+        <SectionHeader
+          title="Security Information"
+          actionLabel={showSecurity ? "Hide" : "View"}
+          onAction={() => setShowSecurity((v) => !v)}
+        />
+        <div
+          className="rounded-2xl px-4"
+          style={{ background: t.cardBg }}
+        >
+          <InfoRow
+            label="Bank Verification Number"
+            value={account?.bvn || account?.bankVerificationNumber || ""}
+            masked={!showSecurity}
+          />
+          <InfoRow
+            label="NIN"
+            value={account?.nin || account?.nationalId || ""}
+            masked={!showSecurity}
+          />
+          <InfoRow
+            label="Account Number"
+            value={account?.checkingAccountNumber || account?.accountNumber || ""}
+            masked={!showSecurity}
+          />
+        </div>
+
+        {/* Account Status */}
+        <SectionHeader title="Account Status" />
+        <div
+          className="rounded-2xl px-4"
+          style={{ background: t.cardBg }}
+        >
+          <InfoRow label="Account Type"   value={account?.accountType || "Personal"} />
+          <InfoRow label="Status"         value={account?.status    || "Active"} />
+          <InfoRow label="Member Since"
+            value={
+              account?.createdAt
+                ? new Date(
+                    typeof account.createdAt.toDate === "function"
+                      ? account.createdAt.toDate()
+                      : account.createdAt
+                  ).toLocaleDateString("en-US", { year: "numeric", month: "long" })
+                : "—"
+            }
+          />
+        </div>
+      </div>
+
+      <BottomNav active="settings" />
+    </div>
+  );
+}

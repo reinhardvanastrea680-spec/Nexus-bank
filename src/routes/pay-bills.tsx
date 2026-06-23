@@ -32,30 +32,44 @@ const categories = [
 ];
 
 const billers = [
-  { id: "dstv",        name: "DStv",                      category: "cable",        initials: "DS", country: "Nigeria"        },
-  { id: "showmax",     name: "Showmax",                   category: "subscription", initials: "SM", country: "Nigeria"        },
-  { id: "mtn",         name: "MTN",                       category: "mobile",       initials: "MT", country: "Nigeria"        },
-  { id: "airtel",      name: "Airtel Nigeria",            category: "mobile",       initials: "AT", country: "Nigeria"        },
-  { id: "glo",         name: "Glo Nigeria",               category: "mobile",       initials: "GL", country: "Nigeria"        },
-  { id: "ekedc",       name: "Eko Electric",              category: "electricity",  initials: "EK", country: "Nigeria"        },
-  { id: "ikeja",       name: "Ikeja Electric",            category: "electricity",  initials: "IE", country: "Nigeria"        },
-  { id: "lawma",       name: "LAWMA",                     category: "government",   initials: "LW", country: "Nigeria"        },
-  { id: "firs",        name: "FIRS",                      category: "tax",          initials: "FS", country: "Nigeria"        },
+  // United States
   { id: "comcast",     name: "Comcast Xfinity",           category: "internet",     initials: "CX", country: "United States"  },
   { id: "verizon",     name: "Verizon Wireless",          category: "mobile",       initials: "VZ", country: "United States"  },
   { id: "att",         name: "AT&T",                      category: "mobile",       initials: "AT", country: "United States"  },
+  { id: "tmobile",     name: "T-Mobile",                  category: "mobile",       initials: "TM", country: "United States"  },
   { id: "geico",       name: "GEICO Insurance",           category: "insurance",    initials: "GI", country: "United States"  },
   { id: "irs",         name: "IRS Payments",              category: "tax",          initials: "IR", country: "United States"  },
   { id: "chase",       name: "Chase Credit Card",         category: "credit-card",  initials: "CH", country: "United States"  },
+  { id: "duke-energy", name: "Duke Energy",               category: "electricity",  initials: "DE", country: "United States"  },
+  { id: "pg-e",        name: "PG&E",                      category: "electricity",  initials: "PE", country: "United States"  },
+  { id: "american-water", name: "American Water",         category: "water",        initials: "AW", country: "United States"  },
+  // United Kingdom
   { id: "bt",          name: "BT Broadband",              category: "internet",     initials: "BT", country: "United Kingdom" },
   { id: "o2",          name: "O2 UK",                     category: "mobile",       initials: "O2", country: "United Kingdom" },
   { id: "sky",         name: "Sky UK",                    category: "cable",        initials: "SK", country: "United Kingdom" },
+  { id: "ee",          name: "EE Mobile",                 category: "mobile",       initials: "EE", country: "United Kingdom" },
   { id: "hmrc",        name: "HMRC Tax",                  category: "tax",          initials: "HM", country: "United Kingdom" },
+  { id: "british-gas", name: "British Gas",               category: "electricity",  initials: "BG", country: "United Kingdom" },
+  { id: "thames-water", name: "Thames Water",             category: "water",        initials: "TW", country: "United Kingdom" },
+  // Europe
+  { id: "edf",         name: "EDF Energy",                category: "electricity",  initials: "ED", country: "Europe"         },
+  { id: "orange",      name: "Orange",                    category: "mobile",       initials: "OR", country: "Europe"         },
+  { id: "vodafone",    name: "Vodafone",                  category: "mobile",       initials: "VF", country: "Global"         },
+  // Canada
+  { id: "rogers",      name: "Rogers Communications",     category: "mobile",       initials: "RG", country: "Canada"         },
+  { id: "bell",        name: "Bell Canada",               category: "internet",     initials: "BL", country: "Canada"         },
+  // Australia
+  { id: "telstra",     name: "Telstra",                   category: "mobile",       initials: "TS", country: "Australia"      },
+  { id: "optus",       name: "Optus",                     category: "mobile",       initials: "OP", country: "Australia"      },
+  // Global subscriptions
   { id: "netflix",     name: "Netflix",                   category: "subscription", initials: "NF", country: "Global"         },
   { id: "spotify",     name: "Spotify",                   category: "subscription", initials: "SP", country: "Global"         },
   { id: "amazon",      name: "Amazon Prime",              category: "subscription", initials: "AP", country: "Global"         },
   { id: "apple-music", name: "Apple Music",               category: "subscription", initials: "AM", country: "Global"         },
+  { id: "disney",      name: "Disney+",                   category: "subscription", initials: "DP", country: "Global"         },
+  { id: "hbo",         name: "HBO Max",                   category: "subscription", initials: "HB", country: "Global"         },
   { id: "school-fees", name: "University Fees",           category: "education",    initials: "UF", country: "Global"         },
+  { id: "microsoft",   name: "Microsoft 365",             category: "subscription", initials: "MS", country: "Global"         },
 ];
 
 function formatCurrency(v: number) {
