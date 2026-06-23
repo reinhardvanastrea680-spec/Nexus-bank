@@ -167,16 +167,6 @@ function ProfilePage() {
           style={{ background: t.cardBg }}
         >
           <InfoRow
-            label="Bank Verification Number"
-            value={account?.bvn || account?.bankVerificationNumber || ""}
-            masked={!showSecurity}
-          />
-          <InfoRow
-            label="NIN"
-            value={account?.nin || account?.nationalId || ""}
-            masked={!showSecurity}
-          />
-          <InfoRow
             label="Account Number"
             value={account?.checkingAccountNumber || account?.accountNumber || ""}
             masked={!showSecurity}
