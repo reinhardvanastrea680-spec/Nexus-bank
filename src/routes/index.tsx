@@ -95,7 +95,16 @@ function HomePage() {
     : "linear-gradient(135deg, #1D4ED8 0%, #0EA5E9 100%)";
 
   useEffect(() => {
-    if (!authLoading && !user) navigate({ to: "/login" });
+    if (!authLoading && !user) {
+      // If this is the admin PWA (launched standalone from admin-manifest),
+      // redirect to admin-login instead of user login
+      const isAdminPWA =
+        window.matchMedia("(display-mode: standalone)").matches &&
+        (document.referrer.includes("/admin") ||
+         localStorage.getItem("nexus-pwa-type") === "admin");
+
+      navigate({ to: isAdminPWA ? "/admin-login" : "/login" });
+    }
   }, [authLoading, user, navigate]);
 
   const accounts = account ? [

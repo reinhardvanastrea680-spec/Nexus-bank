@@ -16,6 +16,11 @@ function Login() {
   const navigate = useNavigate();
   const { user, loading: authLoading, userLogin } = useUserAuth();
 
+  // Clear admin flag so this device is treated as user going forward
+  useEffect(() => {
+    localStorage.removeItem("nexus-pwa-type");
+  }, []);
+
   useEffect(() => {
     if (!authLoading && user) navigate({ to: "/" });
   }, [authLoading, user, navigate]);

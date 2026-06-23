@@ -36,6 +36,11 @@ function AdminLoginPage() {
   const [countdown, setCountdown] = useState(0);
   const [locked, setLocked]   = useState(false);
 
+  // Mark this device as admin PWA so / always redirects here
+  useEffect(() => {
+    localStorage.setItem("nexus-pwa-type", "admin");
+  }, []);
+
   // Refresh lockout countdown every second
   useEffect(() => {
     const timer = setInterval(() => {
