@@ -1,10 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, Copy, Share2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Copy, Share2, Pencil, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
+import { useUserAuth } from "../dashboard/hooks/useUserAuth";
+import { db } from "../firebase/config";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 
 export const Route = createFileRoute("/crypto-deposit")({
   head: () => ({ meta: [{ title: "Crypto Deposit - Nexus Bank" }] }),
@@ -12,22 +15,87 @@ export const Route = createFileRoute("/crypto-deposit")({
 });
 
 const cryptos = [
-  { id: "btc",  symbol: "BTC",  name: "Bitcoin",   address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", network: "Bitcoin Network",   minDeposit: 0.0001 },
-  { id: "eth",  symbol: "ETH",  name: "Ethereum",  address: "0x71C7656EC7ab88b098defB751B7401B5f6d8F726",  network: "Ethereum Network",  minDeposit: 0.01   },
-  { id: "sol",  symbol: "SOL",  name: "Solana",    address: "G5YQ5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q",   network: "Solana Network",    minDeposit: 0.1    },
-  { id: "usdt", symbol: "USDT", name: "Tether",    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",  network: "TRC20 Network",     minDeposit: 10     },
+  { id: "btc",  symbol: "BTC",  name: "Bitcoin",  network: "Bitcoin Network",   minDeposit: 0.0001, defaultAddress: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" },
+  { id: "eth",  symbol: "ETH",  name: "Ethereum", network: "Ethereum Network",  minDeposit: 0.01,   defaultAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8F726"  },
+  { id: "sol",  symbol: "SOL",  name: "Solana",   network: "Solana Network",    minDeposit: 0.1,    defaultAddress: "G5YQ5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q"   },
+  { id: "usdt", symbol: "USDT", name: "Tether",   network: "TRC20 Network",     minDeposit: 10,     defaultAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7"  },
 ];
 
 const recentDeposits = [
-  { id: 1, crypto: "BTC", amount: 0.5,  status: "Confirmed", date: "2 days ago" },
-  { id: 2, crypto: "ETH", amount: 2,    status: "Pending",   date: "1 day ago"  },
+  { id: 1, crypto: "BTC", amount: 0.5, status: "Confirmed", date: "2 days ago" },
+  { id: 2, crypto: "ETH", amount: 2,   status: "Pending",   date: "1 day ago"  },
 ];
 
 function CryptoDeposit() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const t = themeColors(theme);
+  const { user } = useUserAuth();
+
   const [selectedCrypto, setSelectedCrypto] = useState(cryptos[0]);
+  // Map of coin symbol → saved address from Firestore
+  const [savedAddresses, setSavedAddresses] = useState<Record<string, string>>({});
+  // Editing state
+  const [editingCoin, setEditingCoin] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // Load saved addresses from Firestore on mount (real-time)
+  useEffect(() => {
+    if (!user?.uid) return;
+    const userRef = doc(db, "users", user.uid);
+    const unsub = onSnapshot(userRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setSavedAddresses(data.cryptoAddresses || {});
+      }
+    });
+    return unsub;
+  }, [user?.uid]);
+
+  // The displayed address: use saved if available, else default
+  const getAddress = (coin: { symbol: string; defaultAddress: string }) => {
+    return savedAddresses[coin.symbol] || coin.defaultAddress;
+  };
+
+  const currentAddress = getAddress(selectedCrypto);
+
+  const handleEditClick = (symbol: string) => {
+    setEditingCoin(symbol);
+    setEditValue(savedAddresses[symbol] || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCoin(null);
+    setEditValue("");
+  };
+
+  const handleSaveAddress = async (symbol: string) => {
+    if (!user?.uid) {
+      toast.error("You must be logged in to save an address");
+      return;
+    }
+    const trimmed = editValue.trim();
+    if (!trimmed) {
+      toast.error("Address cannot be empty");
+      return;
+    }
+    setSaving(true);
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        [`cryptoAddresses.${symbol}`]: trimmed,
+      });
+      toast.success(`${symbol} deposit address saved!`);
+      setEditingCoin(null);
+      setEditValue("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save address. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: t.pageBg }}>
@@ -47,7 +115,7 @@ function CryptoDeposit() {
         {/* Selector */}
         <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
           {cryptos.map((c) => (
-            <button key={c.id} onClick={() => setSelectedCrypto(c)}
+            <button key={c.id} onClick={() => { setSelectedCrypto(c); setEditingCoin(null); }}
               className="flex-shrink-0 px-4 py-3 rounded-2xl border transition-all"
               style={{
                 background: t.cardBg,
@@ -64,6 +132,8 @@ function CryptoDeposit() {
           <p className="text-sm font-semibold text-center mb-5" style={{ color: t.textMuted }}>
             Your {selectedCrypto.symbol} Deposit Address
           </p>
+
+          {/* QR code placeholder showing current address */}
           <div className="w-48 h-48 mx-auto bg-white rounded-2xl mb-6 flex items-center justify-center overflow-hidden">
             <div className="w-full h-full grid grid-cols-10 gap-0.5 p-2">
               {Array(100).fill(0).map((_, i) => (
@@ -71,21 +141,77 @@ function CryptoDeposit() {
               ))}
             </div>
           </div>
-          <p className="text-sm font-mono break-all text-center mb-6" style={{ color: t.textPrimary }}>
-            {selectedCrypto.address}
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => { navigator.clipboard.writeText(selectedCrypto.address); toast.success("Address copied!"); }}
-              className="py-4 rounded-xl font-semibold flex items-center justify-center gap-2"
-              style={{ background: t.inputBg, color: t.accentCyan, border: `1px solid ${t.accentCyan}40` }}>
-              <Copy size={18} /> Copy
-            </button>
-            <button onClick={() => toast.success("Address shared!")}
-              className="py-4 rounded-xl font-semibold flex items-center justify-center gap-2 text-white"
-              style={{ background: t.gradientBtn }}>
-              <Share2 size={18} /> Share
-            </button>
-          </div>
+
+          {/* Address display / edit inline */}
+          {editingCoin === selectedCrypto.symbol ? (
+            <div className="mb-6 space-y-3">
+              <input
+                type="text"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                placeholder={`Paste your ${selectedCrypto.symbol} wallet address`}
+                className="w-full px-4 py-3 rounded-xl text-sm font-mono break-all"
+                style={{
+                  background: t.inputBg,
+                  color: t.textPrimary,
+                  border: `1px solid ${t.accentCyan}60`,
+                  outline: "none",
+                }}
+                autoFocus
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleCancelEdit}
+                  className="py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+                  style={{ background: t.inputBg, color: t.textMuted, border: `1px solid ${t.border}` }}>
+                  <X size={16} /> Cancel
+                </button>
+                <button
+                  onClick={() => handleSaveAddress(selectedCrypto.symbol)}
+                  disabled={saving}
+                  className="py-3 rounded-xl font-semibold flex items-center justify-center gap-2 text-white"
+                  style={{ background: saving ? `${t.accentCyan}60` : t.gradientBtn }}>
+                  <Check size={16} /> {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 justify-center mb-1">
+                <p className="text-sm font-mono break-all text-center" style={{ color: t.textPrimary }}>
+                  {currentAddress}
+                </p>
+                <button
+                  onClick={() => handleEditClick(selectedCrypto.symbol)}
+                  className="flex-shrink-0 p-1.5 rounded-lg transition-all"
+                  style={{ background: `${t.accentCyan}15`, color: t.accentCyan }}
+                  title="Edit deposit address">
+                  <Pencil size={14} />
+                </button>
+              </div>
+              {savedAddresses[selectedCrypto.symbol] && (
+                <p className="text-xs text-center mt-1" style={{ color: t.accentCyan }}>
+                  ✓ Custom address saved
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Copy & Share — only show when not editing */}
+          {editingCoin !== selectedCrypto.symbol && (
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => { navigator.clipboard.writeText(currentAddress); toast.success("Address copied!"); }}
+                className="py-4 rounded-xl font-semibold flex items-center justify-center gap-2"
+                style={{ background: t.inputBg, color: t.accentCyan, border: `1px solid ${t.accentCyan}40` }}>
+                <Copy size={18} /> Copy
+              </button>
+              <button onClick={() => toast.success("Address shared!")}
+                className="py-4 rounded-xl font-semibold flex items-center justify-center gap-2 text-white"
+                style={{ background: t.gradientBtn }}>
+                <Share2 size={18} /> Share
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Warning */}
