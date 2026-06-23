@@ -205,36 +205,60 @@ export default function ProspectiveUsersPage() {
       {/* ── CHATS TAB ── */}
       {tab === "chats" && (
         <div className="flex gap-4 h-[580px]">
-          {/* Sidebar — narrow, compact */}
-          <div className="w-56 flex-shrink-0 flex flex-col gap-1.5 overflow-y-auto">
+          {/* Sidebar — full width when no chat selected, collapses to icon strip when chat is open */}
+          <div
+            className="flex-shrink-0 flex flex-col overflow-y-auto"
+            style={{
+              width: selectedChat ? 52 : 224,
+              transition: "width 0.25s cubic-bezier(.4,0,.2,1)",
+            }}
+          >
             {filteredChats.length === 0 ? (
-              <div className="text-center py-12 text-[#8A9BB5]">
-                <MessageSquare size={28} className="mx-auto mb-3 opacity-30" />
-                <p className="text-xs">No live chats yet</p>
-              </div>
+              !selectedChat && (
+                <div className="text-center py-12 text-[#8A9BB5]">
+                  <MessageSquare size={28} className="mx-auto mb-3 opacity-30" />
+                  <p className="text-xs">No live chats yet</p>
+                </div>
+              )
             ) : filteredChats.map((chat) => (
               <button key={chat.id} onClick={() => setSelectedChat(chat)}
-                className="text-left px-3 py-2.5 rounded-xl transition-all"
-                style={{ background: selectedChat?.id === chat.id ? "rgba(56,189,248,0.1)" : "rgba(255,255,255,0.03)", border: selectedChat?.id === chat.id ? "1px solid rgba(56,189,248,0.3)" : "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                title={selectedChat ? chat.prospectName : undefined}
+                className="rounded-xl transition-all mb-1.5 relative"
+                style={{
+                  background: selectedChat?.id === chat.id ? "rgba(56,189,248,0.15)" : "rgba(255,255,255,0.03)",
+                  border: selectedChat?.id === chat.id ? "1px solid rgba(56,189,248,0.4)" : "1px solid rgba(255,255,255,0.05)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: selectedChat ? "center" : "flex-start",
+                  gap: selectedChat ? 0 : 8,
+                  padding: selectedChat ? "8px" : "10px 12px",
+                  overflow: "hidden",
+                  textAlign: "left",
+                }}>
+                {/* Avatar — always visible */}
+                <div className="relative flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs">
                     {chat.prospectName.charAt(0).toUpperCase()}
                   </div>
+                  {chat.unreadByAdmin > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white font-bold"
+                      style={{ background: "#EF4444", fontSize: 9 }}>
+                      {chat.unreadByAdmin}
+                    </span>
+                  )}
+                </div>
+                {/* Name + preview — only shown when sidebar is expanded */}
+                {!selectedChat && (
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-white font-semibold text-xs truncate">{chat.prospectName}</span>
-                      {chat.unreadByAdmin > 0 && (
-                        <span className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#EF4444", color: "#fff", fontSize: 10 }}>{chat.unreadByAdmin}</span>
-                      )}
-                    </div>
+                    <p className="text-white font-semibold text-xs truncate">{chat.prospectName}</p>
                     <p className="text-blue-300/50 text-xs truncate">{chat.lastMessage || chat.prospectEmail}</p>
                   </div>
-                </div>
+                )}
               </button>
             ))}
           </div>
 
-          {/* Chat window */}
+          {/* Chat window — expands to fill all remaining space when sidebar collapses */}
           <Card className="glass-card border-0 flex-1 flex flex-col overflow-hidden">
             {!selectedChat ? (
               <div className="flex-1 flex items-center justify-center text-center text-[#8A9BB5]">
@@ -245,26 +269,33 @@ export default function ProspectiveUsersPage() {
               </div>
             ) : (
               <>
-                {/* Chat header */}
+                {/* Chat header — back arrow re-expands sidebar */}
                 <div className="p-4 border-b border-[rgba(255,255,255,0.05)] flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold">
+                  <button
+                    onClick={() => setSelectedChat(null)}
+                    className="p-1.5 rounded-lg text-blue-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 text-base leading-none"
+                    title="Back to all chats"
+                  >
+                    ←
+                  </button>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                     {selectedChat.prospectName.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="text-white font-semibold">{selectedChat.prospectName}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-semibold truncate">{selectedChat.prospectName}</p>
                     <p className="text-blue-300/60 text-xs flex items-center gap-3">
-                      <span className="flex items-center gap-1"><Mail size={11} />{selectedChat.prospectEmail}</span>
-                      {selectedChat.prospectPhone && <span className="flex items-center gap-1"><Phone size={11} />{selectedChat.prospectPhone}</span>}
+                      <span className="flex items-center gap-1 truncate"><Mail size={11} />{selectedChat.prospectEmail}</span>
+                      {selectedChat.prospectPhone && <span className="flex items-center gap-1 flex-shrink-0"><Phone size={11} />{selectedChat.prospectPhone}</span>}
                     </p>
                   </div>
-                  <Badge className="ml-auto bg-green-500/20 text-green-400 border-green-500/30">Prospective User</Badge>
+                  <Badge className="ml-auto flex-shrink-0 bg-green-500/20 text-green-400 border-green-500/30">Prospective User</Badge>
                 </div>
 
                 {/* Messages */}
                 <div className="flex-1 p-4 overflow-y-auto space-y-3" style={{ background: "#07101E" }}>
                   {messages.map((msg) => (
                     <div key={msg.id} className={`flex ${msg.sender === "admin" ? "justify-end" : "justify-start"}`}>
-                      <div className="max-w-[70%] p-3 rounded-2xl"
+                      <div className="max-w-[75%] p-3 rounded-2xl"
                         style={{
                           background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "rgba(255,255,255,0.07)",
                           borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
