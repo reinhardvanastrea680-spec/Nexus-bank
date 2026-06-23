@@ -115,7 +115,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Apply saved theme immediately (before first paint)
+    // Apply saved theme
     const stored = localStorage.getItem("nexus-bank-theme");
     if (stored === "light" || stored === "dark") {
       document.documentElement.classList.add(stored);
