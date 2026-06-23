@@ -1,6 +1,6 @@
-// Nexus Bank Service Worker
-const CACHE_NAME = "nexus-bank-v1";
-const STATIC_ASSETS = ["/", "/manifest.json"];
+// Nexus Bank Service Worker v2
+const CACHE_NAME = "nexus-bank-v2";
+const STATIC_ASSETS = ["/", "/manifest.json", "/admin-manifest.json"];
 
 // Install — cache static shell
 self.addEventListener("install", (event) => {
@@ -20,7 +20,7 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Fetch — network first, fall back to cache for navigation
+// Fetch — network first, smart fallback
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
@@ -36,10 +36,17 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigation requests — network first, cache fallback
+  // Navigation requests — network first, smart cache fallback
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match("/"))
+      fetch(request).catch(() => {
+        const url = new URL(request.url);
+        // Admin routes fall back to admin-login, not user home
+        if (url.pathname.startsWith("/admin")) {
+          return caches.match("/admin-login") || caches.match("/");
+        }
+        return caches.match("/");
+      })
     );
     return;
   }
