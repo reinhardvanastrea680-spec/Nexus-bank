@@ -200,35 +200,36 @@ export default function ProspectiveUsersPage() {
 
       {/* Search */}
       <Input placeholder="Search by name or email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-80 bg-[#070B14] border-[rgba(255,255,255,0.1)] text-white" />
+        className="w-56 bg-[#070B14] border-[rgba(255,255,255,0.1)] text-white" />
 
       {/* ── CHATS TAB ── */}
       {tab === "chats" && (
         <div className="flex gap-4 h-[580px]">
-          {/* Sidebar */}
-          <div className="w-72 flex-shrink-0 flex flex-col gap-2 overflow-y-auto">
+          {/* Sidebar — narrow, compact */}
+          <div className="w-56 flex-shrink-0 flex flex-col gap-1.5 overflow-y-auto">
             {filteredChats.length === 0 ? (
               <div className="text-center py-12 text-[#8A9BB5]">
-                <MessageSquare size={32} className="mx-auto mb-3 opacity-30" />
-                No live chats yet
+                <MessageSquare size={28} className="mx-auto mb-3 opacity-30" />
+                <p className="text-xs">No live chats yet</p>
               </div>
             ) : filteredChats.map((chat) => (
               <button key={chat.id} onClick={() => setSelectedChat(chat)}
-                className="text-left p-4 rounded-xl transition-all"
+                className="text-left px-3 py-2.5 rounded-xl transition-all"
                 style={{ background: selectedChat?.id === chat.id ? "rgba(56,189,248,0.1)" : "rgba(255,255,255,0.03)", border: selectedChat?.id === chat.id ? "1px solid rgba(56,189,248,0.3)" : "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                      {chat.prospectName.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-white font-semibold text-sm truncate max-w-[120px]">{chat.prospectName}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                    {chat.prospectName.charAt(0).toUpperCase()}
                   </div>
-                  {chat.unreadByAdmin > 0 && (
-                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#EF4444", color: "#fff" }}>{chat.unreadByAdmin}</span>
-                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-white font-semibold text-xs truncate">{chat.prospectName}</span>
+                      {chat.unreadByAdmin > 0 && (
+                        <span className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#EF4444", color: "#fff", fontSize: 10 }}>{chat.unreadByAdmin}</span>
+                      )}
+                    </div>
+                    <p className="text-blue-300/50 text-xs truncate">{chat.lastMessage || chat.prospectEmail}</p>
+                  </div>
                 </div>
-                <p className="text-blue-300/60 text-xs truncate">{chat.lastMessage || chat.prospectEmail}</p>
-                <p className="text-blue-300/40 text-xs mt-1">{formatDate(chat.lastMessageAt)}</p>
               </button>
             ))}
           </div>
@@ -299,26 +300,24 @@ export default function ProspectiveUsersPage() {
       {/* ── CONTACTS TAB ── */}
       {tab === "contacts" && (
         <div className="flex gap-4 h-[580px]">
-          {/* List */}
-          <div className="w-80 flex-shrink-0 flex flex-col gap-2 overflow-y-auto">
+          {/* List — narrow */}
+          <div className="w-56 flex-shrink-0 flex flex-col gap-1.5 overflow-y-auto">
             {filteredContacts.length === 0 ? (
               <div className="text-center py-12 text-[#8A9BB5]">
-                <FileText size={32} className="mx-auto mb-3 opacity-30" />
-                No contact enquiries yet
+                <FileText size={28} className="mx-auto mb-3 opacity-30" />
+                <p className="text-xs">No enquiries yet</p>
               </div>
             ) : filteredContacts.map((c) => (
               <button key={c.id} onClick={() => setSelectedContact(c)}
-                className="text-left p-4 rounded-xl transition-all"
+                className="text-left px-3 py-2.5 rounded-xl transition-all"
                 style={{ background: selectedContact?.id === c.id ? "rgba(56,189,248,0.1)" : "rgba(255,255,255,0.03)", border: selectedContact?.id === c.id ? "1px solid rgba(56,189,248,0.3)" : "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-white font-semibold text-sm">{c.name}</span>
-                  <Badge className={c.status === "new" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30" : "bg-green-500/20 text-green-300 border-green-500/30"}>
-                    {c.status === "new" ? "New" : "Handled"}
-                  </Badge>
+                <div className="flex items-center justify-between gap-1 mb-0.5">
+                  <span className="text-white font-semibold text-xs truncate">{c.name}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${c.status === "new" ? "bg-yellow-500/20 text-yellow-300" : "bg-green-500/20 text-green-300"}`} style={{ fontSize: 10 }}>
+                    {c.status === "new" ? "New" : "Done"}
+                  </span>
                 </div>
-                <p className="text-blue-300/60 text-xs">{c.email}</p>
-                <p className="text-cyan-400/80 text-xs mt-1 truncate">{c.subject}</p>
-                <p className="text-blue-300/40 text-xs mt-1 flex items-center gap-1"><Clock size={10} />{formatDate(c.createdAt)}</p>
+                <p className="text-blue-300/50 text-xs truncate">{c.subject || c.email}</p>
               </button>
             ))}
           </div>
