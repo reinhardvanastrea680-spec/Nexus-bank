@@ -9,12 +9,29 @@
   "theme_color": "#06B6D4",
   "orientation": "any",
   "icons": [
-    { "src": "/icons/admin-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icons/admin-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/admin-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/admin-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "categories": ["finance", "business"],
   "shortcuts": [
-    { "name": "Pending Transactions", "url": "/admin/pending-transactions" },
-    { "name": "User Management",      "url": "/admin/users" }
+    { "name": "Pending Transactions", "url": "/admin/pending-transactions", "description": "Review pending transactions" },
+    { "name": "User Management",      "url": "/admin/users",                "description": "Manage bank users" },
+    { "name": "Live Chat",            "url": "/admin/chat",                 "description": "Customer chat support" }
   ]
 }
