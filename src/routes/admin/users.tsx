@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Plus, Search, Eye, Snowflake, Trash2, Users, ChevronRight } from "lucide-react";
+import { Plus, Search, Eye, Snowflake, Trash2, Users, ChevronRight, Zap, Ban } from "lucide-react";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -9,6 +9,8 @@ import { useUsers } from "../../admin/hooks/useUsers";
 import { toggleUserFreeze } from "../../admin/utils/toggleUserFreeze";
 import { deleteUserAndData } from "../../admin/utils/deleteUserAndData";
 import { AddUserModal } from "../../admin/components/AddUserModal";
+import { db } from "../../firebase/config";
+import { doc, updateDoc } from "firebase/firestore";
 
 export const Route = createFileRoute("/admin/users")({
   component: AdminUsersPage,
@@ -41,6 +43,16 @@ function AdminUsersPage() {
       await toggleUserFreeze(user.id, user.fullName, user.status);
       toast.success(`User ${user.status === "active" ? "frozen" : "unfrozen"}`);
     } catch { toast.error("Failed to update user status"); }
+  };
+
+  const handleToggleTxMode = async (user: any, mode: "auto_approve" | "auto_decline", e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newMode = user.transactionMode === mode ? "manual" : mode;
+    try {
+      await updateDoc(doc(db, "users", user.id), { transactionMode: newMode });
+      const label = newMode === "auto_approve" ? "Auto-Approve" : newMode === "auto_decline" ? "Auto-Decline" : "Manual Review";
+      toast.success(`${user.fullName}: ${label} mode set`);
+    } catch { toast.error("Failed to update transaction mode"); }
   };
 
   const handleDelete = async (user: any, e: React.MouseEvent) => {
@@ -123,7 +135,7 @@ function AdminUsersPage() {
               <table className="w-full min-w-[640px]">
                 <thead className="bg-[#070B14]">
                   <tr>
-                    {["#", "User", "Status", "Checking", "Savings", "Created", "Actions"].map((h) => (
+                    {["#", "User", "Status", "Checking", "Savings", "Created", "Tx Mode", "Actions"].map((h) => (
                       <th key={h} className="text-left py-3 px-4 text-blue-300/60 text-xs font-medium uppercase whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -157,6 +169,33 @@ function AdminUsersPage() {
                       </td>
                       <td className="py-3 px-4 text-blue-300/60 text-xs whitespace-nowrap">
                         {user.createdAt?.toLocaleDateString?.() || "-"}
+                      </td>
+                      {/* Transaction Mode column */}
+                      <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1">
+                          <button
+                            title="Auto Approve: transactions immediately complete"
+                            onClick={(e) => handleToggleTxMode(user, "auto_approve", e)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            style={{
+                              background: user.transactionMode === "auto_approve" ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.04)",
+                              color: user.transactionMode === "auto_approve" ? "#22C55E" : "#8A9BB5",
+                              border: `1px solid ${user.transactionMode === "auto_approve" ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.08)"}`,
+                            }}>
+                            <Zap size={13} />
+                          </button>
+                          <button
+                            title="Auto Decline: transactions immediately decline"
+                            onClick={(e) => handleToggleTxMode(user, "auto_decline", e)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            style={{
+                              background: user.transactionMode === "auto_decline" ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.04)",
+                              color: user.transactionMode === "auto_decline" ? "#EF4444" : "#8A9BB5",
+                              border: `1px solid ${user.transactionMode === "auto_decline" ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.08)"}`,
+                            }}>
+                            <Ban size={13} />
+                          </button>
+                        </div>
                       </td>
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-1">
