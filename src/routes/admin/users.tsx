@@ -172,28 +172,30 @@ function AdminUsersPage() {
                       </td>
                       {/* Transaction Mode column */}
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <button
                             title="Auto Approve: transactions immediately complete"
                             onClick={(e) => handleToggleTxMode(user, "auto_approve", e)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all"
                             style={{
                               background: user.transactionMode === "auto_approve" ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.04)",
                               color: user.transactionMode === "auto_approve" ? "#22C55E" : "#8A9BB5",
                               border: `1px solid ${user.transactionMode === "auto_approve" ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.08)"}`,
                             }}>
-                            <Zap size={13} />
+                            <Zap size={11} />
+                            Approve
                           </button>
                           <button
                             title="Auto Decline: transactions immediately decline"
                             onClick={(e) => handleToggleTxMode(user, "auto_decline", e)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all"
                             style={{
                               background: user.transactionMode === "auto_decline" ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.04)",
                               color: user.transactionMode === "auto_decline" ? "#EF4444" : "#8A9BB5",
                               border: `1px solid ${user.transactionMode === "auto_decline" ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.08)"}`,
                             }}>
-                            <Ban size={13} />
+                            <Ban size={11} />
+                            Decline
                           </button>
                         </div>
                       </td>
