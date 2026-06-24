@@ -76,7 +76,7 @@ export async function submitTransaction({
   accountNumber = "",
   memo = "",
   toAccount = "",
-}: SubmitTransactionParams): Promise<{ transactionId: string; transactionRef: string }> {
+}: SubmitTransactionParams): Promise<{ transactionId: string; transactionRef: string; status: string }> {
   const user = auth.currentUser;
   if (!user) throw new Error("User is not authenticated.");
 

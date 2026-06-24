@@ -33,9 +33,10 @@ export function TransactionSuccessScreen({
   const navigate = useNavigate();
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const isFailed  = status === "declined" || status === "failed";
-  const isWire    = transactionType?.includes("wire");
-  const timeNow   = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const isFailed    = status === "declined" || status === "failed";
+  const isCompleted = status === "completed";
+  const isWire      = transactionType?.includes("wire");
+  const timeNow     = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
   // ── RECEIPT VIEW ──────────────────────────────────────────────────────
   if (showReceipt) {
@@ -89,13 +90,13 @@ export function TransactionSuccessScreen({
               <span
                 className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold"
                 style={{
-                  background: isFailed ? "rgba(239,68,68,0.15)" : "rgba(255,171,0,0.12)",
-                  color:      isFailed ? "#EF4444"              : "#FFAB00",
-                  border: `1px solid ${isFailed ? "rgba(239,68,68,0.3)" : "rgba(255,171,0,0.3)"}`,
+                  background: isFailed ? "rgba(239,68,68,0.15)" : isCompleted ? "rgba(0,230,118,0.12)" : "rgba(255,171,0,0.12)",
+                  color:      isFailed ? "#EF4444"              : isCompleted ? "#00E676"               : "#FFAB00",
+                  border: `1px solid ${isFailed ? "rgba(239,68,68,0.3)" : isCompleted ? "rgba(0,230,118,0.3)" : "rgba(255,171,0,0.3)"}`,
                 }}
               >
-                {isFailed ? <XCircle size={11} /> : <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: "#FFAB00" }} />}
-                {isFailed ? "Failed" : "Pending"}
+                {isFailed     ? <XCircle size={11} />     : <CheckCircle2 size={11} />}
+                {isFailed ? "Failed" : isCompleted ? "Approved" : "Pending"}
               </span>
             </div>
 
@@ -211,10 +212,12 @@ export function TransactionSuccessScreen({
       </div>
 
       <h1 className="text-2xl font-bold mb-2" style={{ color: "#FFFFFF" }}>
-        Transaction Submitted
+        {isCompleted ? "Transaction Approved" : "Transaction Submitted"}
       </h1>
       <p className="text-sm mb-8 text-center max-w-xs" style={{ color: "#7A8FA6" }}>
-        Your request has been received and is pending admin review.
+        {isCompleted
+          ? "Your transaction has been approved and processed successfully."
+          : "Your request has been received and is pending admin review."}
       </p>
 
       {/* Transaction summary */}
@@ -249,14 +252,19 @@ export function TransactionSuccessScreen({
             <span className="text-sm" style={{ color: "#7A8FA6" }}>Status</span>
             <span
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border"
-              style={{
+              style={isCompleted ? {
+                backgroundColor: "rgba(0,230,118,0.12)",
+                borderColor: "rgba(0,230,118,0.3)",
+                color: "#00E676",
+              } : {
                 backgroundColor: "rgba(255, 171, 0, 0.12)",
                 borderColor: "rgba(255, 171, 0, 0.3)",
                 color: "#FFAB00",
               }}
             >
-              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: "#FFAB00" }} />
-              Pending
+              {isCompleted
+                ? <><CheckCircle2 size={11} /> Approved</>
+                : <><div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: "#FFAB00" }} /> Pending</>}
             </span>
           </div>
           <div className="flex justify-between items-center">
@@ -267,7 +275,7 @@ export function TransactionSuccessScreen({
       </div>
 
       {/* Action buttons */}
-      <div className="w-full max-w-xs mt-6">
+      <div className="w-full max-w-xs mt-6 space-y-3">
         <button
           onClick={() => navigate({ to: "/" })}
           className="w-full py-4 rounded-xl font-semibold"
@@ -275,6 +283,16 @@ export function TransactionSuccessScreen({
         >
           Back to Home
         </button>
+        {isCompleted && (
+          <button
+            onClick={() => setShowReceipt(true)}
+            className="w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+            style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5", border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <FileText size={16} />
+            View Receipt
+          </button>
+        )}
       </div>
 
       <style>{`
