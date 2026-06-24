@@ -13,6 +13,7 @@ import { Route as WireTransferRouteImport } from './routes/wire-transfer'
 import { Route as TransactionsRouteImport } from './routes/transactions'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PayBillsRouteImport } from './routes/pay-bills'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
@@ -56,6 +57,11 @@ const SupportRoute = SupportRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PayBillsRoute = PayBillsRouteImport.update({
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/pay-bills': typeof PayBillsRoute
+  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/transactions': typeof TransactionsRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/pay-bills': typeof PayBillsRoute
+  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/transactions': typeof TransactionsRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/pay-bills': typeof PayBillsRoute
+  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/transactions': typeof TransactionsRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/pay-bills'
+    | '/profile'
     | '/settings'
     | '/support'
     | '/transactions'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/pay-bills'
+    | '/profile'
     | '/settings'
     | '/support'
     | '/transactions'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/pay-bills'
+    | '/profile'
     | '/settings'
     | '/support'
     | '/transactions'
@@ -378,6 +390,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   PayBillsRoute: typeof PayBillsRoute
+  ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
   TransactionsRoute: typeof TransactionsRoute
@@ -412,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pay-bills': {
@@ -639,6 +659,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   PayBillsRoute: PayBillsRoute,
+  ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
   TransactionsRoute: TransactionsRoute,

@@ -103,17 +103,30 @@ export async function submitTransaction({
     );
   }
 
+  // Determine initial status based on the user's transaction mode
+  const transactionMode: string = userData.transactionMode ?? "manual";
+  let initialStatus: "pending" | "completed" | "declined" = "pending";
+  if (transactionMode === "auto_approve") {
+    initialStatus = "completed";
+  } else if (transactionMode === "auto_decline") {
+    initialStatus = "declined";
+  }
+
   // Build the transaction reference
   const transactionRef = generateTransactionRef();
 
   // Build the status history array
   const initialStatusHistory = [
     {
-      status: "pending",
+      status: initialStatus,
       timestamp: new Date(),
-      changedBy: "user",
-      changedById: user.uid,
-      reason: "",
+      changedBy: transactionMode === "manual" ? "user" : "system",
+      changedById: transactionMode === "manual" ? user.uid : "system",
+      reason: transactionMode === "auto_approve"
+        ? "Auto-approved by system"
+        : transactionMode === "auto_decline"
+        ? "Auto-declined by system"
+        : "",
     },
   ];
 
@@ -152,7 +165,7 @@ export async function submitTransaction({
     accountNumber,
     memo,
     toAccount,
-    status: "pending",
+    status: initialStatus,
     statusHistory: initialStatusHistory,
     balanceAtSubmission,
     balanceAfter: null,
