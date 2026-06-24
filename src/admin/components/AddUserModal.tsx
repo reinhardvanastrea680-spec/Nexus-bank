@@ -25,6 +25,8 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
     status: "active" as "active" | "frozen",
     initialCheckingBalance: "",
     initialSavingsBalance: "",
+    accountTier: "Standard",
+    hidePhone: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -198,6 +200,8 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
         initialCheckingBalance: parseFloat(formData.initialCheckingBalance) || 0,
         initialSavingsBalance: parseFloat(formData.initialSavingsBalance) || 0,
         status: formData.status,
+        accountTier: formData.accountTier,
+        hidePhone: formData.hidePhone,
       });
       onClose();
       resetForm();
@@ -231,6 +235,8 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
       status: "active",
       initialCheckingBalance: "",
       initialSavingsBalance: "",
+      accountTier: "Standard",
+      hidePhone: false,
     });
     setErrors({});
     setSubmitError(null);
@@ -486,9 +492,40 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
               )}
             </div>
 
+            {/* Account Tier */}
             <div className="space-y-3">
-              <Label htmlFor="initialCheckingBalance" className="text-[#7A8FA6] text-sm">Opening Checking Balance</Label>
-              <div className="relative">
+              <Label className="text-[#7A8FA6] text-sm">Account Tier</Label>
+              <select
+                value={formData.accountTier}
+                onChange={(e) => setFormData(prev => ({ ...prev, accountTier: e.target.value }))}
+                className="w-full h-11 px-3 rounded-lg bg-[#111827] border border-[rgba(255,255,255,0.08)] text-white"
+              >
+                {["Standard","Bronze","Silver","Gold","Platinum","VIP","Elite","Diamond"].map((tier) => (
+                  <option key={tier} value={tier}>{tier}</option>
+                ))}
+              </select>
+              <p className="text-[#7A8FA6] text-xs">Selected tier is shown on the user's profile as Account Tier.</p>
+            </div>
+
+            {/* Hide Phone Toggle */}
+            <div className="flex items-center justify-between p-3 rounded-xl"
+              style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div>
+                <p className="text-sm font-semibold text-white">Hide Phone Number</p>
+                <p className="text-xs text-[#7A8FA6] mt-0.5">User sees ••••••••• instead of their number</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, hidePhone: !prev.hidePhone }))}
+                className="w-12 h-6 rounded-full flex items-center px-0.5 transition-all flex-shrink-0"
+                style={{ background: formData.hidePhone ? "#EF4444" : "rgba(255,255,255,0.1)" }}>
+                <span className="w-5 h-5 rounded-full bg-white shadow transition-all"
+                  style={{ transform: formData.hidePhone ? "translateX(24px)" : "translateX(0)" }} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="initialCheckingBalance" className="text-[#7A8FA6] text-sm">Opening Checking Balance</Label>              <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A8FA6]">$</span>
                 <Input
                   id="initialCheckingBalance"

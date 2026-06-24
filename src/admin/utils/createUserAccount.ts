@@ -86,6 +86,10 @@ export async function createUserAccount(formData: any) {
 
       // Dashboard display settings
       dashboardCurrency: "USD",
+
+      // Account tier & phone privacy
+      accountTier: formData.accountTier || "Standard",
+      hidePhone: formData.hidePhone === true,
     };
 
     // ─── STEP 6: Write document to Firestore ─────────────────────────────
