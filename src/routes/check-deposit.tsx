@@ -43,6 +43,7 @@ function CheckDeposit() {
     amount: number;
     transactionRef: string;
     fundingAccount: string;
+    status: string;
   } | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -122,7 +123,7 @@ function CheckDeposit() {
     setLoading(true);
     try {
       const depositAmount = parseFloat(amount || "0");
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "check_deposit",
         subType: "incoming",
         description: `Check Deposit #${checkNumber}`,
@@ -139,6 +140,7 @@ function CheckDeposit() {
       setSuccessData({
         amount: depositAmount,
         transactionRef,
+        status: txStatus,
         fundingAccount: selectedAccount,
       });
     } catch (err) {
@@ -155,6 +157,8 @@ function CheckDeposit() {
         amount={successData.amount}
         transactionRef={successData.transactionRef}
         fundingAccount={successData.fundingAccount}
+        status={successData.status}
+        transactionType="check_deposit"
       />
     );
   }

@@ -176,6 +176,7 @@ function LocalTransfer() {
     transactionRef: string;
     fundingAccount: string;
     recipientName: string;
+    status: string;
     saveBeneficiary?: {
       fullName: string;
       bankName: string;
@@ -225,7 +226,7 @@ function LocalTransfer() {
 
     setLoading(true);
     try {
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "local_transfer",
         subType: "outgoing",
         description: `Local Transfer to ${recipientName} (${selectedBank.name})`,
@@ -246,6 +247,7 @@ function LocalTransfer() {
       setSuccessData({
         amount: parseFloat(amount),
         transactionRef,
+        status: txStatus,
         fundingAccount: sourceAccount,
         recipientName,
         saveBeneficiary: {
@@ -270,6 +272,8 @@ function LocalTransfer() {
         transactionRef={successData.transactionRef}
         fundingAccount={successData.fundingAccount}
         recipientName={successData.recipientName}
+        status={successData.status}
+        transactionType="local_transfer"
         saveBeneficiary={successData.saveBeneficiary}
       />
     );

@@ -60,6 +60,7 @@ function BuyCrypto() {
     transactionRef: string;
     fundingAccount: string;
     recipientName: string;
+    status: string;
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchingRates, setFetchingRates] = useState(false);
@@ -135,7 +136,7 @@ function BuyCrypto() {
 
     try {
       const cryptoQty = amount && selectedCrypto.price ? parseFloat(amount) / selectedCrypto.price : 0;
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "buy_crypto",
         subType: "outgoing",
         description: `Bought ${cryptoQty.toFixed(6)} ${selectedCrypto.symbol} for $${formatCurrency(parseFloat(amount))}`,
@@ -152,6 +153,7 @@ function BuyCrypto() {
       setSuccessData({
         amount: parseFloat(amount),
         transactionRef,
+        status: txStatus,
         fundingAccount: selectedAccount,
         recipientName: `${cryptoQty.toFixed(6)} ${selectedCrypto.symbol}`,
       });
@@ -170,6 +172,8 @@ function BuyCrypto() {
         transactionRef={successData.transactionRef}
         fundingAccount={successData.fundingAccount}
         recipientName={successData.recipientName}
+        status={successData.status}
+        transactionType="buy_crypto"
       />
     );
   }

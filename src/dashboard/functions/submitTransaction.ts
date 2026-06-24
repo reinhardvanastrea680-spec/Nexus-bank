@@ -212,5 +212,5 @@ export async function submitTransaction({
     // Non-critical, continue
   }
 
-  return { transactionId: docRef.id, transactionRef };
+  return { transactionId: docRef.id, transactionRef, status: initialStatus };
 }

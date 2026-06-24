@@ -87,7 +87,7 @@ function PayBills() {
   const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings">("Checking");
   const [showConfirm, setShowConfirm]   = useState(false);
   const [loading, setLoading]           = useState(false);
-  const [successData, setSuccessData]   = useState<{ amount: number; transactionRef: string; fundingAccount: string; recipientName: string } | null>(null);
+  const [successData, setSuccessData]   = useState<{ amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string } | null>(null);
 
   const fromBalance = selectedAccount === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
 
@@ -101,7 +101,7 @@ function PayBills() {
     setShowConfirm(false);
     setLoading(true);
     try {
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "bill_payment", subType: "outgoing",
         description: `Bill Payment - ${selectedBiller?.name}`,
         category: categories.find((c) => c.id === selectedBiller?.category)?.name || "Bills",
@@ -110,13 +110,13 @@ function PayBills() {
         recipientName: selectedBiller?.name || "Biller",
         note: `Customer Ref: ${customerNumber}`,
       });
-      setSuccessData({ amount: parseFloat(amount), transactionRef, fundingAccount: selectedAccount, recipientName: selectedBiller?.name || "Biller" });
+      setSuccessData({ amount: parseFloat(amount), transactionRef, status: txStatus, fundingAccount: selectedAccount, recipientName: selectedBiller?.name || "Biller" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Payment failed");
     } finally { setLoading(false); }
   };
 
-  if (successData) return <TransactionSuccessScreen {...successData} />;
+  if (successData) return <TransactionSuccessScreen {...successData} transactionType="bill_payment" />;
 
   /* ── Biller detail / payment page ── */
   if (selectedBiller) return (

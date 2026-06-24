@@ -31,7 +31,7 @@ function InternalTransfer() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading]         = useState(false);
   const [successData, setSuccessData] = useState<{
-    amount: number; transactionRef: string; fundingAccount: string; recipientName: string;
+    amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string;
   } | null>(null);
 
   const fromBalance = fromAccount === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
@@ -43,7 +43,7 @@ function InternalTransfer() {
     if (fromAccount === toAccount)              { toast.error("Cannot transfer to same account"); return; }
     setLoading(true);
     try {
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "internal_transfer", subType: "between_accounts",
         description: `Internal Transfer from ${fromAccount} to ${toAccount}`,
         category: "Transfer", amount: parseFloat(amount),
@@ -53,7 +53,7 @@ function InternalTransfer() {
         toAccount: toAccount.toLowerCase(), note,
       });
       setShowConfirm(false);
-      setSuccessData({ amount: parseFloat(amount), transactionRef, fundingAccount: fromAccount, recipientName: `Your ${toAccount} Account` });
+      setSuccessData({ amount: parseFloat(amount), transactionRef, status: txStatus, fundingAccount: fromAccount, recipientName: `Your ${toAccount} Account` });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to submit transfer request");
     } finally { setLoading(false); }
@@ -61,7 +61,8 @@ function InternalTransfer() {
 
   if (successData) return (
     <TransactionSuccessScreen amount={successData.amount} transactionRef={successData.transactionRef}
-      fundingAccount={successData.fundingAccount} recipientName={successData.recipientName} />
+      fundingAccount={successData.fundingAccount} recipientName={successData.recipientName}
+      status={successData.status} transactionType="internal_transfer" />
   );
 
   return (

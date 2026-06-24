@@ -46,6 +46,7 @@ function CardDeposit() {
     amount: number;
     transactionRef: string;
     fundingAccount: string;
+    status: string;
   } | null>(null);
 
   const selectedCard = savedCards.find((c) => c.id === selectedCardId);
@@ -66,7 +67,7 @@ function CardDeposit() {
     setShowConfirm(false);
     setLoading(true);
     try {
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "check_deposit",
         subType: "card_deposit",
         description: `Card Deposit — ${selectedCard?.brand} ****${selectedCard?.last4}`,
@@ -80,6 +81,7 @@ function CardDeposit() {
       setSuccessData({
         amount: parseFloat(amount),
         transactionRef,
+        status: txStatus,
         fundingAccount: destinationAccount,
       });
     } catch (err) {
@@ -96,6 +98,8 @@ function CardDeposit() {
         amount={successData.amount}
         transactionRef={successData.transactionRef}
         fundingAccount={successData.fundingAccount}
+        status={successData.status}
+        transactionType="card_deposit"
       />
     );
   }

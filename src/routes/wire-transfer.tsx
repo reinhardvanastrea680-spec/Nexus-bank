@@ -75,6 +75,9 @@ function WireTransferWizard() {
     transactionRef: string;
     fundingAccount: string;
     recipientName: string;
+    status: string;
+    recipientBank: string;
+    recipientRegion: string;
   } | null>(null);
 
   // Mock saved beneficiaries
@@ -170,7 +173,7 @@ function WireTransferWizard() {
       const bankName = selectedBen?.bankName || beneficiary.bankName;
       const bankCountry = selectedBen?.country || beneficiary.bankCountry;
 
-      const { transactionRef } = await submitTransaction({
+      const { transactionRef, status: txStatus } = await submitTransaction({
         type: "wire_transfer",
         subType: "outgoing",
         description: `Wire Transfer to ${recipientFullName} (${bankName}, ${bankCountry})`,
@@ -194,6 +197,9 @@ function WireTransferWizard() {
         transactionRef,
         fundingAccount: transfer.src,
         recipientName: recipientFullName,
+        status: txStatus,
+        recipientBank: bankName,
+        recipientRegion: bankCountry,
       });
       setStep(6);
     } catch (err: any) {
@@ -217,6 +223,10 @@ function WireTransferWizard() {
         transactionRef={successData.transactionRef}
         fundingAccount={successData.fundingAccount}
         recipientName={successData.recipientName}
+        status={successData.status}
+        transactionType="wire_transfer"
+        recipientBank={successData.recipientBank}
+        recipientRegion={successData.recipientRegion}
       />
     );
   }
