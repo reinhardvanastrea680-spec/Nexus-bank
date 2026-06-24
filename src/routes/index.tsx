@@ -79,12 +79,14 @@ function HomePage() {
   const cardBg2       = dark ? "#1A2840"                  : "#FFFFFF";
   const mutedBg       = dark ? "#233552"                  : "#E8F0FE";
   const iconBg        = dark ? "#1E3048"                  : "rgba(255,255,255,0.85)";
-  const textPrimary   = dark ? "#FFFFFF"                  : "#FFFFFF";   // white on blue
-  const textMuted     = dark ? "#8A9BB5"                  : "rgba(255,255,255,0.75)";
-  const accentCyan    = dark ? "#38BDF8"                  : "#38BDF8";
-  const navBg         = dark ? "#152035"                  : "#FFFFFF";   // white nav bar
+  // On blue header: white text. On white card sections: dark text
+  const textPrimary   = dark ? "#FFFFFF"                  : "#0D1B2A";
+  const headerText    = "#FFFFFF";   // always white — used on blue background areas
+  const textMuted     = dark ? "#8A9BB5"                  : "#475569";
+  const accentCyan    = dark ? "#38BDF8"                  : "#1D6BE5";
+  const navBg         = dark ? "#152035"                  : "#FFFFFF";
   const navBorder     = dark ? "rgba(255,255,255,0.09)"   : "#E5E7EB";
-  const navActive     = dark ? "#FFFFFF"                  : "#1D6BE5";   // blue active nav
+  const navActive     = dark ? "#FFFFFF"                  : "#1D6BE5";
   const navInactive   = dark ? "#8A9BB5"                  : "#9CA3AF";
   const qlCardBg      = dark ? "#FFFFFF08"                : "#F3F6FA";
   const qlLabelColor  = dark ? "#8A9BB5"                  : "#374151";
@@ -137,16 +139,16 @@ function HomePage() {
               {(account?.fullName || "U").split(" ").slice(0,2).map((w: string) => w[0]?.toUpperCase()).join("") || <User size={20} />}
             </Link>
             <div>
-              <p className="text-xs" style={{ color: textMuted }}>Welcome back</p>
-              <p className="text-lg font-bold" style={{ color: textPrimary }}>
+              <p className="text-xs" style={{ color: dark ? textMuted : "rgba(255,255,255,0.8)" }}>Welcome back</p>
+              <p className="text-lg font-bold" style={{ color: headerText }}>
                 Hi, {account?.fullName?.split(" ")[0] || "User"}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Link to="/notifications" className="relative">
-              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: iconBg }}>
-                <Bell size={20} style={{ color: textPrimary }} />
+              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: dark ? iconBg : "rgba(255,255,255,0.2)" }}>
+                <Bell size={20} style={{ color: headerText }} />
               </div>
               <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full" style={{ background: "#FFAB00" }} />
             </Link>
@@ -161,15 +163,15 @@ function HomePage() {
           border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.3)"}`,
           backdropFilter: dark ? "none" : "blur(8px)",
         }}>
-        <span className="text-sm" style={{ color: textMuted }}>Total balance</span>
+        <span className="text-sm" style={{ color: dark ? textMuted : "rgba(255,255,255,0.8)" }}>Total balance</span>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold font-mono" style={{ color: textPrimary }}>
+          <span className="text-sm font-semibold font-mono" style={{ color: headerText }}>
             {balanceVisible ? `$${formatCurrency(totalBalance)}` : "••••••••"}
           </span>
           <button onClick={() => setBalanceVisible(!balanceVisible)} className="opacity-60 hover:opacity-100">
             {balanceVisible
-              ? <EyeOff size={14} style={{ color: textPrimary }} />
-              : <Eye    size={14} style={{ color: textPrimary }} />}
+              ? <EyeOff size={14} style={{ color: headerText }} />
+              : <Eye    size={14} style={{ color: headerText }} />}
           </button>
         </div>
       </div>
