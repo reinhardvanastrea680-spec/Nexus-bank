@@ -222,13 +222,33 @@ function Notifications() {
 
             <p className="text-sm mb-4" style={{ color: textMuted }}>{selectedNotif.message}</p>
 
-            {/* Decline reason */}
-            {selectedNotif.declineReason && (
+            {/* Decline reason — replaced with bold Failed UI matching reference design */}
+            {selectedNotif.type === "transaction_declined" ? (
+              <div className="flex flex-col items-center text-center mb-6 mt-2">
+                {/* Big red X icon */}
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
+                  style={{ background: "rgba(239,68,68,0.12)" }}>
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center"
+                    style={{ background: "#EF4444" }}>
+                    <XCircle size={32} color="#fff" />
+                  </div>
+                </div>
+                <p className="text-2xl font-bold mb-3" style={{ color: textPrimary }}>Transaction Failed</p>
+                <p className="text-sm leading-relaxed max-w-xs" style={{ color: textMuted }}>
+                  {selectedNotif.declineReason && selectedNotif.declineReason !== "declined"
+                    ? selectedNotif.declineReason
+                    : "Your transaction could not be processed at this time."}
+                </p>
+                <p className="text-sm mt-2 font-semibold" style={{ color: "#EF4444" }}>
+                  Please contact your administrator for assistance.
+                </p>
+              </div>
+            ) : selectedNotif.declineReason ? (
               <div className="mb-4 p-3 rounded-xl" style={{ background: "rgba(255,77,106,0.08)", border: "1px solid rgba(255,77,106,0.2)" }}>
                 <p className="text-xs font-semibold mb-1" style={{ color: "#FF4D6A" }}>Decline Reason</p>
                 <p className="text-sm" style={{ color: "#FF4D6A" }}>{selectedNotif.declineReason}</p>
               </div>
-            )}
+            ) : null}
 
             {/* Transaction details */}
             {relatedTx ? (
