@@ -6,9 +6,9 @@
 :root,
 .light {
   /* Page backgrounds */
-  --bg-page:        #F0F4F8;
+  --bg-page:        #1D6BE5;
   --bg-card:        #FFFFFF;
-  --bg-card-alt:    #F7F9FC;
+  --bg-card-alt:    #FFFFFF;
   --bg-input:       #EEF2F7;
   --bg-muted:       #E4EAF2;
   --bg-sidebar:     #FFFFFF;

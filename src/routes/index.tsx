@@ -74,25 +74,25 @@ function HomePage() {
 
   // ── Theme palette ──────────────────────────────────────────────────────
   const dark = theme === "dark";
-  const pageBg        = dark ? "#0B1120"                  : "#F0F4F8";
-  const cardBg        = dark ? "#0F1A2E"                  : "#FFFFFF";
-  const cardBg2       = dark ? "#111827"                  : "#F7F9FC";
-  const mutedBg       = dark ? "#1E2D45"                  : "#E4EAF2";
-  const iconBg        = dark ? "#1E2D45"                  : "#E8EFF8";
-  const textPrimary   = dark ? "#FFFFFF"                  : "#0D1B2A";
-  const textMuted     = dark ? "#8A9BB5"                  : "#64748B";
-  const accentCyan    = dark ? "#38BDF8"                  : "#0EA5E9";
-  const navBg         = dark ? "#0F1A2E"                  : "#FFFFFF";
-  const navBorder     = dark ? "rgba(255,255,255,0.07)"   : "#E5E7EB";
-  const navActive     = dark ? "#FFFFFF"                  : "#0D1B2A";
+  const pageBg        = dark ? "#0F1A2E"                  : "#1D6BE5";   // blue header in light
+  const cardBg        = dark ? "#152035"                  : "#FFFFFF";
+  const cardBg2       = dark ? "#1A2840"                  : "#FFFFFF";
+  const mutedBg       = dark ? "#233552"                  : "#E8F0FE";
+  const iconBg        = dark ? "#1E3048"                  : "rgba(255,255,255,0.85)";
+  const textPrimary   = dark ? "#FFFFFF"                  : "#FFFFFF";   // white on blue
+  const textMuted     = dark ? "#8A9BB5"                  : "rgba(255,255,255,0.75)";
+  const accentCyan    = dark ? "#38BDF8"                  : "#38BDF8";
+  const navBg         = dark ? "#152035"                  : "#FFFFFF";   // white nav bar
+  const navBorder     = dark ? "rgba(255,255,255,0.09)"   : "#E5E7EB";
+  const navActive     = dark ? "#FFFFFF"                  : "#1D6BE5";   // blue active nav
   const navInactive   = dark ? "#8A9BB5"                  : "#9CA3AF";
-  const qlCardBg      = dark ? "#FFFFFF08"                : "#FFFFFF";
-  const qlLabelColor  = dark ? "#8A9BB5"                  : "#64748B";
-  const txRowBg       = dark ? "#0F1A2E"                  : "#FFFFFF";
+  const qlCardBg      = dark ? "#FFFFFF08"                : "#F3F6FA";
+  const qlLabelColor  = dark ? "#8A9BB5"                  : "#374151";
+  const txRowBg       = dark ? "#152035"                  : "#FFFFFF";
   const txTextColor   = dark ? "#FFFFFF"                  : "#0D1B2A";
   const cardAccent    = dark
     ? "linear-gradient(135deg, #0F1A2E 0%, #1a2a44 100%)"
-    : "linear-gradient(135deg, #1D4ED8 0%, #0EA5E9 100%)";
+    : "linear-gradient(135deg, #1565C0 0%, #0EA5E9 100%)";
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -156,7 +156,11 @@ function HomePage() {
 
       {/* ── Total Balance Bar ───────────────────────────────────────────── */}
       <div className="mx-5 mb-4 px-4 py-3 rounded-xl flex items-center justify-between"
-        style={{ background: cardBg2, border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
+        style={{
+          background: dark ? cardBg2 : "rgba(255,255,255,0.18)",
+          border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.3)"}`,
+          backdropFilter: dark ? "none" : "blur(8px)",
+        }}>
         <span className="text-sm" style={{ color: textMuted }}>Total balance</span>
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold font-mono" style={{ color: textPrimary }}>
@@ -258,21 +262,25 @@ function HomePage() {
       {/* ── Quick Links ─────────────────────────────────────────────────── */}
       <div className="flex-1 rounded-t-[28px] px-5 pt-6 pb-24"
         style={{ background: dark ? "#0D1829" : "#FFFFFF",
-          borderTop: `1px solid ${dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}` }}>
+          borderTop: `1px solid ${dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)"}` }}>
 
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-bold" style={{ color: textPrimary }}>Quick Links</h2>
-          <button className="text-sm font-semibold" style={{ color: accentCyan }}>Customise</button>
+          <h2 className="text-base font-bold" style={{ color: dark ? "#FFFFFF" : "#0D1B2A" }}>Quick Links</h2>
+          <button className="text-sm font-semibold" style={{ color: dark ? accentCyan : "#1D6BE5" }}>Customise</button>
         </div>
 
         <div className="grid grid-cols-3 gap-y-5 gap-x-2">
           {quickLinks.map(({ label, icon: Icon, to }) => (
             <Link key={label} to={to} className="flex flex-col items-center gap-2">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform active:scale-95"
-                style={{ background: iconBg, border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
-                <Icon size={22} style={{ color: accentCyan }} />
+                style={{
+                  background: iconBg,
+                  border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(29,107,229,0.12)"}`,
+                }}>
+                <Icon size={22} style={{ color: dark ? accentCyan : "#1D6BE5" }} />
               </div>
-              <span className="text-xs font-medium text-center leading-tight" style={{ color: textMuted }}>
+              <span className="text-xs font-medium text-center leading-tight"
+                style={{ color: dark ? qlLabelColor : "#374151" }}>
                 {label}
               </span>
             </Link>
