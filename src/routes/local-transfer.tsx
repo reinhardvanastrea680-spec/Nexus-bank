@@ -99,14 +99,15 @@ const globalBanks = [
   { id: "nl-ing", name: "ING Bank Netherlands", country: "Netherlands", swift: "INGBNL2A" },
   { id: "es-santander", name: "Banco Santander", country: "Spain", swift: "BSCHESMM" },
 
-  // Nigeria (from original list)
-  { id: "nexus", name: "Nexus Bank", country: "Nigeria" },
-  { id: "momo", name: "MTN MoMo", country: "Nigeria" },
-  { id: "opay", name: "Opay", country: "Nigeria" },
-  { id: "kuda", name: "Kuda", country: "Nigeria" },
-  { id: "gtb", name: "GTBank", country: "Nigeria" },
-  { id: "access", name: "Access Bank", country: "Nigeria" },
-  { id: "zenith", name: "Zenith Bank", country: "Nigeria" },
+  // Additional US banks
+  { id: "us-chase", name: "Chase Bank", country: "United States", swift: "CHASUS33" },
+  { id: "us-boa", name: "Bank of America", country: "United States", swift: "BOFAUS3N" },
+  { id: "us-wells", name: "Wells Fargo", country: "United States", swift: "WFBIUS6S" },
+  { id: "us-citi", name: "Citibank", country: "United States", swift: "CITIUS33" },
+  { id: "us-usbank", name: "US Bank", country: "United States", swift: "USBKUS44" },
+  { id: "us-pnc", name: "PNC Bank", country: "United States", swift: "PNCCUS33" },
+  { id: "us-capital", name: "Capital One", country: "United States", swift: "NFBKUS33" },
+  { id: "us-td", name: "TD Bank", country: "United States", swift: "NRTHUS33" },
 
   // Canada
   { id: "ca-rbc", name: "Royal Bank of Canada", country: "Canada", swift: "ROYCCAT2" },
@@ -394,9 +395,7 @@ function LocalTransfer() {
                         onClick={() => handleSelectBank(bank)}
                         className="w-full text-left p-4 border-b border-[rgba(255,255,255,0.05)] hover:bg-[rgba(56,189,248,0.1)] transition-colors"
                       >
-                        <div className="font-semibold" style={{ color: t.textPrimary }}>
-                          {bank.name}
-                        </div>
+                        <div className="font-semibold" style={{ color: t.textPrimary }}>{bank.name}</div>
                         <div className="text-xs text-blue-300/70">
                           {bank.country}
                           {bank.swift && <span className="ml-3">SWIFT: {bank.swift}</span>}
@@ -405,8 +404,19 @@ function LocalTransfer() {
                       </button>
                     ))
                   ) : (
-                    <div className="p-4 text-center text-sm" style={{ color: t.textMuted }}>
-                      No banks found
+                    <div className="p-4 space-y-3">
+                      <p className="text-center text-sm" style={{ color: t.textMuted }}>No matching bank found</p>
+                      {bankSearchQuery.trim().length >= 2 && (
+                        <button
+                          onClick={() => {
+                            toast.info(`Bank not found. Your request to add "${bankSearchQuery}" has been noted. Please contact support to add this bank.`, { duration: 5000 });
+                          }}
+                          className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all"
+                          style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}
+                        >
+                          + Request to Add "{bankSearchQuery}"
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

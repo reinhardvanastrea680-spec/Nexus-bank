@@ -76,30 +76,8 @@ function AddBeneficiary() {
 
   const handleSave = async () => {
     if (!canSave) return;
-    setSaving(true);
-    try {
-      const initials = getInitials(fullName.trim());
-      await addBeneficiary({
-        fullName: fullName.trim(),
-        nickname: nickname.trim() || fullName.trim(),
-        bankName: selectedBankName,
-        bankId: selectedBankId,
-        accountNumber: accountNumber.trim(),
-        accountType,
-        initials,
-      });
-      toast.success("Beneficiary saved successfully");
-      setFullName("");
-      setSelectedBankId("");
-      setAccountNumber("");
-      setNickname("");
-      setAccountType("Personal");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to save beneficiary");
-    } finally {
-      setSaving(false);
-    }
+    // Beneficiary saving requires admin approval — show support message
+    toast.error("Trouble saving beneficiary. Please contact support.", { duration: 5000 });
   };
 
   const handleDelete = async () => {

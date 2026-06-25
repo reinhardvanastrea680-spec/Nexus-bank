@@ -11,26 +11,7 @@ import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useTheme } from "../hooks/use-theme";
-
-const quickLinks = [
-  { label: "Wire Transfer",        icon: ArrowUpRight,  to: "/wire-transfer"     },
-  { label: "Local Transfer",       icon: ArrowLeftRight, to: "/local-transfer"   },
-  { label: "Internal Transfer",    icon: Building2,      to: "/internal-transfer" },
-  { label: "Buy Crypto",           icon: Bitcoin,        to: "/buy-crypto"        },
-  { label: "Pay Bills",            icon: Receipt,        to: "/pay-bills"         },
-  { label: "Add Beneficiary",      icon: UserPlus,       to: "/add-beneficiary"   },
-  { label: "Transaction History",  icon: History,        to: "/transactions"      },
-  { label: "Crypto Deposit",       icon: Bitcoin,        to: "/crypto-deposit"    },
-  { label: "Check Deposit",        icon: FileCheck,      to: "/check-deposit"     },
-];
-
-const navItems = [
-  { label: "Settings",      icon: Settings,  to: "/settings"      },
-  { label: "Notifications", icon: Bell,      to: "/notifications"  },
-  { label: "Home",          icon: HomeIcon,  to: "/", active: true },
-  { label: "Transactions",  icon: History,   to: "/transactions"   },
-  { label: "Support",       icon: Headphones, to: "/support"       },
-];
+import { useLanguage } from "../hooks/use-language";
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -52,6 +33,29 @@ function HomePage() {
   const { account, loading: accountLoading } = useUserAccount();
   const { transactions, loading: txLoading } = useUserTransactions();
   const { theme } = useTheme();
+  const { t } = useLanguage();
+
+  // Translated quick links
+  const quickLinks = [
+    { label: t("Wire Transfer"),       icon: ArrowUpRight,   to: "/wire-transfer"     },
+    { label: t("Local Transfer"),      icon: ArrowLeftRight, to: "/local-transfer"    },
+    { label: t("Internal Transfer"),   icon: Building2,      to: "/internal-transfer" },
+    { label: t("Buy Crypto"),          icon: Bitcoin,        to: "/buy-crypto"        },
+    { label: t("Pay Bills"),           icon: Receipt,        to: "/pay-bills"         },
+    { label: t("Add Beneficiary"),     icon: UserPlus,       to: "/add-beneficiary"   },
+    { label: t("Transaction History"), icon: History,        to: "/transactions"      },
+    { label: t("Crypto Deposit"),      icon: Bitcoin,        to: "/crypto-deposit"    },
+    { label: t("Check Deposit"),       icon: FileCheck,      to: "/check-deposit"     },
+  ];
+
+  // Translated nav items
+  const navItems = [
+    { label: t("Settings"),      icon: Settings,   to: "/settings"     },
+    { label: t("Notifications"), icon: Bell,       to: "/notifications" },
+    { label: t("Home"),          icon: HomeIcon,   to: "/", active: true },
+    { label: t("Transactions"),  icon: History,    to: "/transactions"  },
+    { label: t("Support"),       icon: Headphones, to: "/support"       },
+  ];
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [cardBalanceVisible, setCardBalanceVisible] = useState(true);
@@ -139,9 +143,9 @@ function HomePage() {
               {(account?.fullName || "U").split(" ").slice(0,2).map((w: string) => w[0]?.toUpperCase()).join("") || <User size={20} />}
             </Link>
             <div>
-              <p className="text-xs" style={{ color: dark ? textMuted : "rgba(255,255,255,0.8)" }}>Welcome back</p>
+              <p className="text-xs" style={{ color: dark ? textMuted : "rgba(255,255,255,0.8)" }}>{t("Welcome back")}</p>
               <p className="text-lg font-bold" style={{ color: headerText }}>
-                Hi, {account?.fullName?.split(" ")[0] || "User"}
+                {t("Hi,")} {account?.fullName?.split(" ")[0] || "User"}
               </p>
             </div>
           </div>
@@ -163,7 +167,7 @@ function HomePage() {
           border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.3)"}`,
           backdropFilter: dark ? "none" : "blur(8px)",
         }}>
-        <span className="text-sm" style={{ color: dark ? textMuted : "rgba(255,255,255,0.8)" }}>Total balance</span>
+        <span className="text-sm" style={{ color: dark ? textMuted : "rgba(255,255,255,0.8)" }}>{t("Total balance")}</span>
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold font-mono" style={{ color: headerText }}>
             {balanceVisible ? `$${formatCurrency(totalBalance)}` : "••••••••"}
@@ -267,8 +271,8 @@ function HomePage() {
           borderTop: `1px solid ${dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)"}` }}>
 
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-bold" style={{ color: dark ? "#FFFFFF" : "#0D1B2A" }}>Quick Links</h2>
-          <button className="text-sm font-semibold" style={{ color: dark ? accentCyan : "#1D6BE5" }}>Customise</button>
+          <h2 className="text-base font-bold" style={{ color: dark ? "#FFFFFF" : "#0D1B2A" }}>{t("Quick Links")}</h2>
+          <button className="text-sm font-semibold" style={{ color: dark ? accentCyan : "#1D6BE5" }}>{t("Customise")}</button>
         </div>
 
         <div className="grid grid-cols-3 gap-y-5 gap-x-2">
