@@ -443,13 +443,18 @@ function WireTransferWizard() {
                   $
                 </span>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   min="0"
-                  value={transfer.amount}
+                  value={transfer.amount ? Number(transfer.amount.replace(/,/g, "")).toLocaleString("en-US") : ""}
                   placeholder="0.00"
                   className="w-full pl-10 pr-4 py-4 rounded-xl outline-none text-xl font-mono"
                   style={{ background: t.inputBg, color: t.textPrimary }}
-                  onChange={(e) => setTransfer({ ...transfer, amount: e.target.value })}
+                  onChange={(e) => {
+                    // Strip commas, keep only digits and one decimal point
+                    const raw = e.target.value.replace(/,/g, "").replace(/[^0-9.]/g, "");
+                    setTransfer({ ...transfer, amount: raw });
+                  }}
                 />
               </div>
             </div>
@@ -688,7 +693,7 @@ function WireTransferWizard() {
                     Est. delivery
                   </span>
                   <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
-                    3-5 Business Days
+                    2-3 Hours
                   </span>
                 </div>
               </div>

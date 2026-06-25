@@ -68,7 +68,7 @@ export function TransactionSuccessScreen({
             </p>
             {isFailed && (
               <p className="text-xs mt-1 text-center" style={{ color: "#8A9BB5" }}>
-                Please contact your administrator for assistance.
+                Please contact support for assistance.
               </p>
             )}
           </div>
@@ -156,7 +156,7 @@ export function TransactionSuccessScreen({
           Your transaction could not be processed at this time.
         </p>
         <p className="text-sm font-semibold mb-8" style={{ color: "#EF4444" }}>
-          Please contact your administrator for assistance.
+          Please contact support for assistance.
         </p>
 
         {/* Reference */}
@@ -172,12 +172,12 @@ export function TransactionSuccessScreen({
             OK
           </button>
           <button
-            onClick={() => setShowReceipt(true)}
+            onClick={() => navigate({ to: "/support" })}
             className="w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2"
             style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5", border: "1px solid rgba(255,255,255,0.1)" }}
           >
             <FileText size={16} />
-            View Receipt
+            Report This Issue
           </button>
         </div>
 

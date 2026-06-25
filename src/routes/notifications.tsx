@@ -240,7 +240,7 @@ function Notifications() {
                     : "Your transaction could not be processed at this time."}
                 </p>
                 <p className="text-sm mt-2 font-semibold" style={{ color: "#EF4444" }}>
-                  Please contact your administrator for assistance.
+                  Please contact support for assistance.
                 </p>
               </div>
             ) : selectedNotif.declineReason ? (
