@@ -610,14 +610,6 @@ function LocalTransfer() {
                   ${parseFloat(amount || "0").toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </span>
               </div>
-              <div className="flex items-center justify-between pt-3 border-t border-[rgba(255,255,255,0.1)]">
-                <span className="text-sm" style={{ color: t.textMuted }}>
-                  Requires Admin Approval
-                </span>
-                <span className="text-sm font-semibold" style={{ color: t.accentYellow }}>
-                  Yes
-                </span>
-              </div>
             </div>
           </div>
         )}
@@ -644,7 +636,7 @@ function LocalTransfer() {
                 opacity: !amount || parseFloat(amount) <= 0 || loading ? 0.5 : 1,
               }}
             >
-              {loading ? "Submitting…" : "Request Transfer"}
+              {loading ? "Submitting…" : "Confirm Transfer"}
             </button>
           </div>
         ) : (

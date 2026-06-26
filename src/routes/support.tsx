@@ -92,7 +92,7 @@ function SupportPage() {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ background: t.accentGreen }} />
               <span className="text-xs" style={{ color: t.textMuted }}>
-                {isTyping ? "Typing..." : "Online now"}
+                "Online now"
               </span>
             </div>
           </div>
@@ -124,18 +124,7 @@ function SupportPage() {
             </div>
           </div>
         ))}
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="px-4 py-3 rounded-2xl rounded-tl-sm" style={{ background: t.cardBg2, border: `1px solid ${t.border}` }}>
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="w-2 h-2 rounded-full animate-bounce"
-                    style={{ background: t.textMuted, animationDelay: `${i * 0.15}s` }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+
         <div ref={chatEndRef} />
       </div>
 

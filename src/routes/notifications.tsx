@@ -181,10 +181,7 @@ function Notifications() {
                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-2" style={{ background: "#38BDF8" }} />
                   )}
                 </div>
-                <p className="text-xs mb-1" style={{ color: textMuted }}>{n.message}</p>
-                {n.declineReason && (
-                  <p className="text-xs font-semibold" style={{ color: "#FF4D6A" }}>Reason: {n.declineReason}</p>
-                )}
+                <p className="text-xs mb-1" style={{ color: textMuted }}>{n.message?.replace(/\\. Reason:.*$/, "").replace(/ Reason:.*$/, "")}</p>
                 <p className="text-xs mt-1" style={{ color: textMuted }}>
                   {n.createdAt?.toLocaleString() || "Just now"}
                 </p>
@@ -270,18 +267,18 @@ function Notifications() {
                       style={{
                         background: (relatedTx as any).status === "approved"
                           ? "rgba(0,230,118,0.12)"
-                          : (relatedTx as any).status === "declined"
+                          : (relatedTx as any).status === "declined" || status === "failed"
                             ? "rgba(255,77,106,0.12)"
                             : "rgba(255,171,0,0.12)",
                         color: (relatedTx as any).status === "approved"
                           ? "#00E676"
-                          : (relatedTx as any).status === "declined"
+                          : (relatedTx as any).status === "declined" || status === "failed"
                             ? "#FF4D6A"
                             : "#FFAB00",
                       }}
                     >
                       {(relatedTx as any).status === "approved" && <CheckCircle2 size={11} />}
-                      {(relatedTx as any).status === "declined" && <XCircle size={11} />}
+                      {(relatedTx as any).status === "declined" || status === "failed" && <XCircle size={11} />}
                       {(relatedTx as any).status === "pending" && <Clock size={11} />}
                       {(relatedTx as any).status?.charAt(0).toUpperCase() + (relatedTx as any).status?.slice(1)}
                     </span>

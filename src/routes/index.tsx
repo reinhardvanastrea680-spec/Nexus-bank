@@ -12,6 +12,9 @@ import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useTheme } from "../hooks/use-theme";
 import { useLanguage } from "../hooks/use-language";
+import { db } from "../firebase/config";
+import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
+import { ADMIN_UID } from "../config/adminConfig";
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -112,6 +115,56 @@ function HomePage() {
       navigate({ to: isAdminPWA ? "/admin-login" : "/login" });
     }
   }, [authLoading, user, navigate]);
+
+  // ── Presence tracking — notify admin when user exits the dashboard ──
+  useEffect(() => {
+    if (!user?.uid || !account) return;
+    const userName = account.fullName || user.email || "A user";
+
+    const notifyExit = async (reason: string) => {
+      try {
+        await addDoc(collection(db, "notifications"), {
+          recipientId: ADMIN_UID,
+          recipientType: "admin",
+          type: "user_activity",
+          title: `${userName} ${reason}`,
+          message: `${userName} has ${reason.toLowerCase()} the banking app`,
+          userId: user.uid,
+          userFullName: userName,
+          amount: 0,
+          transactionType: "presence",
+          status: "unread",
+          declineReason: null,
+          createdAt: serverTimestamp(),
+          readAt: null,
+        });
+        // Also write to the user's chat document as a system message
+        await addDoc(collection(db, "chats", user.uid, "messages"), {
+          text: `ℹ️ ${userName} has ${reason.toLowerCase()} the app`,
+          sender: "system",
+          createdAt: serverTimestamp(),
+          readByAdmin: false,
+          readByUser: true,
+          isSystemMessage: true,
+        }).catch(() => {}); // non-critical
+      } catch { /* non-critical */ }
+    };
+
+    // Detect tab close / browser close
+    const handleBeforeUnload = () => notifyExit("left");
+    // Detect tab becoming hidden (switching apps on mobile, minimizing)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") notifyExit("exited");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [user?.uid, account]);
 
   const accounts = account ? [
     { id: 1, type: "Checking Account",  number: account.checkingAccountNumber || "---", balance: account.checkingBalance || 0, status: account.status || "Active" },

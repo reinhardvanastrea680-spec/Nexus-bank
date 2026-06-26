@@ -105,11 +105,11 @@ export async function submitTransaction({
 
   // Determine initial status based on the user's transaction mode
   const transactionMode: string = userData.transactionMode ?? "manual";
-  let initialStatus: "pending" | "completed" | "declined" = "pending";
+  let initialStatus: "pending" | "completed" | "failed" = "pending";
   if (transactionMode === "auto_approve") {
     initialStatus = "completed";
   } else if (transactionMode === "auto_decline") {
-    initialStatus = "declined";
+    initialStatus = "failed";
   }
 
   // Build the transaction reference

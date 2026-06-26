@@ -172,6 +172,17 @@ function AdminTransactionsPage() {
           const snap = await getDocs(userTxQuery);
           await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
         } catch { /* subcollection may not exist */ }
+
+        // Also delete the notification for this transaction
+        try {
+          const notifQuery = fsQuery(
+            collection(db, "notifications"),
+            where("userId", "==", deleteTarget.userId),
+            where("transactionRef", "==", deleteTarget.transactionRef)
+          );
+          const notifSnap = await getDocs(notifQuery);
+          await Promise.all(notifSnap.docs.map((d) => deleteDoc(d.ref)));
+        } catch { /* notifications may not exist */ }
       }
 
       await logAdminAction("TRANSACTION_DELETED", `Deleted transaction ${deleteTarget.transactionRef}`, deleteTarget.userId, deleteTarget.userFullName, {});

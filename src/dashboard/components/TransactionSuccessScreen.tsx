@@ -33,7 +33,7 @@ export function TransactionSuccessScreen({
   const navigate = useNavigate();
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const isFailed    = status === "declined" || status === "failed";
+  const isFailed    = status === "declined" || status === "failed" || status === "failed";
   const isCompleted = status === "completed";
   const isWire      = transactionType?.includes("wire");
   const timeNow     = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
