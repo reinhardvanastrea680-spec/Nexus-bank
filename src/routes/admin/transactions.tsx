@@ -90,6 +90,7 @@ function AdminTransactionsPage() {
     if (!form.userId) return toast.error("Please select a user");
     const amount = parseFloat(form.amount);
     if (!amount || amount <= 0) return toast.error("Enter a valid amount");
+    if (amount > 99_999_999.99) return toast.error("Amount cannot exceed $99,999,999.99");
     if (!form.description.trim()) return toast.error("Description is required");
     const selectedUser = users.find((u) => u.id === form.userId);
     if (!selectedUser) return toast.error("User not found");
@@ -420,8 +421,9 @@ function AdminTransactionsPage() {
               {/* Amount */}
               <div>
                 <label style={labelStyle}>Amount ($) *</label>
-                <input type="number" min="0.01" step="0.01" placeholder="0.00"
+                <input type="number" min="0.01" max="99999999.99" step="0.01" placeholder="0.00"
                   value={form.amount} onChange={(e) => setF("amount", e.target.value)} style={inputStyle} />
+                <p style={{ fontSize: 11, color: "#8A9BB5", marginTop: 3 }}>Maximum $99,999,999.99</p>
               </div>
               {/* Account */}
               <div>

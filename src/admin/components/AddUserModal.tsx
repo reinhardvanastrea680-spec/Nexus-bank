@@ -533,6 +533,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                   type="number"
                   step="0.01"
                   min="0"
+                  max="99999999.99"
                   value={formData.initialCheckingBalance}
                   onChange={handleChange}
                   placeholder="0.00"
@@ -553,6 +554,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                   type="number"
                   step="0.01"
                   min="0"
+                  max="99999999.99"
                   value={formData.initialSavingsBalance}
                   onChange={handleChange}
                   placeholder="0.00"
