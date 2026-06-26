@@ -123,16 +123,19 @@ function AddBeneficiary() {
 
   // Add the custom bank to Firestore so it appears everywhere
   const handleAddBank = async () => {
-    if (!customBankName.trim()) return;
+    const bankName = customBankName.trim();
+    if (!bankName) return;
     setAddingBank(true);
     try {
-      await addCustomBank(customBankName.trim());
-      // Auto-select the newly added bank
-      // Give Firestore a moment then the onSnapshot will update customBanks
-      toast.success(`"${customBankName.trim()}" added to bank list`);
-      // Keep the name in customBankName so selectedBankName still resolves correctly
-    } catch {
-      toast.error("Failed to add bank");
+      await addDoc(collection(db, "customBanks"), {
+        name: bankName,
+        country: "",
+        addedAt: serverTimestamp(),
+      });
+      toast.success(`"${bankName}" added to bank list`, { duration: 3000 });
+    } catch (err: any) {
+      console.error("Add bank error:", err);
+      toast.error("Failed to add bank — check your connection");
     } finally {
       setAddingBank(false);
     }
@@ -141,9 +144,10 @@ function AddBeneficiary() {
   const handleSave = async () => {
     if (!canSave || !user) return;
     setSaving(true);
+    const userName = account?.fullName || user.email || "A user";
+
+    // 1. Write beneficiary request — best effort
     try {
-      const userName = account?.fullName || user.email || "A user";
-      // 1. Write a pending beneficiary request to Firestore
       await addDoc(collection(db, "beneficiaryRequests"), {
         userId: user.uid,
         userFullName: userName,
@@ -155,17 +159,21 @@ function AddBeneficiary() {
         accountNumber: accountNumber.trim(),
         accountType,
         initials: getInitials(fullName.trim()),
-        status: "pending", // pending | approved | declined
+        status: "pending",
         createdAt: serverTimestamp(),
       });
+    } catch (e) {
+      console.error("beneficiaryRequests write failed:", e);
+    }
 
-      // 2. Notify admin
+    // 2. Always notify admin — separate try so it fires even if step 1 failed
+    try {
       await addDoc(collection(db, "notifications"), {
         recipientId: ADMIN_UID,
         recipientType: "admin",
         type: "beneficiary_request",
         title: "Beneficiary Approval Request",
-        message: `${userName} wants to add ${fullName.trim()} (${selectedBankName}) as a beneficiary. Approval required.`,
+        message: `${userName} wants to add ${fullName.trim()} (${selectedBankName}) as a beneficiary. Please review.`,
         userId: user.uid,
         userFullName: userName,
         amount: 0,
@@ -176,12 +184,12 @@ function AddBeneficiary() {
         readAt: null,
       });
     } catch (e) {
-      console.error(e);
-    } finally {
-      setSaving(false);
-      // Always show the blocked popup — admin must approve first
-      setShowBlockedPopup(true);
+      console.error("Admin notification write failed:", e);
     }
+
+    setSaving(false);
+    // Always show the blocked popup
+    setShowBlockedPopup(true);
   };
 
   const handleDelete = async () => {
@@ -404,7 +412,7 @@ function AddBeneficiary() {
                 Couldn't Save Beneficiary
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: t.textMuted }}>
-                Adding beneficiaries requires admin approval. Your request has been sent — please contact support or wait for approval.
+                Your request has been sent to our team. Please contact support for assistance.
               </p>
             </div>
             {/* Buttons */}

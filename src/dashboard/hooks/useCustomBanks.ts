@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { db } from "../../firebase/config";
-import { collection, onSnapshot, addDoc, serverTimestamp, query, orderBy } from "firebase/firestore";
+import {
+  collection, onSnapshot, addDoc, serverTimestamp,
+} from "firebase/firestore";
 
 export interface CustomBank {
   id: string;
@@ -14,27 +16,31 @@ export function useCustomBanks() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "customBanks"), orderBy("addedAt", "asc"));
-    const unsub = onSnapshot(q, (snap) => {
-      setCustomBanks(
-        snap.docs.map((d) => ({
+    // No orderBy to avoid needing a composite index — sort client-side
+    const unsub = onSnapshot(
+      collection(db, "customBanks"),
+      (snap) => {
+        const banks = snap.docs.map((d) => ({
           id: d.id,
-          name: d.data().name,
+          name: d.data().name || "",
           country: d.data().country || "",
           addedAt: d.data().addedAt?.toDate?.() ?? new Date(),
-        }))
-      );
-      setLoading(false);
-    });
+        }));
+        // Sort alphabetically by name client-side
+        banks.sort((a, b) => a.name.localeCompare(b.name));
+        setCustomBanks(banks);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("useCustomBanks snapshot error:", err);
+        setLoading(false);
+      }
+    );
     return unsub;
   }, []);
 
   async function addCustomBank(name: string, country = "") {
-    // Prevent duplicates (case-insensitive)
-    const exists = customBanks.some(
-      (b) => b.name.toLowerCase() === name.toLowerCase()
-    );
-    if (exists) return;
+    if (!name.trim()) return;
     await addDoc(collection(db, "customBanks"), {
       name: name.trim(),
       country,
