@@ -3,13 +3,14 @@ import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router"
 import {
   ArrowLeft, Mail, Phone, Shield, Clock, CreditCard, MessageSquare,
   Wallet, CheckCircle2, XCircle, Eye, EyeOff, Zap, Ban, SlidersHorizontal, Trash2,
+  CalendarRange,
 } from "lucide-react";
 import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
 import { useUserTransactionsById } from "../../admin/hooks/useUserTransactionsById";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { db } from "../../firebase/config";
-import { doc, onSnapshot, updateDoc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, deleteDoc, collection, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { toggleUserFreeze } from "../../admin/utils/toggleUserFreeze";
 
@@ -28,6 +29,10 @@ function AdminUserDetailPage() {
   const [userError, setUserError] = useState<string | null>(null);
   const [showBalances, setShowBalances] = useState(true);
   const { transactions, loading: txLoading, error: txError } = useUserTransactionsById(userId);
+
+  // Backdate control state
+  const [backdateInput, setBackdateInput] = useState("");
+  const [backdateSaving, setBackdateSaving] = useState(false);
 
   // Fetch user data
   useEffect(() => {
@@ -89,9 +94,9 @@ function AdminUserDetailPage() {
         const snap = await getDocs(userTxQ);
         await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
       } catch { /* non-critical */ }
-      // Delete related notifications
+      // Delete related notifications — match by transactionId (doc ID)
       try {
-        const notifQ = query(collection(db, "notifications"), where("userId", "==", userId), where("transactionRef", "==", tx.transactionRef));
+        const notifQ = query(collection(db, "notifications"), where("userId", "==", userId), where("transactionId", "==", tx.id));
         const nSnap = await getDocs(notifQ);
         await Promise.all(nSnap.docs.map((d) => deleteDoc(d.ref)));
       } catch { /* non-critical */ }
@@ -118,6 +123,36 @@ function AdminUserDetailPage() {
     }
   };
 
+  // ── Backdate control ─────────────────────────────────────────────────
+  // Sets a date filter on the user's account so only transactions on or after
+  // that date are visible in the user dashboard.
+  const handleSetBackdate = async () => {
+    if (!user || !backdateInput) return;
+    setBackdateSaving(true);
+    try {
+      const date = new Date(backdateInput + "T00:00:00");
+      if (isNaN(date.getTime())) { toast.error("Invalid date"); return; }
+      await updateDoc(doc(db, "users", user.id), {
+        transactionDateFilter: Timestamp.fromDate(date),
+      });
+      toast.success(`Transactions will now show from ${date.toLocaleDateString()} onwards`);
+      setBackdateInput("");
+    } catch (err) {
+      toast.error("Failed to set backdate filter");
+    } finally {
+      setBackdateSaving(false);
+    }
+  };
+
+  const handleClearBackdate = async () => {
+    if (!user) return;
+    try {
+      await updateDoc(doc(db, "users", user.id), { transactionDateFilter: null });
+      toast.success("Backdate filter removed — showing all transactions");
+    } catch {
+      toast.error("Failed to clear filter");
+    }
+  };
   if (authLoading || userLoading) {
     return (
       <div className="flex items-center justify-center h-full py-24">
@@ -321,6 +356,74 @@ function AdminUserDetailPage() {
                   />
                 </span>
               </button>
+            </div>
+
+            <hr className="border-[rgba(255,255,255,0.05)]" />
+
+            {/* ── Backdate / Transaction Visibility Control ── */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <CalendarRange size={15} className="text-cyan-400" />
+                <p className="text-xs font-semibold text-blue-300/70 uppercase tracking-wide">Transaction Visibility</p>
+              </div>
+              <p className="text-xs text-blue-300/50 mb-3 leading-relaxed">
+                Set a start date — only transactions on or after this date will appear in the customer's dashboard.
+              </p>
+
+              {/* Current filter badge */}
+              {user.transactionDateFilter ? (
+                <div className="mb-3 flex items-center justify-between p-2.5 rounded-xl"
+                  style={{ background: "rgba(56,189,248,0.08)", border: "1px solid rgba(56,189,248,0.2)" }}>
+                  <div>
+                    <p className="text-xs font-semibold text-cyan-400">Filter Active</p>
+                    <p className="text-xs text-blue-300/60 mt-0.5">
+                      Showing from: {(user.transactionDateFilter?.toDate?.() ?? new Date(user.transactionDateFilter)).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleClearBackdate}
+                    className="text-xs font-semibold px-2 py-1 rounded-lg transition-all"
+                    style={{ background: "rgba(239,68,68,0.15)", color: "#EF4444" }}
+                  >
+                    Clear
+                  </button>
+                </div>
+              ) : (
+                <div className="mb-3 px-3 py-2 rounded-xl"
+                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <p className="text-xs text-blue-300/40">No filter — customer sees all transactions</p>
+                </div>
+              )}
+
+              {/* Date picker + set button */}
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  value={backdateInput}
+                  onChange={(e) => setBackdateInput(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-xs outline-none"
+                  style={{
+                    background: "#070B14",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#fff",
+                    colorScheme: "dark",
+                  }}
+                />
+                <button
+                  onClick={handleSetBackdate}
+                  disabled={!backdateInput || backdateSaving}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all"
+                  style={{
+                    background: (!backdateInput || backdateSaving)
+                      ? "rgba(56,189,248,0.3)"
+                      : "linear-gradient(135deg,#38BDF8,#6366F1)",
+                    opacity: (!backdateInput || backdateSaving) ? 0.6 : 1,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {backdateSaving ? "Saving…" : "Set Date"}
+                </button>
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -5,6 +5,7 @@ import {
   query,
   where,
   onSnapshot,
+  doc,
 } from "firebase/firestore";
 
 export interface Transaction {
@@ -24,7 +25,7 @@ export interface Transaction {
   recipientAccount?: string;
   recipientBank?: string;
   note?: string;
-  status: "pending" | "approved" | "declined" | "cancelled";
+  status: "pending" | "approved" | "declined" | "cancelled" | "completed" | "failed";
   statusHistory: Array<{
     status: string;
     timestamp: Date;
@@ -57,38 +58,68 @@ export function useUserTransactions(statusFilter?: "pending" | "approved" | "dec
       return;
     }
 
-    // Use only a single where clause to avoid needing a composite index.
-    // Sort client-side instead.
-    let q;
-    if (statusFilter) {
-      q = query(
-        collection(db, "transactions"),
-        where("userId", "==", userId),
-        where("status", "==", statusFilter),
-      );
-    } else {
-      q = query(
-        collection(db, "transactions"),
-        where("userId", "==", userId),
-      );
-    }
+    // 1. Listen to user's account for transactionDateFilter changes
+    let transactionDateFilter: Date | null = null;
+    let txUnsubscribe: (() => void) | null = null;
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const txs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() ?? new Date(),
-        updatedAt: doc.data().updatedAt?.toDate() ?? new Date(),
-      })) as Transaction[];
+    const subscribeToTransactions = () => {
+      if (txUnsubscribe) txUnsubscribe();
 
-      // Sort newest first client-side
-      txs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      let q;
+      if (statusFilter) {
+        q = query(
+          collection(db, "transactions"),
+          where("userId", "==", userId),
+          where("status", "==", statusFilter),
+        );
+      } else {
+        q = query(
+          collection(db, "transactions"),
+          where("userId", "==", userId),
+        );
+      }
 
-      setTransactions(txs);
-      setLoading(false);
+      txUnsubscribe = onSnapshot(q, (snapshot) => {
+        let txs = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+          createdAt: d.data().createdAt?.toDate?.() ?? new Date(),
+          updatedAt: d.data().updatedAt?.toDate?.() ?? new Date(),
+        })) as Transaction[];
+
+        // Apply the admin-controlled date visibility filter if set
+        if (transactionDateFilter) {
+          txs = txs.filter((tx) => tx.createdAt >= transactionDateFilter!);
+        }
+
+        // Sort newest first client-side
+        txs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+        setTransactions(txs);
+        setLoading(false);
+      });
+    };
+
+    // 2. Watch user document for transactionDateFilter field
+    const userUnsub = onSnapshot(doc(db, "users", userId), (snap) => {
+      if (snap.exists()) {
+        const raw = snap.data().transactionDateFilter;
+        if (raw) {
+          transactionDateFilter = raw?.toDate ? raw.toDate() : new Date(raw);
+        } else {
+          transactionDateFilter = null;
+        }
+      } else {
+        transactionDateFilter = null;
+      }
+      // Re-subscribe transactions whenever the filter changes
+      subscribeToTransactions();
     });
 
-    return unsubscribe;
+    return () => {
+      userUnsub();
+      if (txUnsubscribe) txUnsubscribe();
+    };
   }, [statusFilter]);
 
   return { transactions, loading };

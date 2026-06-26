@@ -174,11 +174,12 @@ function AdminTransactionsPage() {
         } catch { /* subcollection may not exist */ }
 
         // Also delete the notification for this transaction
+        // Match by transactionId (the doc ID) — that's what createNotification stores
         try {
           const notifQuery = fsQuery(
             collection(db, "notifications"),
             where("userId", "==", deleteTarget.userId),
-            where("transactionRef", "==", deleteTarget.transactionRef)
+            where("transactionId", "==", deleteTarget.id)
           );
           const notifSnap = await getDocs(notifQuery);
           await Promise.all(notifSnap.docs.map((d) => deleteDoc(d.ref)));
