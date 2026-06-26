@@ -34,6 +34,7 @@ function formatCurrency(value: number) {
 function CardDeposit() {
   
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const t = themeColors(theme);
   const { account } = useUserAccount();
 

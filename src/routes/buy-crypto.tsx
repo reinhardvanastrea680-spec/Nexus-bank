@@ -47,6 +47,7 @@ function formatCurrency(value: number) {
 function BuyCrypto() {
   
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const t = themeColors(theme);
   const { account } = useUserAccount();
 

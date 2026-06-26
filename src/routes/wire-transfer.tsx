@@ -47,6 +47,7 @@ function WireTransferWizard() {
   
   const { theme } = useTheme();
   const t = themeColors(theme);
+  const navigate = useNavigate();
   const { account } = useUserAccount();
   const [step, setStep] = useState(1);
 

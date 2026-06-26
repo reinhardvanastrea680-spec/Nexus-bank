@@ -153,6 +153,7 @@ function LocalTransfer() {
   
   const { theme } = useTheme();
   const t = themeColors(theme);
+  const navigate = useNavigate();
   const { account } = useUserAccount();
   const { beneficiaries } = useBeneficiaries();
 

@@ -26,6 +26,7 @@ export const Route = createFileRoute("/check-deposit")({
 function CheckDeposit() {
   
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const t = themeColors(theme);
   const { account } = useUserAccount();
   const [step, setStep] = useState(1);
