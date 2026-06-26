@@ -130,10 +130,6 @@ function InternalTransfer() {
               <span className="text-sm" style={{ color: t.textMuted }}>→</span>
               <span className="text-sm" style={{ color: t.textMuted }}>{toAccount}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm" style={{ color: t.textMuted }}>Requires Admin Approval</span>
-              <span className="text-sm font-semibold" style={{ color: t.accentYellow }}>Yes</span>
-            </div>
           </div>
         )}
       </div>

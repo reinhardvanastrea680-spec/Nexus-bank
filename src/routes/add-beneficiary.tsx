@@ -89,6 +89,7 @@ function AddBeneficiary() {
 
   const [fullName, setFullName] = useState("");
   const [selectedBankId, setSelectedBankId] = useState("");
+  const [customBankName, setCustomBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [nickname, setNickname] = useState("");
   const [accountType, setAccountType] = useState<"Personal" | "Business">("Personal");
@@ -102,8 +103,12 @@ function AddBeneficiary() {
   const [showSheet, setShowSheet] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const selectedBankName = banks.find((b) => b.id === selectedBankId)?.name || "";
-  const canSave = fullName.trim() && selectedBankId && accountNumber.trim();
+  const selectedBankName = selectedBankId === "other"
+    ? (customBankName.trim() || "Other")
+    : (banks.find((b) => b.id === selectedBankId)?.name || "");
+  const canSave = fullName.trim() && selectedBankId &&
+    (selectedBankId !== "other" || customBankName.trim()) &&
+    accountNumber.trim();
 
   const handleSave = async () => {
     if (!canSave || !user) return;
@@ -240,7 +245,7 @@ function AddBeneficiary() {
           {/* Bank */}
           <div>
             <label className="block text-xs font-semibold mb-2" style={{ color: t.textMuted }}>Bank *</label>
-            <select value={selectedBankId} onChange={(e) => setSelectedBankId(e.target.value)}
+            <select value={selectedBankId} onChange={(e) => { setSelectedBankId(e.target.value); setCustomBankName(""); }}
               className="w-full px-4 py-3.5 rounded-xl outline-none appearance-none"
               style={{ background: t.inputBg, color: selectedBankId ? t.textPrimary : t.textMuted }}>
               <option value="" disabled>Select bank</option>
@@ -248,6 +253,18 @@ function AddBeneficiary() {
                 <option key={bank.id} value={bank.id}>{bank.name}</option>
               ))}
             </select>
+            {/* Custom bank name input — shown only when "Other" is selected */}
+            {selectedBankId === "other" && (
+              <input
+                type="text"
+                value={customBankName}
+                onChange={(e) => setCustomBankName(e.target.value)}
+                placeholder="Enter bank name *"
+                className="w-full px-4 py-3.5 rounded-xl outline-none mt-2"
+                style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.accentCyan}50` }}
+                autoFocus
+              />
+            )}
           </div>
 
           {/* Account Number */}
