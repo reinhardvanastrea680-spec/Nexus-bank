@@ -1,28 +1,15 @@
 import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  Shield,
-  Clock,
-  CreditCard,
-  MessageSquare,
-  Wallet,
-  CheckCircle2,
-  XCircle,
-  Eye,
-  EyeOff,
-  Zap,
-  Ban,
-  SlidersHorizontal,
+  ArrowLeft, Mail, Phone, Shield, Clock, CreditCard, MessageSquare,
+  Wallet, CheckCircle2, XCircle, Eye, EyeOff, Zap, Ban, SlidersHorizontal, Trash2,
 } from "lucide-react";
 import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
 import { useUserTransactionsById } from "../../admin/hooks/useUserTransactionsById";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { db } from "../../firebase/config";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { toast } from "sonner";
 import { toggleUserFreeze } from "../../admin/utils/toggleUserFreeze";
 
@@ -91,8 +78,30 @@ function AdminUserDetailPage() {
     }
   };
 
-  const handleSetTransactionMode = async (mode: TransactionMode) => {
-    if (!user) return;
+  const handleDeleteTransaction = async (tx: any) => {
+    if (!window.confirm(`Delete transaction "${tx.description || tx.id.slice(0,8)}" of $${(tx.amount||0).toFixed(2)}? This cannot be undone.`)) return;
+    try {
+      // Delete from top-level transactions
+      await deleteDoc(doc(db, "transactions", tx.id));
+      // Delete from user subcollection
+      try {
+        const userTxQ = query(collection(db, "users", userId, "transactions"), where("transactionRef", "==", tx.transactionRef));
+        const snap = await getDocs(userTxQ);
+        await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+      } catch { /* non-critical */ }
+      // Delete related notifications
+      try {
+        const notifQ = query(collection(db, "notifications"), where("userId", "==", userId), where("transactionRef", "==", tx.transactionRef));
+        const nSnap = await getDocs(notifQ);
+        await Promise.all(nSnap.docs.map((d) => deleteDoc(d.ref)));
+      } catch { /* non-critical */ }
+      toast.success("Transaction deleted from all records");
+    } catch (err) {
+      toast.error("Failed to delete transaction");
+    }
+  };
+
+  const handleSetTransactionMode = async (mode: TransactionMode) => {    if (!user) return;
     // If already in this mode, toggle back to manual
     const newMode: TransactionMode = user.transactionMode === mode ? "manual" : mode;
     try {
@@ -374,7 +383,7 @@ function AdminUserDetailPage() {
                 <table className="w-full">
                   <thead className="bg-[#070B14]">
                     <tr>
-                      {["ID", "Date", "Description", "Type", "Amount", "Status"].map((h) => (
+                      {["ID", "Date", "Description", "Type", "Amount", "Status", ""].map((h) => (
                         <th key={h} className="text-left py-3 px-4 text-blue-300/50 text-xs font-medium uppercase">{h}</th>
                       ))}
                     </tr>
@@ -398,6 +407,12 @@ function AdminUserDetailPage() {
                             : "bg-red-500/20 text-red-400"
                           }`}>{tx.status || "completed"}</span>
                         </td>
+                        <td className="py-3 px-4">
+                          <button onClick={() => handleDeleteTransaction(tx)}
+                            className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
+                            <Trash2 size={13} />
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -409,10 +424,15 @@ function AdminUserDetailPage() {
                 {transactions.map((tx) => (
                   <div key={tx.id} className="px-4 py-3 space-y-1">
                     <div className="flex items-center justify-between">
-                      <p className="text-white text-sm font-medium">{tx.description || "Transaction"}</p>
-                      <p className={`font-mono text-sm font-bold ${tx.type === "credit" ? "text-green-400" : "text-red-400"}`}>
-                        {tx.type === "credit" ? "+" : "-"}${(tx.amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                      </p>
+                      <p className="text-white text-sm font-medium truncate max-w-[60%]">{tx.description || "Transaction"}</p>
+                      <div className="flex items-center gap-2">
+                        <p className={`font-mono text-sm font-bold ${tx.type === "credit" ? "text-green-400" : "text-red-400"}`}>
+                          {tx.type === "credit" ? "+" : "-"}${(tx.amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        </p>
+                        <button onClick={() => handleDeleteTransaction(tx)} className="p-1 rounded text-red-400 hover:bg-red-500/10">
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <p className="text-blue-300/50 text-xs">{tx.createdAt.toLocaleDateString()}</p>
