@@ -28,6 +28,9 @@ import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { useLanguage, SUPPORTED_LANGUAGES } from "../hooks/use-language";
+import { db } from "../firebase/config";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "Settings - Nexus Bank" }] }),
@@ -57,6 +60,30 @@ function Settings() {
 
   const handleLogout = async () => {
     try {
+      // Notify admin that user has signed out
+      const userName = account?.fullName || user?.email || "A user";
+      const userId = user?.uid;
+      if (userId) {
+        try {
+          // Clear the session presence key so re-entry fires again
+          sessionStorage.removeItem(`nexus-presence-${userId}`);
+          await addDoc(collection(db, "notifications"), {
+            recipientId: ADMIN_UID,
+            recipientType: "admin",
+            type: "user_activity",
+            title: `${userName} signed out`,
+            message: `${userName} has signed out of the banking app`,
+            userId,
+            userFullName: userName,
+            amount: 0,
+            transactionType: "presence",
+            status: "unread",
+            declineReason: null,
+            createdAt: serverTimestamp(),
+            readAt: null,
+          });
+        } catch { /* non-critical */ }
+      }
       await userLogout();
       navigate({ to: "/login" });
     } catch (e) {

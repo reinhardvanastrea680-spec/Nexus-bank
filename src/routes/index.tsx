@@ -240,24 +240,40 @@ function HomePage() {
       </div>
 
       {/* ── Account Card ────────────────────────────────────────────────── */}
-      <div className="mx-5 mb-4">
+      <div className="mb-4" style={{ paddingLeft: "28px", paddingRight: "28px" }}>
         <div className="relative select-none">
-          {/* Left arrow — outside overflow-hidden */}
+          {/* Left arrow — sits outside the card with real space */}
           {currentAccount > 0 && (
             <button
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
-              style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
-              onClick={() => setCurrentAccount((p) => p - 1)}>
-              <ChevronLeft size={18} style={{ color: "white" }} />
+              className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg"
+              style={{
+                left: "-22px",
+                width: "36px",
+                height: "36px",
+                background: "rgba(255,255,255,0.30)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,0.25)",
+              }}
+              onClick={() => setCurrentAccount((p) => Math.max(0, p - 1))}
+            >
+              <ChevronLeft size={20} style={{ color: "white" }} />
             </button>
           )}
-          {/* Right arrow — outside overflow-hidden */}
+          {/* Right arrow — sits outside the card with real space */}
           {currentAccount < accounts.length - 1 && (
             <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
-              style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
-              onClick={() => setCurrentAccount((p) => p + 1)}>
-              <ChevronRight size={18} style={{ color: "white" }} />
+              className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg"
+              style={{
+                right: "-22px",
+                width: "36px",
+                height: "36px",
+                background: "rgba(255,255,255,0.30)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,0.25)",
+              }}
+              onClick={() => setCurrentAccount((p) => Math.min(accounts.length - 1, p + 1))}
+            >
+              <ChevronRight size={20} style={{ color: "white" }} />
             </button>
           )}
 
@@ -331,7 +347,6 @@ function HomePage() {
           ))}
         </div>
       </div>
-
       {/* ── Quick Links ─────────────────────────────────────────────────── */}
       <div className="flex-1 rounded-t-[28px] px-5 pt-6 pb-24"
         style={{ background: dark ? "#0D1829" : "#FFFFFF",
