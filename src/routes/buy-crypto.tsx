@@ -343,14 +343,6 @@ function BuyCrypto() {
               ${formatCurrency(parseFloat(amount || "0") + 3.98)}
             </span>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-[rgba(255,255,255,0.1)]">
-            <span className="text-sm" style={{ color: t.textMuted }}>
-              Requires Admin Approval
-            </span>
-            <span className="text-sm font-semibold" style={{ color: t.accentYellow }}>
-              Yes
-            </span>
-          </div>
         </div>
       </div>
 

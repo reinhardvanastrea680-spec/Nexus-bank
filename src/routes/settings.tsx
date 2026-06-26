@@ -246,10 +246,7 @@ function Settings() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Smartphone size={16} style={{ color: "#38BDF8" }} />
-                    <span
-                      className="text-sm"
-                      style={{ color: t.textPrimary }}
-                    >
+                    <span className="text-sm" style={{ color: t.textPrimary }}>
                       Push Alerts
                     </span>
                   </div>
@@ -259,28 +256,6 @@ function Settings() {
                     style={{
                       background: pushAlerts ? t.accentCyan : t.inputBg,
                       paddingLeft: pushAlerts ? "26px" : "2px",
-                    }}
-                  >
-                    <div className="w-5 h-5 rounded-full" style={{ background: "#FFFFFF" }} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Bell size={16} style={{ color: "#38BDF8" }} />
-                    <span
-                      className="text-sm"
-                      style={{ color: t.textPrimary }}
-                    >
-                      SMS Alerts
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setSmsAlerts(!smsAlerts)}
-                    className="w-12 h-6 rounded-full flex items-center"
-                    style={{
-                      background: smsAlerts ? t.accentCyan : t.inputBg,
-                      paddingLeft: smsAlerts ? "26px" : "2px",
                     }}
                   >
                     <div className="w-5 h-5 rounded-full" style={{ background: "#FFFFFF" }} />

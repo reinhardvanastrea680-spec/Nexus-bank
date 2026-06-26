@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Trash2, User, X, AlertCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Trash2, User, AlertCircle, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useBeneficiaries } from "../dashboard/hooks/useBeneficiaries";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useCustomBanks } from "../dashboard/hooks/useCustomBanks";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
@@ -86,10 +87,12 @@ function AddBeneficiary() {
   const { user } = useUserAuth();
   const { account } = useUserAccount();
   const { beneficiaries, loading, removeBeneficiary } = useBeneficiaries();
+  const { customBanks, addCustomBank } = useCustomBanks();
 
   const [fullName, setFullName] = useState("");
   const [selectedBankId, setSelectedBankId] = useState("");
   const [customBankName, setCustomBankName] = useState("");
+  const [addingBank, setAddingBank] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
   const [nickname, setNickname] = useState("");
   const [accountType, setAccountType] = useState<"Personal" | "Business">("Personal");
@@ -103,12 +106,37 @@ function AddBeneficiary() {
   const [showSheet, setShowSheet] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Merge static + custom banks for the dropdown (custom banks appear after the static list, before "Other")
+  const allBanks = [
+    ...banks.filter((b) => b.id !== "other"),
+    ...customBanks.map((cb) => ({ id: `custom_${cb.id}`, name: cb.name, country: cb.country })),
+    { id: "other", name: "Other", country: "" },
+  ];
+
   const selectedBankName = selectedBankId === "other"
     ? (customBankName.trim() || "Other")
-    : (banks.find((b) => b.id === selectedBankId)?.name || "");
+    : (allBanks.find((b) => b.id === selectedBankId)?.name || "");
+
   const canSave = fullName.trim() && selectedBankId &&
     (selectedBankId !== "other" || customBankName.trim()) &&
     accountNumber.trim();
+
+  // Add the custom bank to Firestore so it appears everywhere
+  const handleAddBank = async () => {
+    if (!customBankName.trim()) return;
+    setAddingBank(true);
+    try {
+      await addCustomBank(customBankName.trim());
+      // Auto-select the newly added bank
+      // Give Firestore a moment then the onSnapshot will update customBanks
+      toast.success(`"${customBankName.trim()}" added to bank list`);
+      // Keep the name in customBankName so selectedBankName still resolves correctly
+    } catch {
+      toast.error("Failed to add bank");
+    } finally {
+      setAddingBank(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!canSave || !user) return;
@@ -249,21 +277,46 @@ function AddBeneficiary() {
               className="w-full px-4 py-3.5 rounded-xl outline-none appearance-none"
               style={{ background: t.inputBg, color: selectedBankId ? t.textPrimary : t.textMuted }}>
               <option value="" disabled>Select bank</option>
-              {banks.map((bank) => (
+              {allBanks.map((bank) => (
                 <option key={bank.id} value={bank.id}>{bank.name}</option>
               ))}
             </select>
-            {/* Custom bank name input — shown only when "Other" is selected */}
+
+            {/* Custom bank name input + Add Bank button — shown only when "Other" is selected */}
             {selectedBankId === "other" && (
-              <input
-                type="text"
-                value={customBankName}
-                onChange={(e) => setCustomBankName(e.target.value)}
-                placeholder="Enter bank name *"
-                className="w-full px-4 py-3.5 rounded-xl outline-none mt-2"
-                style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.accentCyan}50` }}
-                autoFocus
-              />
+              <div className="mt-2 space-y-2">
+                <input
+                  type="text"
+                  value={customBankName}
+                  onChange={(e) => setCustomBankName(e.target.value)}
+                  placeholder="Type bank name *"
+                  className="w-full px-4 py-3.5 rounded-xl outline-none"
+                  style={{
+                    background: t.inputBg,
+                    color: t.textPrimary,
+                    border: `1px solid ${t.accentCyan}50`,
+                  }}
+                  autoFocus
+                />
+                {/* "Add Bank" button — appears once name is typed */}
+                {customBankName.trim().length >= 2 && (
+                  <button
+                    type="button"
+                    onClick={handleAddBank}
+                    disabled={addingBank}
+                    className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+                    style={{
+                      background: addingBank ? "rgba(56,189,248,0.3)" : "rgba(56,189,248,0.15)",
+                      color: t.accentCyan,
+                      border: `1px solid ${t.accentCyan}40`,
+                      opacity: addingBank ? 0.7 : 1,
+                    }}
+                  >
+                    <PlusCircle size={16} />
+                    {addingBank ? "Adding…" : `Add "${customBankName.trim()}" to bank list`}
+                  </button>
+                )}
+              </div>
             )}
           </div>
 

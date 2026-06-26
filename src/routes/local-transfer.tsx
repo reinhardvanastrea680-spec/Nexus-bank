@@ -19,6 +19,7 @@ import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 import { useBeneficiaries } from "../dashboard/hooks/useBeneficiaries";
+import { useCustomBanks } from "../dashboard/hooks/useCustomBanks";
 
 export const Route = createFileRoute("/local-transfer")({
   head: () => ({ meta: [{ title: "Local Transfer - Nexus Bank" }] }),
@@ -156,6 +157,19 @@ function LocalTransfer() {
   const navigate = useNavigate();
   const { account } = useUserAccount();
   const { beneficiaries } = useBeneficiaries();
+  const { customBanks } = useCustomBanks();
+
+  // Merge static globalBanks with custom banks from Firestore
+  const allBanks = [
+    ...globalBanks,
+    ...customBanks.map((cb) => ({
+      id: `custom_${cb.id}`,
+      name: cb.name,
+      country: cb.country || "Custom",
+      swift: undefined as string | undefined,
+      routing: undefined as string | undefined,
+    })),
+  ];
 
   const [step, setStep] = useState(1);
   const [selectedBank, setSelectedBank] = useState<(typeof globalBanks)[0] | null>(null);
@@ -188,7 +202,7 @@ function LocalTransfer() {
   } | null>(null);
 
   // Filter banks based on search query
-  const filteredBanks = globalBanks.filter(
+  const filteredBanks = allBanks.filter(
     (bank) =>
       bank.name.toLowerCase().includes(bankSearchQuery.toLowerCase()) ||
       bank.country.toLowerCase().includes(bankSearchQuery.toLowerCase()) ||
@@ -196,7 +210,7 @@ function LocalTransfer() {
       (bank.routing && bank.routing.includes(bankSearchQuery)),
   );
 
-  const handleSelectBank = (bank: (typeof globalBanks)[0]) => {
+  const handleSelectBank = (bank: (typeof allBanks)[0]) => {
     setSelectedBank(bank);
     setRecipientSwift(bank.swift || "");
     setRecipientRouting(bank.routing || "");
@@ -327,7 +341,7 @@ function LocalTransfer() {
                         setRecipientName(ben.fullName);
                         setAccountNumber(ben.accountNumber);
                         // Find matching bank in globalBanks or create a placeholder
-                        const match = globalBanks.find(
+                        const match = allBanks.find(
                           (b) => b.id === ben.bankId || b.name.toLowerCase() === ben.bankName.toLowerCase(),
                         );
                         if (match) {
