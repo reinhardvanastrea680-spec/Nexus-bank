@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bell, CheckCircle2, Clock, XCircle, Check, Eye, AlertTriangle, UserCheck, UserX, Trash2 } from "lucide-react";
 import { Card } from "../../components/ui/card";
@@ -78,6 +78,22 @@ function AdminNotificationsPage() {
       setDeletingAll(false);
     }
   };
+
+  // ── Auto-cleanup: delete admin notifications older than 24 hours ──────────
+  // Runs once when the page loads, silently clears stale notifications
+  useEffect(() => {
+    if (loading || notifications.length === 0) return;
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago
+    const stale = notifications.filter((n) => {
+      const ts = n.createdAt instanceof Date ? n.createdAt.getTime() : 0;
+      return ts < cutoff;
+    });
+    if (stale.length === 0) return;
+    // Fire-and-forget — don't block the UI
+    Promise.all(stale.map((n) => deleteDoc(doc(db, "notifications", n.id))))
+      .then(() => console.log(`Auto-cleaned ${stale.length} admin notifications older than 24h`))
+      .catch((err) => console.error("Auto-cleanup failed:", err));
+  }, [loading]); // only run when loading transitions to false (i.e., once on mount)
 
   // The actual transaction document for the selected notification
   const relatedTx = selectedNotif?.transactionId
@@ -350,7 +366,7 @@ function AdminNotificationsPage() {
             {notifications.map((notif) => (
               <div
                 key={notif.id}
-                className="flex items-start gap-4 p-4 hover:bg-white/5 transition-all cursor-pointer relative group"
+                className="flex items-start gap-4 p-4 hover:bg-white/5 transition-all cursor-pointer relative"
                 style={{
                   background: notif.status === "unread" ? "rgba(56,189,248,0.03)" : "transparent",
                   borderLeft: notif.status === "unread" ? "3px solid #38BDF8" : "3px solid transparent",
@@ -375,14 +391,15 @@ function AdminNotificationsPage() {
                           ? notif.createdAt.toLocaleString()
                           : "Just now"}
                       </span>
-                      {/* Delete button — visible on hover */}
+                      {/* Delete button — always visible */}
                       <button
                         onClick={(e) => handleDeleteNotif(e, notif.id)}
                         disabled={deletingId === notif.id}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg transition-all hover:bg-red-500/20"
+                        className="p-1.5 rounded-lg transition-all hover:bg-red-500/20 flex-shrink-0"
                         title="Delete notification"
+                        style={{ opacity: deletingId === notif.id ? 0.4 : 1 }}
                       >
-                        <Trash2 size={13} style={{ color: deletingId === notif.id ? "#888" : "#EF4444" }} />
+                        <Trash2 size={14} style={{ color: "#EF4444" }} />
                       </button>
                     </div>
                   </div>
