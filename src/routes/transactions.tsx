@@ -15,34 +15,44 @@ function formatCurrency(value: number) {
 }
 
 function formatDate(dateInput: any) {
-  if (dateInput?.toDate) {
-    return dateInput.toDate().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } else if (typeof dateInput === "string") {
-    return dateInput;
+  let d: Date | null = null;
+
+  if (dateInput instanceof Date) {
+    d = dateInput;
+  } else if (dateInput?.toDate) {
+    d = dateInput.toDate();
+  } else if (typeof dateInput === "string" && dateInput) {
+    d = new Date(dateInput);
+  } else if (typeof dateInput === "number") {
+    d = new Date(dateInput);
   }
-  return "Date not available";
+
+  if (!d || isNaN(d.getTime())) return "—";
+
+  // Show time only (e.g. "3:42 PM")
+  return d.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 function getStatusBadge(status: string) {
   switch (status) {
     case "pending":
-      return { text: "Pending", color: "#FFAB00", icon: Clock };
+      return { text: "Pending",   color: "#FFAB00", icon: Clock         };
     case "approved":
-      return { text: "Approved", color: "#00E676", icon: CheckCircle2 };
-    case "declined":
-      return { text: "Declined", color: "#FF4D6A", icon: XCircle };
     case "completed":
-      return { text: "Completed", color: "#00E676", icon: CheckCircle2 };
+      return { text: "Completed", color: "#00E676", icon: CheckCircle2  };
+    case "failed":
+      return { text: "Failed",    color: "#FF4D6A", icon: XCircle       };
+    case "declined":
+      return { text: "Failed",    color: "#FF4D6A", icon: XCircle       };
     case "cancelled":
-      return { text: "Cancelled", color: "#8A9BB5", icon: XCircle };
+      return { text: "Cancelled", color: "#8A9BB5", icon: XCircle       };
     default:
-      // Old-schema transactions without status field are admin-posted and completed
-      return { text: "Completed", color: "#00E676", icon: CheckCircle2 };
+      // Admin-posted transactions with no status field — show completed
+      return { text: "Completed", color: "#00E676", icon: CheckCircle2  };
   }
 }
 
