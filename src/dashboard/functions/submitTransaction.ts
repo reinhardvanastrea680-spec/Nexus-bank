@@ -189,28 +189,105 @@ export async function submitTransaction({
   // Non-critical: store doc ID back on the document
   try {
     await updateDoc(docRef, { transactionId: docRef.id });
-  } catch {
-    // Non-critical, continue
+  } catch { /* Non-critical */ }
+
+  // ── Apply balance changes for non-pending statuses ──────────────────
+  const balanceField = fundingAccount === "checking" ? "checkingBalance" : "savingsBalance";
+
+  if (initialStatus === "completed") {
+    // Auto-approve: debit balance immediately
+    try {
+      const newBalance = balanceAtSubmission - amount;
+      await updateDoc(doc(db, "users", user.uid), {
+        [balanceField]: newBalance,
+        totalBalance: (userData.checkingBalance ?? 0) + (userData.savingsBalance ?? 0) - amount,
+        lastBalanceUpdatedAt: serverTimestamp(),
+        lastBalanceUpdatedBy: "system",
+      });
+      await updateDoc(docRef, { balanceAfter: newBalance, status: "completed" });
+    } catch (e) { console.error("Balance update failed:", e); }
   }
 
-  // Non-critical: notify admin
+  // ── Notify admin based on actual status ─────────────────────────────
   try {
-    await createNotification({
-      recipientId: ADMIN_UID,
-      recipientType: "admin",
-      type: "new_transaction",
-      title: "New Pending Transaction",
-      message: `${userData.fullName} submitted a ${type.replace(/_/g, " ")} of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)}`,
-      transactionId: docRef.id,
-      userId: user.uid,
-      userFullName: userData.fullName,
-      amount,
-      transactionType: type,
-    });
+    if (initialStatus === "failed") {
+      // Auto-declined: notify admin that transaction was declined, NOT pending
+      await createNotification({
+        recipientId: ADMIN_UID,
+        recipientType: "admin",
+        type: "transaction_declined",
+        title: "Transaction Auto-Declined",
+        message: `${userData.fullName}'s ${type.replace(/_/g, " ")} of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)} was automatically declined`,
+        transactionId: docRef.id,
+        userId: user.uid,
+        userFullName: userData.fullName,
+        amount,
+        transactionType: type,
+        status: "failed",
+      });
+      // Also notify the user
+      await createNotification({
+        recipientId: user.uid,
+        recipientType: "user",
+        type: "transaction_declined",
+        title: "Transaction Failed",
+        message: `Your ${type.replace(/_/g, " ")} of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)} could not be processed`,
+        transactionId: docRef.id,
+        userId: user.uid,
+        userFullName: userData.fullName,
+        amount,
+        transactionType: type,
+        status: "failed",
+        declineReason: null,
+        transactionRef,
+      });
+    } else if (initialStatus === "completed") {
+      // Auto-approved: notify admin of completed transaction
+      await createNotification({
+        recipientId: ADMIN_UID,
+        recipientType: "admin",
+        type: "new_transaction",
+        title: "Transaction Auto-Approved",
+        message: `${userData.fullName}'s ${type.replace(/_/g, " ")} of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)} was automatically approved and processed`,
+        transactionId: docRef.id,
+        userId: user.uid,
+        userFullName: userData.fullName,
+        amount,
+        transactionType: type,
+        status: "completed",
+      });
+      // Notify user of approval
+      await createNotification({
+        recipientId: user.uid,
+        recipientType: "user",
+        type: "transaction_approved",
+        title: "Transaction Approved",
+        message: `Your ${type.replace(/_/g, " ")} of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)} has been approved and processed`,
+        transactionId: docRef.id,
+        userId: user.uid,
+        userFullName: userData.fullName,
+        amount,
+        transactionType: type,
+        status: "completed",
+        transactionRef,
+      });
+    } else {
+      // Manual/pending: notify admin of new pending transaction
+      await createNotification({
+        recipientId: ADMIN_UID,
+        recipientType: "admin",
+        type: "new_transaction",
+        title: "New Pending Transaction",
+        message: `${userData.fullName} submitted a ${type.replace(/_/g, " ")} of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)}`,
+        transactionId: docRef.id,
+        userId: user.uid,
+        userFullName: userData.fullName,
+        amount,
+        transactionType: type,
+      });
+    }
     await updateDoc(docRef, { adminNotified: true });
-  } catch {
-    // Non-critical, continue
-  }
+  } catch { /* Non-critical */ }
 
   return { transactionId: docRef.id, transactionRef, status: initialStatus };
 }
