@@ -112,8 +112,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
         newErrors.initialCheckingBalance = "Balance cannot be negative";
       } else if (formData.initialCheckingBalance.includes('.') && formData.initialCheckingBalance.split('.')[1].length > 2) {
         newErrors.initialCheckingBalance = "Maximum 2 decimal places";
-      } else if (balance > 99999999.99) {
-        newErrors.initialCheckingBalance = "Maximum $99,999,999.99";
       }
     }
 
@@ -124,8 +122,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
         newErrors.initialSavingsBalance = "Balance cannot be negative";
       } else if (formData.initialSavingsBalance.includes('.') && formData.initialSavingsBalance.split('.')[1].length > 2) {
         newErrors.initialSavingsBalance = "Maximum 2 decimal places";
-      } else if (balance > 99999999.99) {
-        newErrors.initialSavingsBalance = "Maximum $99,999,999.99";
       }
     }
 
@@ -533,7 +529,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                   type="number"
                   step="0.01"
                   min="0"
-                  max="99999999.99"
                   value={formData.initialCheckingBalance}
                   onChange={handleChange}
                   placeholder="0.00"
@@ -554,7 +549,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                   type="number"
                   step="0.01"
                   min="0"
-                  max="99999999.99"
                   value={formData.initialSavingsBalance}
                   onChange={handleChange}
                   placeholder="0.00"

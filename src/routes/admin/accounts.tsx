@@ -41,8 +41,6 @@ function AdminAccountsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(search.user ? String(search.user) : null);
 
-  const MAX_BALANCE = 99_999_999.99;
-
   // Edit dialog
   const [editState, setEditState]       = useState<EditState | null>(null);
   const [editAmount, setEditAmount]     = useState("");
@@ -76,20 +74,6 @@ function AdminAccountsPage() {
     if (!selectedUser || !editState) return;
     const amt = parseFloat(editAmount);
     if (isNaN(amt) || amt < 0) { toast.error("Enter a valid amount"); return; }
-
-    // Enforce max balance cap
-    const resultingBalance =
-      editState.mode === "set"    ? amt :
-      editState.mode === "credit" ? editState.currentBalance + amt :
-      editState.currentBalance - amt;
-    if (resultingBalance > MAX_BALANCE) {
-      toast.error(`Balance cannot exceed $${MAX_BALANCE.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, { duration: 4000 });
-      return;
-    }
-    if (editState.mode === "set" && amt > MAX_BALANCE) {
-      toast.error(`Maximum balance is $${MAX_BALANCE.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, { duration: 4000 });
-      return;
-    }
     setEditLoading(true);
     try {
       const { account, mode, currentBalance } = editState;
@@ -257,7 +241,7 @@ function AdminAccountsPage() {
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-mono" style={{ color: modeColor[editState.mode] }} aria-hidden="true">$</span>
-                  <input id="edit-amount" type="number" min="0" max={MAX_BALANCE} step="0.01" value={editAmount}
+                  <input id="edit-amount" type="number" min="0" step="0.01" value={editAmount}
                     onChange={(e) => setEditAmount(e.target.value)} placeholder="0.00" autoFocus
                     aria-label={editState.mode === "set" ? "New balance amount" : "Transaction amount"}
                     className="w-full pl-10 pr-4 py-4 rounded-xl text-xl font-mono font-bold outline-none"
