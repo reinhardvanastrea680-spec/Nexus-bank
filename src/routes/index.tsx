@@ -64,7 +64,7 @@ function HomePage() {
   const [cardBalanceVisible, setCardBalanceVisible] = useState(true);
   const [currentAccount, setCurrentAccount] = useState(0);
 
-  // Touch swipe support for account card
+  // Touch swipe support for account card — improved sensitivity
   const touchStartX = useRef<number | null>(null);
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -72,7 +72,7 @@ function HomePage() {
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) {
+    if (Math.abs(diff) > 30) { // lowered threshold for faster response
       if (diff > 0 && currentAccount < accounts.length - 1) setCurrentAccount((p) => p + 1);
       if (diff < 0 && currentAccount > 0) setCurrentAccount((p) => p - 1);
     }
@@ -117,9 +117,11 @@ function HomePage() {
   }, [authLoading, user, navigate]);
 
   // ── Presence tracking — notify admin when user enters OR exits the dashboard ──
+  // Use sessionStorage flag so it fires only ONCE per browser session (prevents React double-render duplicates)
   useEffect(() => {
     if (!user?.uid || !account) return;
     const userName = account.fullName || user.email || "A user";
+    const sessionKey = `nexus-presence-${user.uid}`;
 
     const notifyPresence = async (action: string) => {
       try {
@@ -138,26 +140,27 @@ function HomePage() {
           createdAt: serverTimestamp(),
           readAt: null,
         });
-        // System message in chat — non-critical
-        addDoc(collection(db, "chats", user.uid, "messages"), {
-          text: `ℹ️ ${userName} has ${action.toLowerCase()} the app`,
-          sender: "system",
-          createdAt: serverTimestamp(),
-          readByAdmin: false,
-          readByUser: true,
-          isSystemMessage: true,
-        }).catch(() => {});
       } catch { /* non-critical */ }
     };
 
-    // Notify on ENTER
-    notifyPresence("entered");
+    // Only fire "entered" ONCE per session
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, "1");
+      notifyPresence("entered");
+    }
 
-    // Notify on EXIT (tab close / browser close)
-    const handleBeforeUnload = () => notifyPresence("left");
-    // Notify when tab becomes hidden (switch apps on mobile, minimize)
+    // Dedupe exit notifications with a flag
+    let exitFired = false;
+    const handleExit = (action: string) => {
+      if (exitFired) return;
+      exitFired = true;
+      sessionStorage.removeItem(sessionKey); // allow re-entry next time
+      notifyPresence(action);
+    };
+
+    const handleBeforeUnload = () => handleExit("left");
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") notifyPresence("exited");
+      if (document.visibilityState === "hidden") handleExit("exited");
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -167,7 +170,7 @@ function HomePage() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [user?.uid, account]);
+  }, [user?.uid, account?.fullName]); // stable deps — won't re-run on every render
 
   const accounts = account ? [
     { id: 1, type: "Checking Account",  number: account.checkingAccountNumber || "---", balance: account.checkingBalance || 0, status: account.status || "Active" },
@@ -238,15 +241,36 @@ function HomePage() {
 
       {/* ── Account Card ────────────────────────────────────────────────── */}
       <div className="mx-5 mb-4">
-        <div
-          className="relative overflow-hidden rounded-2xl select-none"
-          style={{
-            background: cardAccent,
-            boxShadow: dark ? "0 8px 32px rgba(0,0,0,0.4)" : "0 8px 32px rgba(14,165,233,0.25)",
-          }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
+        <div className="relative select-none">
+          {/* Left arrow — outside overflow-hidden */}
+          {currentAccount > 0 && (
+            <button
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
+              onClick={() => setCurrentAccount((p) => p - 1)}>
+              <ChevronLeft size={18} style={{ color: "white" }} />
+            </button>
+          )}
+          {/* Right arrow — outside overflow-hidden */}
+          {currentAccount < accounts.length - 1 && (
+            <button
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
+              onClick={() => setCurrentAccount((p) => p + 1)}>
+              <ChevronRight size={18} style={{ color: "white" }} />
+            </button>
+          )}
+
+          <div
+            className="relative overflow-hidden rounded-2xl"
+            style={{
+              background: cardAccent,
+              boxShadow: dark ? "0 8px 32px rgba(0,0,0,0.4)" : "0 8px 32px rgba(14,165,233,0.25)",
+              transition: "background 0.3s ease",
+            }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
           {/* Decorative circles */}
           <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-10"
             style={{ background: accentCyan }} />
@@ -293,21 +317,8 @@ function HomePage() {
             </div>
           </div>
 
-          {/* Nav arrows */}
-          {currentAccount > 0 && (
-            <button className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.15)" }}
-              onClick={() => setCurrentAccount((p) => p - 1)}>
-              <ChevronLeft size={14} style={{ color: "white" }} />
-            </button>
-          )}
-          {currentAccount < accounts.length - 1 && (
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.15)" }}
-              onClick={() => setCurrentAccount((p) => p + 1)}>
-              <ChevronRight size={14} style={{ color: "white" }} />
-            </button>
-          )}
+          </div>
+          {/* removed old arrows — now handled above outside overflow-hidden */}
         </div>
 
         {/* Dot indicators */}
