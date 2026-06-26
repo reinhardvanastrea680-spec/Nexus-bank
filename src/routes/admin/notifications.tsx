@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, CheckCircle2, Clock, XCircle, Check, Eye, AlertTriangle, UserCheck, UserX } from "lucide-react";
+import { Bell, CheckCircle2, Clock, XCircle, Check, Eye, AlertTriangle, UserCheck, UserX, Trash2 } from "lucide-react";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import {
@@ -22,7 +22,7 @@ import {
 import { db } from "../../firebase/config";
 import {
   collection, addDoc, updateDoc, doc, getDocs,
-  query, where, serverTimestamp,
+  query, where, serverTimestamp, deleteDoc,
 } from "firebase/firestore";
 import { logAdminAction } from "../../utils/logAdminAction";
 import { toast } from "sonner";
@@ -48,6 +48,36 @@ function AdminNotificationsPage() {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingAll, setDeletingAll] = useState(false);
+
+  // Delete a single notification
+  const handleDeleteNotif = async (e: React.MouseEvent, notifId: string) => {
+    e.stopPropagation();
+    setDeletingId(notifId);
+    try {
+      await deleteDoc(doc(db, "notifications", notifId));
+      toast.success("Notification deleted");
+    } catch {
+      toast.error("Failed to delete");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Delete ALL admin notifications
+  const handleDeleteAll = async () => {
+    if (!window.confirm(`Delete all ${notifications.length} notifications? This cannot be undone.`)) return;
+    setDeletingAll(true);
+    try {
+      await Promise.all(notifications.map((n) => deleteDoc(doc(db, "notifications", n.id))));
+      toast.success("All notifications deleted");
+    } catch {
+      toast.error("Failed to delete all");
+    } finally {
+      setDeletingAll(false);
+    }
+  };
 
   // The actual transaction document for the selected notification
   const relatedTx = selectedNotif?.transactionId
@@ -292,6 +322,17 @@ function AdminNotificationsPage() {
               Mark all read
             </button>
           )}
+          {notifications.length > 0 && (
+            <button
+              onClick={handleDeleteAll}
+              disabled={deletingAll}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all"
+              style={{ background: "rgba(239,68,68,0.1)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.2)", opacity: deletingAll ? 0.6 : 1 }}
+            >
+              <Trash2 size={14} />
+              {deletingAll ? "Deleting…" : "Delete All"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -309,7 +350,7 @@ function AdminNotificationsPage() {
             {notifications.map((notif) => (
               <div
                 key={notif.id}
-                className="flex items-start gap-4 p-4 hover:bg-white/5 transition-all cursor-pointer"
+                className="flex items-start gap-4 p-4 hover:bg-white/5 transition-all cursor-pointer relative group"
                 style={{
                   background: notif.status === "unread" ? "rgba(56,189,248,0.03)" : "transparent",
                   borderLeft: notif.status === "unread" ? "3px solid #38BDF8" : "3px solid transparent",
@@ -334,6 +375,15 @@ function AdminNotificationsPage() {
                           ? notif.createdAt.toLocaleString()
                           : "Just now"}
                       </span>
+                      {/* Delete button — visible on hover */}
+                      <button
+                        onClick={(e) => handleDeleteNotif(e, notif.id)}
+                        disabled={deletingId === notif.id}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg transition-all hover:bg-red-500/20"
+                        title="Delete notification"
+                      >
+                        <Trash2 size={13} style={{ color: deletingId === notif.id ? "#888" : "#EF4444" }} />
+                      </button>
                     </div>
                   </div>
                   <p className="text-xs text-blue-300/60 mb-2">{notif.message}</p>
