@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, CheckCircle2, Clock, XCircle, Check, Eye, AlertTriangle } from "lucide-react";
+import { Bell, CheckCircle2, Clock, XCircle, Check, Eye, AlertTriangle, UserCheck, UserX } from "lucide-react";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import {
@@ -19,6 +19,12 @@ import {
   approveTransaction,
   declineTransaction,
 } from "../../admin/functions/reviewTransaction";
+import { db } from "../../firebase/config";
+import {
+  collection, addDoc, updateDoc, doc, getDocs,
+  query, where, serverTimestamp,
+} from "firebase/firestore";
+import { logAdminAction } from "../../utils/logAdminAction";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/notifications")({
@@ -95,27 +101,167 @@ function AdminNotificationsPage() {
     }
   };
 
+  // ── Beneficiary approve/decline ─────────────────────────────────────
+  const handleBeneficiaryApprove = async () => {
+    if (!selectedNotif) return;
+    setActionLoading(true);
+    try {
+      const { userId, userFullName } = selectedNotif;
+
+      // 1. Find the pending beneficiaryRequest for this user (most recent pending one)
+      const reqSnap = await getDocs(query(
+        collection(db, "beneficiaryRequests"),
+        where("userId", "==", userId),
+        where("status", "==", "pending"),
+      ));
+
+      let benData: any = null;
+      if (!reqSnap.empty) {
+        // Pick the most recent
+        const sorted = reqSnap.docs.sort((a, b) =>
+          (b.data().createdAt?.toMillis?.() || 0) - (a.data().createdAt?.toMillis?.() || 0)
+        );
+        const reqDoc = sorted[0];
+        benData = reqDoc.data();
+
+        // 2. Write approved beneficiary to user's beneficiaries collection
+        await addDoc(collection(db, "beneficiaries"), {
+          userId,
+          fullName: benData.fullName,
+          nickname: benData.nickname || "",
+          bankName: benData.bankName,
+          bankId: benData.bankId,
+          accountNumber: benData.accountNumber,
+          accountType: benData.accountType || "Personal",
+          initials: benData.initials || benData.fullName?.charAt(0)?.toUpperCase() || "?",
+          createdAt: serverTimestamp(),
+          approvedByAdmin: true,
+        });
+
+        // 3. Mark request approved
+        await updateDoc(doc(db, "beneficiaryRequests", reqDoc.id), {
+          status: "approved",
+          resolvedAt: serverTimestamp(),
+        });
+      }
+
+      // 4. Notify the user
+      await addDoc(collection(db, "notifications"), {
+        recipientId: userId,
+        recipientType: "user",
+        type: "beneficiary_approved",
+        title: "Beneficiary Approved ✓",
+        message: benData
+          ? `${benData.fullName} (${benData.bankName}) has been added to your saved beneficiaries.`
+          : "Your beneficiary request has been approved.",
+        userId,
+        userFullName,
+        amount: 0,
+        transactionType: "beneficiary_request",
+        status: "unread",
+        declineReason: null,
+        createdAt: serverTimestamp(),
+        readAt: null,
+      });
+
+      // 5. Mark the admin notification as read
+      await updateDoc(doc(db, "notifications", selectedNotif.id), { status: "read", readAt: serverTimestamp() });
+
+      await logAdminAction("BENEFICIARY_APPROVED",
+        `Approved beneficiary for ${userFullName}${benData ? `: ${benData.fullName} (${benData.bankName})` : ""}`,
+        userId, userFullName, {});
+
+      toast.success(`Beneficiary approved — ${userFullName} notified`);
+      setSelectedNotif(null);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "Failed to approve beneficiary");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBeneficiaryDecline = async () => {
+    if (!selectedNotif) return;
+    setActionLoading(true);
+    try {
+      const { userId, userFullName } = selectedNotif;
+
+      // 1. Find all pending requests for this user and mark them declined
+      const reqSnap = await getDocs(query(
+        collection(db, "beneficiaryRequests"),
+        where("userId", "==", userId),
+        where("status", "==", "pending"),
+      ));
+
+      let benData: any = null;
+      for (const reqDoc of reqSnap.docs) {
+        if (!benData) benData = reqDoc.data();
+        await updateDoc(doc(db, "beneficiaryRequests", reqDoc.id), {
+          status: "declined",
+          resolvedAt: serverTimestamp(),
+        });
+      }
+
+      // 2. Notify the user
+      await addDoc(collection(db, "notifications"), {
+        recipientId: userId,
+        recipientType: "user",
+        type: "beneficiary_declined",
+        title: "Beneficiary Request Declined",
+        message: benData
+          ? `Your request to add ${benData.fullName} (${benData.bankName}) was declined. Contact support for assistance.`
+          : "Your beneficiary request was declined. Please contact support.",
+        userId,
+        userFullName,
+        amount: 0,
+        transactionType: "beneficiary_request",
+        status: "unread",
+        declineReason: null,
+        createdAt: serverTimestamp(),
+        readAt: null,
+      });
+
+      // 3. Mark the admin notification as read
+      await updateDoc(doc(db, "notifications", selectedNotif.id), { status: "read", readAt: serverTimestamp() });
+
+      await logAdminAction("BENEFICIARY_DECLINED",
+        `Declined beneficiary for ${userFullName}${benData ? `: ${benData.fullName} (${benData.bankName})` : ""}`,
+        userId, userFullName, {});
+
+      toast.success("Beneficiary request declined — user notified");
+      setSelectedNotif(null);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "Failed to decline beneficiary");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const getIcon = (type: string) => {
     switch (type) {
-      case "new_transaction": return <Clock size={20} style={{ color: "#FFAB00" }} />;
+      case "new_transaction":      return <Clock size={20} style={{ color: "#FFAB00" }} />;
       case "transaction_approved": return <CheckCircle2 size={20} style={{ color: "#00E676" }} />;
       case "transaction_declined": return <XCircle size={20} style={{ color: "#FF4D6A" }} />;
-      case "admin_credit": return <CheckCircle2 size={20} style={{ color: "#00E676" }} />;
-      case "admin_debit": return <XCircle size={20} style={{ color: "#FF4D6A" }} />;
-      case "balance_override": return <Bell size={20} style={{ color: "#38BDF8" }} />;
-      default: return <Bell size={20} style={{ color: "#38BDF8" }} />;
+      case "admin_credit":         return <CheckCircle2 size={20} style={{ color: "#00E676" }} />;
+      case "admin_debit":          return <XCircle size={20} style={{ color: "#FF4D6A" }} />;
+      case "balance_override":     return <Bell size={20} style={{ color: "#38BDF8" }} />;
+      case "beneficiary_request":  return <UserCheck size={20} style={{ color: "#A855F7" }} />;
+      default:                     return <Bell size={20} style={{ color: "#38BDF8" }} />;
     }
   };
 
   const getIconBg = (type: string) => {
     switch (type) {
-      case "new_transaction": return "rgba(255,171,0,0.12)";
+      case "new_transaction":      return "rgba(255,171,0,0.12)";
       case "transaction_approved": return "rgba(0,230,118,0.12)";
       case "transaction_declined": return "rgba(255,77,106,0.12)";
-      case "admin_credit": return "rgba(0,230,118,0.12)";
-      case "admin_debit": return "rgba(255,77,106,0.12)";
-      case "balance_override": return "rgba(56,189,248,0.12)";
-      default: return "rgba(56,189,248,0.12)";
+      case "admin_credit":         return "rgba(0,230,118,0.12)";
+      case "admin_debit":          return "rgba(255,77,106,0.12)";
+      case "balance_override":     return "rgba(56,189,248,0.12)";
+      case "beneficiary_request":  return "rgba(168,85,247,0.12)";
+      default:                     return "rgba(56,189,248,0.12)";
     }
   };
 
@@ -303,8 +449,27 @@ function AdminNotificationsPage() {
           )}
 
           <DialogFooter className="gap-2 mt-2">
-            {/* Show approve/decline only if the related tx is still pending */}
-            {relatedTx?.status === "pending" ? (
+            {/* Beneficiary request — approve / decline */}
+            {selectedNotif?.type === "beneficiary_request" ? (
+              <>
+                <Button
+                  onClick={handleBeneficiaryDecline}
+                  disabled={actionLoading}
+                  className="flex-1 bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30"
+                >
+                  <UserX size={15} className="mr-1.5" />
+                  {actionLoading ? "…" : "Decline"}
+                </Button>
+                <Button
+                  onClick={handleBeneficiaryApprove}
+                  disabled={actionLoading}
+                  className="flex-1 bg-green-500/15 hover:bg-green-500/25 text-green-400 border border-green-500/30"
+                >
+                  <UserCheck size={15} className="mr-1.5" />
+                  {actionLoading ? "Approving…" : "Approve"}
+                </Button>
+              </>
+            ) : relatedTx?.status === "pending" ? (
               <>
                 <Button
                   onClick={handleRejectClick}

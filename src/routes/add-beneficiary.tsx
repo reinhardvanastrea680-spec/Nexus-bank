@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Trash2, User, AlertCircle, PlusCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Trash2, User, AlertCircle, PlusCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useBeneficiaries } from "../dashboard/hooks/useBeneficiaries";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
@@ -10,7 +10,7 @@ import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { db } from "../firebase/config";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, where } from "firebase/firestore";
 import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/add-beneficiary")({
@@ -98,8 +98,9 @@ function AddBeneficiary() {
   const [accountType, setAccountType] = useState<"Personal" | "Business">("Personal");
   const [saving, setSaving] = useState(false);
 
-  // Blocked popup
+  // Blocked popup (pending) + declined popup (permanently blocked)
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
+  const [showDeclinedPopup, setShowDeclinedPopup] = useState(false);
 
   // Detail sheet
   const [selectedBen, setSelectedBen] = useState<(typeof beneficiaries)[0] | null>(null);
@@ -146,6 +147,23 @@ function AddBeneficiary() {
     setSaving(true);
     const userName = account?.fullName || user.email || "A user";
 
+    // Check if admin previously declined this exact account number for this user
+    try {
+      const declinedSnap = await getDocs(query(
+        collection(db, "beneficiaryRequests"),
+        where("userId", "==", user.uid),
+        where("accountNumber", "==", accountNumber.trim()),
+        where("status", "==", "declined"),
+      ));
+      if (!declinedSnap.empty) {
+        setSaving(false);
+        setShowDeclinedPopup(true);
+        return;
+      }
+    } catch (e) {
+      console.error("Decline check failed:", e);
+    }
+
     // 1. Write beneficiary request — best effort
     try {
       await addDoc(collection(db, "beneficiaryRequests"), {
@@ -188,7 +206,6 @@ function AddBeneficiary() {
     }
 
     setSaving(false);
-    // Always show the blocked popup
     setShowBlockedPopup(true);
   };
 
@@ -402,7 +419,6 @@ function AddBeneficiary() {
           <div className="w-full max-w-sm rounded-3xl p-7 space-y-5"
             style={{ background: theme === "dark" ? "#111827" : "#ffffff" }}
             onClick={(e) => e.stopPropagation()}>
-            {/* Icon */}
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{ background: "rgba(255,171,0,0.15)" }}>
@@ -415,7 +431,6 @@ function AddBeneficiary() {
                 Your request has been sent to our team. Please contact support for assistance.
               </p>
             </div>
-            {/* Buttons */}
             <button
               onClick={() => { setShowBlockedPopup(false); navigate({ to: "/support" }); }}
               className="w-full py-3.5 rounded-2xl font-semibold text-white"
@@ -423,6 +438,41 @@ function AddBeneficiary() {
               Contact Support
             </button>
             <button onClick={() => setShowBlockedPopup(false)}
+              className="w-full py-3 rounded-2xl text-sm font-semibold"
+              style={{ color: t.textMuted }}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Declined Popup — beneficiary was previously declined by admin ── */}
+      {showDeclinedPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6"
+          style={{ background: "rgba(0,0,0,0.65)" }}
+          onClick={() => setShowDeclinedPopup(false)}>
+          <div className="w-full max-w-sm rounded-3xl p-7 space-y-5"
+            style={{ background: theme === "dark" ? "#111827" : "#ffffff" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(255,77,106,0.15)" }}>
+                <XCircle size={32} style={{ color: "#FF4D6A" }} />
+              </div>
+              <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>
+                Beneficiary Not Allowed
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: t.textMuted }}>
+                This beneficiary was previously declined by our team. To appeal this decision, please contact support.
+              </p>
+            </div>
+            <button
+              onClick={() => { setShowDeclinedPopup(false); navigate({ to: "/support" }); }}
+              className="w-full py-3.5 rounded-2xl font-semibold text-white"
+              style={{ background: "linear-gradient(135deg, #FF4D6A, #6366F1)" }}>
+              Contact Support
+            </button>
+            <button onClick={() => setShowDeclinedPopup(false)}
               className="w-full py-3 rounded-2xl text-sm font-semibold"
               style={{ color: t.textMuted }}>
               Close
