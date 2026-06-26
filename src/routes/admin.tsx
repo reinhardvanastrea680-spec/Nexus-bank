@@ -16,6 +16,7 @@ import {
   LogOut,
   Clock,
   UserPlus,
+  BookUser,
 } from "lucide-react";
 import { useAdminAuth } from "../admin/hooks/useAdminAuth";
 import { useAdminTransactions } from "../admin/hooks/useAdminTransactions";
@@ -56,16 +57,17 @@ export const Route = createFileRoute("/admin")({
 });
 
 const navItems = [
-  { label: "Overview",             icon: LayoutDashboard, to: "/admin/overview"           },
-  { label: "Notifications",        icon: Bell,            to: "/admin/notifications"       },
-  { label: "User Management",      icon: Users,           to: "/admin/users"               },
-  { label: "Account Control",      icon: Wallet,          to: "/admin/accounts"            },
-  { label: "Pending Transfers",    icon: Clock,           to: "/admin/pending-transactions" },
-  { label: "Transaction Manager",  icon: ArrowLeftRight,  to: "/admin/transactions"        },
-  { label: "Live Chat Center",     icon: MessageSquare,   to: "/admin/chat"                },
-  { label: "Prospective New Users",icon: UserPlus,        to: "/admin/prospective-users"   },
-  { label: "Activity Log",         icon: ScrollText,      to: "/admin/activity"            },
-  { label: "System Settings",      icon: Settings,        to: "/admin/settings"            },
+  { label: "Overview",              icon: LayoutDashboard, to: "/admin/overview"              },
+  { label: "Notifications",         icon: Bell,            to: "/admin/notifications"          },
+  { label: "User Management",       icon: Users,           to: "/admin/users"                  },
+  { label: "Account Control",       icon: Wallet,          to: "/admin/accounts"               },
+  { label: "Pending Transfers",     icon: Clock,           to: "/admin/pending-transactions"   },
+  { label: "Transaction Manager",   icon: ArrowLeftRight,  to: "/admin/transactions"           },
+  { label: "Beneficiary Requests",  icon: BookUser,        to: "/admin/beneficiary-requests"   },
+  { label: "Live Chat Center",      icon: MessageSquare,   to: "/admin/chat"                   },
+  { label: "Prospective New Users", icon: UserPlus,        to: "/admin/prospective-users"      },
+  { label: "Activity Log",          icon: ScrollText,      to: "/admin/activity"               },
+  { label: "System Settings",       icon: Settings,        to: "/admin/settings"               },
 ];
 
 function AdminLayout() {
@@ -78,8 +80,22 @@ function AdminLayout() {
   const { unreadCount: unreadNotifCount } = useAdminNotifications();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
   const [prospectiveCount, setProspectiveCount] = useState(0);
+  const [pendingBeneficiaryCount, setPendingBeneficiaryCount] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const prevPendingCountRef = useRef(pendingCount);
+
+  // Listen to pending beneficiary requests
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, "beneficiaryRequests"),
+      (snap) => {
+        setPendingBeneficiaryCount(
+          snap.docs.filter((d) => d.data().status === "pending").length
+        );
+      }
+    );
+    return unsub;
+  }, []);
 
   // Listen to total unread chat messages across all chats
   useEffect(() => {
@@ -202,10 +218,11 @@ function AdminLayout() {
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
             let badge = 0;
-            if (item.to === "/admin/notifications")        badge = unreadNotifCount;
-            if (item.to === "/admin/pending-transactions") badge = pendingCount;
-            if (item.to === "/admin/chat")                 badge = unreadChatCount;
-            if (item.to === "/admin/prospective-users")    badge = prospectiveCount;
+            if (item.to === "/admin/notifications")          badge = unreadNotifCount;
+            if (item.to === "/admin/pending-transactions")   badge = pendingCount;
+            if (item.to === "/admin/chat")                   badge = unreadChatCount;
+            if (item.to === "/admin/prospective-users")      badge = prospectiveCount;
+            if (item.to === "/admin/beneficiary-requests")   badge = pendingBeneficiaryCount;
 
             return (
               <Link
@@ -285,10 +302,11 @@ function AdminLayout() {
               {navItems.map((item) => {
                 const isActive = location.pathname === item.to;
                 let badge = 0;
-                if (item.to === "/admin/notifications")        badge = unreadNotifCount;
-                if (item.to === "/admin/pending-transactions") badge = pendingCount;
-                if (item.to === "/admin/chat")                 badge = unreadChatCount;
-                if (item.to === "/admin/prospective-users")    badge = prospectiveCount;
+                if (item.to === "/admin/notifications")          badge = unreadNotifCount;
+                if (item.to === "/admin/pending-transactions")   badge = pendingCount;
+                if (item.to === "/admin/chat")                   badge = unreadChatCount;
+                if (item.to === "/admin/prospective-users")      badge = prospectiveCount;
+                if (item.to === "/admin/beneficiary-requests")   badge = pendingBeneficiaryCount;
                 return (
                   <Link key={item.to} to={item.to}
                     aria-label={`${item.label}${badge > 0 ? ` (${badge} new)` : ""}`}

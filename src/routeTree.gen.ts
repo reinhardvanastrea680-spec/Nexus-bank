@@ -35,6 +35,7 @@ import { Route as AdminPendingTransactionsRouteImport } from './routes/admin/pen
 import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
 import { Route as AdminNotificationsRouteImport } from './routes/admin/notifications'
 import { Route as AdminChatRouteImport } from './routes/admin/chat'
+import { Route as AdminBeneficiaryRequestsRouteImport } from './routes/admin/beneficiary-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin/activity'
 import { Route as AdminAccountsRouteImport } from './routes/admin/accounts'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin/users.$userId'
@@ -170,6 +171,12 @@ const AdminChatRoute = AdminChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBeneficiaryRequestsRoute =
+  AdminBeneficiaryRequestsRouteImport.update({
+    id: '/beneficiary-requests',
+    path: '/beneficiary-requests',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminActivityRoute = AdminActivityRouteImport.update({
   id: '/activity',
   path: '/activity',
@@ -207,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/wire-transfer': typeof WireTransferRoute
   '/admin/accounts': typeof AdminAccountsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/beneficiary-requests': typeof AdminBeneficiaryRequestsRoute
   '/admin/chat': typeof AdminChatRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/overview': typeof AdminOverviewRoute
@@ -238,6 +246,7 @@ export interface FileRoutesByTo {
   '/wire-transfer': typeof WireTransferRoute
   '/admin/accounts': typeof AdminAccountsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/beneficiary-requests': typeof AdminBeneficiaryRequestsRoute
   '/admin/chat': typeof AdminChatRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/overview': typeof AdminOverviewRoute
@@ -270,6 +279,7 @@ export interface FileRoutesById {
   '/wire-transfer': typeof WireTransferRoute
   '/admin/accounts': typeof AdminAccountsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/beneficiary-requests': typeof AdminBeneficiaryRequestsRoute
   '/admin/chat': typeof AdminChatRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/overview': typeof AdminOverviewRoute
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/wire-transfer'
     | '/admin/accounts'
     | '/admin/activity'
+    | '/admin/beneficiary-requests'
     | '/admin/chat'
     | '/admin/notifications'
     | '/admin/overview'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/wire-transfer'
     | '/admin/accounts'
     | '/admin/activity'
+    | '/admin/beneficiary-requests'
     | '/admin/chat'
     | '/admin/notifications'
     | '/admin/overview'
@@ -365,6 +377,7 @@ export interface FileRouteTypes {
     | '/wire-transfer'
     | '/admin/accounts'
     | '/admin/activity'
+    | '/admin/beneficiary-requests'
     | '/admin/chat'
     | '/admin/notifications'
     | '/admin/overview'
@@ -581,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminChatRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/beneficiary-requests': {
+      id: '/admin/beneficiary-requests'
+      path: '/beneficiary-requests'
+      fullPath: '/admin/beneficiary-requests'
+      preLoaderRoute: typeof AdminBeneficiaryRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/activity': {
       id: '/admin/activity'
       path: '/activity'
@@ -620,6 +640,7 @@ const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
 interface AdminRouteChildren {
   AdminAccountsRoute: typeof AdminAccountsRoute
   AdminActivityRoute: typeof AdminActivityRoute
+  AdminBeneficiaryRequestsRoute: typeof AdminBeneficiaryRequestsRoute
   AdminChatRoute: typeof AdminChatRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminOverviewRoute: typeof AdminOverviewRoute
@@ -633,6 +654,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAccountsRoute: AdminAccountsRoute,
   AdminActivityRoute: AdminActivityRoute,
+  AdminBeneficiaryRequestsRoute: AdminBeneficiaryRequestsRoute,
   AdminChatRoute: AdminChatRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminOverviewRoute: AdminOverviewRoute,
