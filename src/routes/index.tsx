@@ -116,19 +116,19 @@ function HomePage() {
     }
   }, [authLoading, user, navigate]);
 
-  // ── Presence tracking — notify admin when user exits the dashboard ──
+  // ── Presence tracking — notify admin when user enters OR exits the dashboard ──
   useEffect(() => {
     if (!user?.uid || !account) return;
     const userName = account.fullName || user.email || "A user";
 
-    const notifyExit = async (reason: string) => {
+    const notifyPresence = async (action: string) => {
       try {
         await addDoc(collection(db, "notifications"), {
           recipientId: ADMIN_UID,
           recipientType: "admin",
           type: "user_activity",
-          title: `${userName} ${reason}`,
-          message: `${userName} has ${reason.toLowerCase()} the banking app`,
+          title: `${userName} ${action} the app`,
+          message: `${userName} has ${action.toLowerCase()} the banking app`,
           userId: user.uid,
           userFullName: userName,
           amount: 0,
@@ -138,23 +138,26 @@ function HomePage() {
           createdAt: serverTimestamp(),
           readAt: null,
         });
-        // Also write to the user's chat document as a system message
-        await addDoc(collection(db, "chats", user.uid, "messages"), {
-          text: `ℹ️ ${userName} has ${reason.toLowerCase()} the app`,
+        // System message in chat — non-critical
+        addDoc(collection(db, "chats", user.uid, "messages"), {
+          text: `ℹ️ ${userName} has ${action.toLowerCase()} the app`,
           sender: "system",
           createdAt: serverTimestamp(),
           readByAdmin: false,
           readByUser: true,
           isSystemMessage: true,
-        }).catch(() => {}); // non-critical
+        }).catch(() => {});
       } catch { /* non-critical */ }
     };
 
-    // Detect tab close / browser close
-    const handleBeforeUnload = () => notifyExit("left");
-    // Detect tab becoming hidden (switching apps on mobile, minimizing)
+    // Notify on ENTER
+    notifyPresence("entered");
+
+    // Notify on EXIT (tab close / browser close)
+    const handleBeforeUnload = () => notifyPresence("left");
+    // Notify when tab becomes hidden (switch apps on mobile, minimize)
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") notifyExit("exited");
+      if (document.visibilityState === "hidden") notifyPresence("exited");
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
