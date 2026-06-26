@@ -49,12 +49,18 @@ export function useUserNotifications() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() ?? new Date(),
-        readAt: doc.data().readAt?.toDate() ?? null,
-      })) as UserNotification[];
+      const notifs = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate() ?? new Date(),
+          readAt: doc.data().readAt?.toDate() ?? null,
+        }))
+        // Never show presence/tracking notifications to the user — those are admin-only
+        .filter((n: any) =>
+          n.transactionType !== "presence" &&
+          n.type !== "user_activity"
+        ) as UserNotification[];
 
       // Sort newest first client-side
       notifs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
