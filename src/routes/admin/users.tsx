@@ -229,21 +229,68 @@ function AdminUsersPage() {
           <div className="space-y-2 md:hidden">
             {pagedUsers.map((user) => (
               <div key={user.id}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98]"
-                style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.06)" }}
-                onClick={() => navigate({ to: `/admin/users/${user.id}` })}
-                role="button" tabIndex={0} aria-label={`View ${user.fullName}`}
-                onKeyDown={(e) => e.key === "Enter" && navigate({ to: `/admin/users/${user.id}` })}>
-                {/* Avatar */}
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0" aria-hidden="true">
-                  {user.fullName.charAt(0).toUpperCase()}
+                className="rounded-2xl overflow-hidden"
+                style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.06)" }}>
+
+                {/* Main row — tap to go to detail page */}
+                <div
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-white/5"
+                  onClick={() => navigate({ to: `/admin/users/${user.id}` })}
+                  role="button" tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && navigate({ to: `/admin/users/${user.id}` })}>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    {user.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-semibold text-sm truncate">{user.fullName}</p>
+                    <p className="text-blue-300/50 text-xs truncate">{user.email}</p>
+                  </div>
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${user.status === "active" ? "bg-green-400" : "bg-red-400"}`} />
+                  <ChevronRight size={16} className="text-blue-300/40 flex-shrink-0" aria-hidden="true" />
                 </div>
-                {/* Name only */}
-                <p className="flex-1 text-white font-semibold text-sm truncate">{user.fullName}</p>
-                {/* Status dot */}
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${user.status === "active" ? "bg-green-400" : "bg-red-400"}`} />
-                {/* Chevron */}
-                <ChevronRight size={16} className="text-blue-300/40 flex-shrink-0" aria-hidden="true" />
+
+                {/* Action buttons row */}
+                <div className="flex items-center gap-1 px-3 pb-3 pt-0 flex-wrap"
+                  onClick={(e) => e.stopPropagation()}>
+                  {/* View detail */}
+                  <button onClick={() => navigate({ to: `/admin/users/${user.id}` })}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}>
+                    <Eye size={12} /> View
+                  </button>
+                  {/* Freeze/Unfreeze */}
+                  <button onClick={(e) => handleToggleFreeze(user, e)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{ background: user.status === "active" ? "rgba(56,189,248,0.08)" : "rgba(0,230,118,0.08)", color: user.status === "active" ? "#38BDF8" : "#00E676" }}>
+                    <Snowflake size={12} /> {user.status === "active" ? "Freeze" : "Unfreeze"}
+                  </button>
+                  {/* Auto Approve */}
+                  <button onClick={(e) => handleToggleTxMode(user, "auto_approve", e)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{
+                      background: user.transactionMode === "auto_approve" ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.06)",
+                      color: user.transactionMode === "auto_approve" ? "#22C55E" : "#6B7280",
+                      border: `1px solid ${user.transactionMode === "auto_approve" ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.08)"}`,
+                    }}>
+                    <Zap size={12} /> Approve
+                  </button>
+                  {/* Auto Decline */}
+                  <button onClick={(e) => handleToggleTxMode(user, "auto_decline", e)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{
+                      background: user.transactionMode === "auto_decline" ? "rgba(239,68,68,0.2)" : "rgba(239,68,68,0.06)",
+                      color: user.transactionMode === "auto_decline" ? "#EF4444" : "#6B7280",
+                      border: `1px solid ${user.transactionMode === "auto_decline" ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.08)"}`,
+                    }}>
+                    <Ban size={12} /> Decline
+                  </button>
+                  {/* Delete */}
+                  <button onClick={(e) => handleDelete(user, e)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold ml-auto"
+                    style={{ background: "rgba(239,68,68,0.08)", color: "#EF4444" }}>
+                    <Trash2 size={12} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
