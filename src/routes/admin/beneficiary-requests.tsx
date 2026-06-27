@@ -61,8 +61,8 @@ function BeneficiaryRequestsPage() {
   const handleApprove = async (req: BeneficiaryRequest) => {
     setProcessingId(req.id);
     try {
-      // 1. Write approved beneficiary to user's beneficiaries collection
-      await addDoc(collection(db, "beneficiaries"), {
+      // 1. Write approved beneficiary to user subcollection (admin has write access to users/*)
+      await addDoc(collection(db, "users", req.userId, "beneficiaries"), {
         userId: req.userId,
         fullName: req.fullName,
         nickname: req.nickname || "",
@@ -74,6 +74,21 @@ function BeneficiaryRequestsPage() {
         createdAt: serverTimestamp(),
         approvedByAdmin: true,
       });
+      // Also try top-level (non-critical)
+      try {
+        await addDoc(collection(db, "beneficiaries"), {
+          userId: req.userId,
+          fullName: req.fullName,
+          nickname: req.nickname || "",
+          bankName: req.bankName,
+          bankId: req.bankId,
+          accountNumber: req.accountNumber,
+          accountType: req.accountType,
+          initials: req.initials,
+          createdAt: serverTimestamp(),
+          approvedByAdmin: true,
+        });
+      } catch { /* rules may block top-level — subcollection is primary */ }
 
       // 2. Update request status
       await updateDoc(doc(db, "beneficiaryRequests", req.id), {

@@ -195,9 +195,10 @@ function AdminNotificationsPage() {
         console.warn("Could not fetch beneficiaryRequests — using parsed data:", e);
       }
 
-      // 2. Write beneficiary to user's collection
+      // 2. Write beneficiary — use user subcollection which admin can write to
       if (benData?.fullName) {
-        await addDoc(collection(db, "beneficiaries"), {
+        // Write to users/{userId}/beneficiaries subcollection (admin has write access to users)
+        await addDoc(collection(db, "users", userId, "beneficiaries"), {
           userId,
           fullName: benData.fullName || "",
           nickname: benData.nickname || "",
@@ -209,6 +210,21 @@ function AdminNotificationsPage() {
           createdAt: serverTimestamp(),
           approvedByAdmin: true,
         });
+        // Also try the top-level collection as secondary (non-critical)
+        try {
+          await addDoc(collection(db, "beneficiaries"), {
+            userId,
+            fullName: benData.fullName || "",
+            nickname: benData.nickname || "",
+            bankName: benData.bankName || "",
+            bankId: benData.bankId || "other",
+            accountNumber: benData.accountNumber || "",
+            accountType: benData.accountType || "Personal",
+            initials: benData.initials || benData.fullName.charAt(0).toUpperCase(),
+            createdAt: serverTimestamp(),
+            approvedByAdmin: true,
+          });
+        } catch { /* rules may block top-level — subcollection is the source of truth */ }
       }
 
       // 3. Mark request approved (if found)
