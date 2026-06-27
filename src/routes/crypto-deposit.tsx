@@ -9,6 +9,7 @@ import { BottomNav } from "../dashboard/components/BottomNav";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
+import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 import { db } from "../firebase/config";
 import { doc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { generateTransactionRef } from "../utils/generateTransactionRef";
@@ -157,6 +158,12 @@ function CryptoDeposit() {
       const txRef = generateTransactionRef();
       const userName = account?.fullName || user.email || "User";
 
+      // Respect transactionMode set by admin
+      const transactionMode: string = (account as any)?.transactionMode ?? "manual";
+      let initialStatus: "pending" | "completed" | "failed" =
+        transactionMode === "auto_approve" ? "completed" :
+        transactionMode === "auto_decline" ? "failed" : "pending";
+
       // Write deposit request directly — no balance deduction (it's incoming)
       await addDoc(collection(db, "transactions"), {
         userId: user.uid,
@@ -174,7 +181,7 @@ function CryptoDeposit() {
         toBank: selectedCrypto.network,
         toAccountNumber: depositAddress,
         note: txHash ? `TxHash: ${txHash}` : "",
-        status: "pending",
+        status: initialStatus,
         transactionRef: txRef,
         createdByUser: true,
         balanceAtSubmission: account?.checkingBalance || 0,
@@ -189,9 +196,15 @@ function CryptoDeposit() {
         await addDoc(collection(db, "notifications"), {
           recipientId: ADMIN_UID,
           recipientType: "admin",
-          type: "new_transaction",
-          title: "New Crypto Deposit Request",
-          message: `${userName} has submitted a crypto deposit of ${rawAmt} ${selectedCrypto.symbol} on ${selectedCrypto.network}${txHash ? ` (TxHash: ${txHash})` : ""}`,
+          type: initialStatus === "failed" ? "transaction_declined" : "new_transaction",
+          title: initialStatus === "failed"
+            ? "Crypto Deposit Auto-Declined"
+            : initialStatus === "completed"
+            ? "Crypto Deposit Auto-Approved"
+            : "New Crypto Deposit Request",
+          message: initialStatus === "failed"
+            ? `${userName}'s crypto deposit of ${rawAmt} ${selectedCrypto.symbol} was automatically declined`
+            : `${userName} submitted a crypto deposit of ${rawAmt} ${selectedCrypto.symbol} on ${selectedCrypto.network}${txHash ? ` (TxHash: ${txHash})` : ""}`,
           userId: user.uid,
           userFullName: userName,
           amount: rawAmt,
@@ -203,7 +216,36 @@ function CryptoDeposit() {
         });
       } catch { /* non-critical */ }
 
-      setSuccessData({ transactionRef: txRef });
+      // Notify user if auto-declined
+      if (initialStatus === "failed") {
+        try {
+          await addDoc(collection(db, "notifications"), {
+            recipientId: user.uid,
+            recipientType: "user",
+            type: "transaction_declined",
+            title: "Transaction Failed",
+            message: `Your crypto deposit of ${rawAmt} ${selectedCrypto.symbol} could not be processed`,
+            userId: user.uid,
+            userFullName: userName,
+            amount: rawAmt,
+            transactionType: "crypto_deposit",
+            status: "unread",
+            declineReason: null,
+            transactionRef: txRef,
+            createdAt: serverTimestamp(),
+            readAt: null,
+          });
+        } catch { /* non-critical */ }
+      }
+
+      // Set success data with status — TransactionSuccessScreen handles both success and failed UI
+      setSuccessData({
+        amount: rawAmt,
+        transactionRef: txRef,
+        fundingAccount: "checking",
+        recipientName: `${rawAmt} ${selectedCrypto.symbol}`,
+        status: initialStatus,
+      });
     } catch (err: any) {
       console.error("Crypto deposit error:", err);
       toast.error(err?.message || "Failed to submit deposit request");
@@ -232,56 +274,14 @@ function CryptoDeposit() {
 
   if (successData) {
     return (
-      <div className="min-h-screen flex flex-col pb-24" style={{ background: t.pageBg }}>
-        <div className="px-5 pt-10 pb-6 flex items-center gap-4">
-          <button onClick={() => navigate({ to: "/" })} className="p-2">
-            <ArrowLeft size={24} style={{ color: t.textPrimary }} />
-          </button>
-          <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>Crypto Deposit</h1>
-          <div className="w-10" />
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center px-5 gap-6">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(0,230,118,0.15)" }}>
-            <CheckCircle2 size={40} style={{ color: "#00E676" }} />
-          </div>
-          <div className="text-center space-y-2">
-            <h2 className="text-xl font-bold" style={{ color: t.textPrimary }}>Deposit Request Submitted</h2>
-            <p className="text-sm" style={{ color: t.textMuted }}>
-              Your {selectedCrypto.symbol} deposit has been received and is pending admin confirmation. Funds will be credited to your account once verified.
-            </p>
-          </div>
-          <div className="w-full p-5 rounded-2xl space-y-3" style={{ background: t.cardBg }}>
-            <div className="flex justify-between">
-              <span className="text-sm" style={{ color: t.textMuted }}>Asset</span>
-              <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{selectedCrypto.name}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm" style={{ color: t.textMuted }}>Network</span>
-              <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{selectedCrypto.network}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm" style={{ color: t.textMuted }}>Reference</span>
-              <span className="text-xs font-mono font-semibold" style={{ color: t.accentCyan }}>{successData.transactionRef}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm" style={{ color: t.textMuted }}>Status</span>
-              <span className="text-sm font-semibold" style={{ color: "#FFAB00" }}>Pending Confirmation</span>
-            </div>
-          </div>
-          <button onClick={() => navigate({ to: "/" })}
-            className="w-full py-4 rounded-xl font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>
-            Back to Home
-          </button>
-          <button onClick={() => { setSuccessData(null); setAmount(""); setTxHash(""); }}
-            className="w-full py-3 rounded-xl font-semibold text-sm"
-            style={{ color: t.textMuted }}>
-            Make Another Deposit
-          </button>
-        </div>
-        <BottomNav />
-      </div>
+      <TransactionSuccessScreen
+        amount={successData.amount}
+        transactionRef={successData.transactionRef}
+        fundingAccount={successData.fundingAccount}
+        recipientName={successData.recipientName}
+        status={successData.status}
+        transactionType="crypto_deposit"
+      />
     );
   }
 
