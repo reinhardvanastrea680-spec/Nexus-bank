@@ -1,18 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { Settings, Bell, Home as HomeIcon, History, Headphones } from "lucide-react";
+import { Settings, Bell, Home as HomeIcon, History, Headphones, CreditCard, User } from "lucide-react";
 import { useTheme } from "../../hooks/use-theme";
 import { themeColors } from "../../utils/theme";
 
 interface BottomNavProps {
-  active?: "home" | "notifications" | "transactions" | "settings" | "support";
+  active?: "home" | "notifications" | "transactions" | "settings" | "support" | "cards" | "profile";
 }
 
 const items = [
-  { key: "settings",      label: "Settings",      icon: Settings,   to: "/settings"      },
-  { key: "notifications", label: "Notifications", icon: Bell,        to: "/notifications" },
-  { key: "home",          label: "Home",          icon: HomeIcon,    to: "/"              },
-  { key: "transactions",  label: "Transactions",  icon: History,     to: "/transactions"  },
-  { key: "support",       label: "Support",       icon: Headphones,  to: "/support"       },
+  { key: "settings",      label: "Settings",      icon: Settings,     to: "/settings"      },
+  { key: "notifications", label: "Notifications", icon: Bell,         to: "/notifications" },
+  { key: "home",          label: "Home",          icon: HomeIcon,     to: "/"              },
+  { key: "transactions",  label: "Transactions",  icon: History,      to: "/transactions"  },
+  { key: "support",       label: "Support",       icon: Headphones,   to: "/support"       },
 ];
 
 export function BottomNav({ active }: BottomNavProps) {

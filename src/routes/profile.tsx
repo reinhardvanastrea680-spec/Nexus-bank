@@ -6,9 +6,8 @@ import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
-import { db, storage } from "../firebase/config";
+import { db } from "../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -67,15 +66,25 @@ function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !user?.uid) return;
     if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be under 5MB"); return; }
+    if (!file.type.startsWith("image/")) { toast.error("Only image files are allowed"); return; }
     setUploading(true);
     try {
-      const storageRef = ref(storage, `profile-photos/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      await updateDoc(doc(db, "users", user.uid), { photoURL: url });
+      // Convert to base64 — no CORS, no Firebase Storage needed
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      await updateDoc(doc(db, "users", user.uid), { photoURL: base64 });
       toast.success("Profile photo updated!");
-    } catch { toast.error("Failed to upload photo. Please try again."); }
-    finally { setUploading(false); }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload photo. Please try again.");
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = "";
+    }
   };
 
   if (loading) {

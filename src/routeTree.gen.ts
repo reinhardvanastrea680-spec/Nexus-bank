@@ -21,6 +21,7 @@ import { Route as LocalTransferRouteImport } from './routes/local-transfer'
 import { Route as InternalTransferRouteImport } from './routes/internal-transfer'
 import { Route as CryptoDepositRouteImport } from './routes/crypto-deposit'
 import { Route as CheckDepositRouteImport } from './routes/check-deposit'
+import { Route as CardsRouteImport } from './routes/cards'
 import { Route as CardDepositRouteImport } from './routes/card-deposit'
 import { Route as BuyCryptoRouteImport } from './routes/buy-crypto'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
@@ -98,6 +99,11 @@ const CryptoDepositRoute = CryptoDepositRouteImport.update({
 const CheckDepositRoute = CheckDepositRouteImport.update({
   id: '/check-deposit',
   path: '/check-deposit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CardsRoute = CardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CardDepositRoute = CardDepositRouteImport.update({
@@ -200,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/admin-login': typeof AdminLoginRoute
   '/buy-crypto': typeof BuyCryptoRoute
   '/card-deposit': typeof CardDepositRoute
+  '/cards': typeof CardsRoute
   '/check-deposit': typeof CheckDepositRoute
   '/crypto-deposit': typeof CryptoDepositRoute
   '/internal-transfer': typeof InternalTransferRoute
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/admin-login': typeof AdminLoginRoute
   '/buy-crypto': typeof BuyCryptoRoute
   '/card-deposit': typeof CardDepositRoute
+  '/cards': typeof CardsRoute
   '/check-deposit': typeof CheckDepositRoute
   '/crypto-deposit': typeof CryptoDepositRoute
   '/internal-transfer': typeof InternalTransferRoute
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/admin-login': typeof AdminLoginRoute
   '/buy-crypto': typeof BuyCryptoRoute
   '/card-deposit': typeof CardDepositRoute
+  '/cards': typeof CardsRoute
   '/check-deposit': typeof CheckDepositRoute
   '/crypto-deposit': typeof CryptoDepositRoute
   '/internal-transfer': typeof InternalTransferRoute
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/buy-crypto'
     | '/card-deposit'
+    | '/cards'
     | '/check-deposit'
     | '/crypto-deposit'
     | '/internal-transfer'
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/buy-crypto'
     | '/card-deposit'
+    | '/cards'
     | '/check-deposit'
     | '/crypto-deposit'
     | '/internal-transfer'
@@ -363,6 +374,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/buy-crypto'
     | '/card-deposit'
+    | '/cards'
     | '/check-deposit'
     | '/crypto-deposit'
     | '/internal-transfer'
@@ -396,6 +408,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   BuyCryptoRoute: typeof BuyCryptoRoute
   CardDepositRoute: typeof CardDepositRoute
+  CardsRoute: typeof CardsRoute
   CheckDepositRoute: typeof CheckDepositRoute
   CryptoDepositRoute: typeof CryptoDepositRoute
   InternalTransferRoute: typeof InternalTransferRoute
@@ -494,6 +507,13 @@ declare module '@tanstack/react-router' {
       path: '/check-deposit'
       fullPath: '/check-deposit'
       preLoaderRoute: typeof CheckDepositRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards': {
+      id: '/cards'
+      path: '/cards'
+      fullPath: '/cards'
+      preLoaderRoute: typeof CardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/card-deposit': {
@@ -674,6 +694,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   BuyCryptoRoute: BuyCryptoRoute,
   CardDepositRoute: CardDepositRoute,
+  CardsRoute: CardsRoute,
   CheckDepositRoute: CheckDepositRoute,
   CryptoDepositRoute: CryptoDepositRoute,
   InternalTransferRoute: InternalTransferRoute,

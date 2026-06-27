@@ -13,6 +13,9 @@ import {
 import { useUsers } from "../../admin/hooks/useUsers";
 import { setBalanceDirectly } from "../../admin/utils/setBalanceDirectly";
 import { postTransaction }    from "../../admin/utils/postTransaction";
+import { db } from "../../firebase/config";
+import { doc, updateDoc } from "firebase/firestore";
+import { CURRENCIES } from "../../utils/currency";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/accounts")({
@@ -207,6 +210,50 @@ function AdminAccountsPage() {
                     </Card>
                   ))}
                 </div>
+
+                {/* ── Currency Control ── */}
+                <Card className="border border-[rgba(255,255,255,0.05)] bg-[#0D1625]">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-white text-base flex items-center gap-2">
+                      <DollarSign size={16} className="text-cyan-400" />
+                      Display Currency
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-blue-300/50 text-xs">
+                      Balances are stored in USD. Choose how they display in the customer's dashboard. Amounts are automatically converted using standard exchange rates.
+                    </p>
+                    <div className="flex gap-3 items-end">
+                      <div className="flex-1">
+                        <label className="block text-xs font-semibold text-blue-300/60 mb-2">Current: {selectedUser.dashboardCurrency || "USD"}</label>
+                        <select
+                          id="currency-select"
+                          defaultValue={selectedUser.dashboardCurrency || "USD"}
+                          onChange={async (e) => {
+                            const newCurrency = e.target.value;
+                            try {
+                              await updateDoc(doc(db, "users", selectedUser.id), { dashboardCurrency: newCurrency });
+                              toast.success(`Currency changed to ${newCurrency} — customer dashboard will update automatically`);
+                            } catch {
+                              toast.error("Failed to update currency");
+                            }
+                          }}
+                          className="w-full h-10 px-3 rounded-xl text-sm outline-none"
+                          style={{ background: "#070B14", border: "1px solid rgba(255,255,255,0.1)", color: "#fff" }}
+                        >
+                          {Object.entries(CURRENCIES).map(([code, { symbol, name }]) => (
+                            <option key={code} value={code}>{symbol} {code} — {name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <p className="text-xs text-blue-300/40">
+                      Example: $1,000 USD → {CURRENCIES[selectedUser.dashboardCurrency as keyof typeof CURRENCIES]
+                        ? `${CURRENCIES[selectedUser.dashboardCurrency as keyof typeof CURRENCIES].symbol}${(1000 * CURRENCIES[selectedUser.dashboardCurrency as keyof typeof CURRENCIES].rateFromUSD).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${selectedUser.dashboardCurrency}`
+                        : "$1,000.00 USD"}
+                    </p>
+                  </CardContent>
+                </Card>
               </>
             )}
           </CardContent>

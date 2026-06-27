@@ -85,7 +85,7 @@ export async function createUserAccount(formData: any) {
       notificationsEnabled: true,
 
       // Dashboard display settings
-      dashboardCurrency: "USD",
+      dashboardCurrency: formData.currency || "USD",
 
       // Account tier & phone privacy
       accountTier: formData.accountTier || "Standard",

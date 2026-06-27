@@ -15,7 +15,7 @@ function formatCurrency(value: number) {
 }
 
 // Determine if a transaction is a credit (incoming money) or debit (outgoing)
-function isTransactionCredit(tx: any): boolean {
+export function isTransactionCredit(tx: any): boolean {
   const type = tx.type || "";
   // Explicit credit types
   if (type === "credit" || type === "check_deposit" || type === "crypto_deposit") return true;

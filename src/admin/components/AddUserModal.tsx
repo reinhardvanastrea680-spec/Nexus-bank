@@ -7,6 +7,7 @@ import { Label } from "../../components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { toast } from "sonner";
 import { createUserAccount } from "../utils/createUserAccount";
+import { CURRENCIES } from "../../utils/currency";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
     initialSavingsBalance: "",
     accountTier: "Standard",
     hidePhone: false,
+    currency: "USD",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -198,6 +200,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
         status: formData.status,
         accountTier: formData.accountTier,
         hidePhone: formData.hidePhone,
+        currency: formData.currency,
       });
       onClose();
       resetForm();
@@ -233,6 +236,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
       initialSavingsBalance: "",
       accountTier: "Standard",
       hidePhone: false,
+      currency: "USD",
     });
     setErrors({});
     setSubmitError(null);
@@ -503,6 +507,21 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
               <p className="text-[#7A8FA6] text-xs">Selected tier is shown on the user's profile as Account Tier.</p>
             </div>
 
+            {/* Account Currency */}
+            <div className="space-y-3">
+              <Label className="text-[#7A8FA6] text-sm">Account Display Currency</Label>
+              <select
+                value={formData.currency}
+                onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
+                className="w-full h-11 px-3 rounded-lg bg-[#111827] border border-[rgba(255,255,255,0.08)] text-white"
+              >
+                {Object.entries(CURRENCIES).map(([code, { symbol, name }]) => (
+                  <option key={code} value={code}>{symbol} {code} — {name}</option>
+                ))}
+              </select>
+              <p className="text-[#7A8FA6] text-xs">Balances are stored in USD and automatically converted for display using live exchange rates.</p>
+            </div>
+
             {/* Hide Phone Toggle */}
             <div className="flex items-center justify-between p-3 rounded-xl"
               style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -596,7 +615,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[#7A8FA6] text-sm">Currency</span>
-                <span className="text-white text-sm">USD · US Dollar</span>
+                <span className="text-white text-sm">{formData.currency} · {CURRENCIES[formData.currency]?.name || "US Dollar"}</span>
               </div>
             </div>
           </div>
