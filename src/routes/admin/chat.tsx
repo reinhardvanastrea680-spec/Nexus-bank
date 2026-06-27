@@ -215,7 +215,23 @@ function AdminChatPage() {
                 background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#1A2438",
                 borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
               }}>
-              <p className="text-sm leading-relaxed text-white">{msg.text}</p>
+              {/* Render image if mediaUrl is an image */}
+              {(msg as any).mediaUrl && (
+                (msg as any).mediaType?.startsWith("video/") ? (
+                  <video src={(msg as any).mediaUrl} controls
+                    className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 220 }} />
+                ) : (
+                  <img src={(msg as any).mediaUrl} alt="Shared image"
+                    className="rounded-xl mb-2 max-w-full cursor-pointer"
+                    style={{ maxHeight: 220 }}
+                    onClick={() => window.open((msg as any).mediaUrl, "_blank")}
+                  />
+                )
+              )}
+              {/* Only show text if it's not just an emoji label */}
+              {!(msg as any).mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text) ? (
+                <p className="text-sm leading-relaxed text-white">{msg.text}</p>
+              ) : null}
               <div className="flex items-center justify-end gap-1 mt-1">
                 <p className="text-xs opacity-60 text-white">{msg.time}</p>
                 {msg.sender === "admin" && (

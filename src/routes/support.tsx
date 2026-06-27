@@ -217,12 +217,19 @@ function SupportPage() {
                 style={{ background: msg.sender === "user" ? t.gradientBtn : t.cardBg2, border: msg.sender !== "user" ? `1px solid ${t.border}` : "none" }}>
                 {/* Media preview */}
                 {msg.mediaUrl && msg.mediaType?.startsWith("video/") && (
-                  <video src={msg.mediaUrl} controls className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 200 }} />
+                  <video src={msg.mediaUrl} controls className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 220 }} />
                 )}
-                {msg.mediaUrl && msg.mediaType?.startsWith("image/") && (
-                  <img src={msg.mediaUrl} alt="Shared image" className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 200 }} />
+                {msg.mediaUrl && (msg.mediaType?.startsWith("image/") || msg.mediaUrl.startsWith("data:image")) && (
+                  <img src={msg.mediaUrl} alt="Shared image"
+                    className="rounded-xl mb-2 max-w-full cursor-pointer"
+                    style={{ maxHeight: 220 }}
+                    onClick={() => window.open(msg.mediaUrl, "_blank")}
+                  />
                 )}
-                <p className="text-sm leading-relaxed" style={{ color: msg.sender === "user" ? "#FFFFFF" : t.textPrimary }}>{msg.text}</p>
+                {/* Hide emoji label when actual media is shown */}
+                {(!msg.mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text)) && (
+                  <p className="text-sm leading-relaxed" style={{ color: msg.sender === "user" ? "#FFFFFF" : t.textPrimary }}>{msg.text}</p>
+                )}
                 <div className="flex items-center justify-end gap-1 mt-1">
                   <p className="text-xs opacity-60" style={{ color: msg.sender === "user" ? "#FFFFFF" : t.textMuted }}>{msg.time}</p>
                   {msg.sender === "user" && (msg.readByAdmin
