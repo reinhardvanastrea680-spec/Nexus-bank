@@ -56,8 +56,19 @@ function SupportPage() {
           const createdAt = data.createdAt?.toDate() || new Date();
           return { id: d.id, text: data.text, sender: data.sender, createdAt, readByUser: data.readByUser ?? true, readByAdmin: data.readByAdmin ?? false, time: createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), mediaUrl: data.mediaUrl, mediaType: data.mediaType } as Message;
         })
-        // Filter out system/presence messages — those are admin-only
-        .filter((m) => m.sender !== "system" && !(m as any).isPresence);
+        // Filter out system/presence messages — these are ADMIN-ONLY, never shown to customer
+        // Multiple checks to catch all variants (sender=system, isPresence flag, or text patterns)
+        .filter((m) => {
+          if (m.sender === "system") return false;
+          if ((m as any).isPresence === true) return false;
+          if ((m as any).transactionType === "presence") return false;
+          // Catch presence text patterns as fallback
+          const txt = (m.text || "").toLowerCase();
+          if (txt.includes("is now online") || txt.includes("has gone offline") ||
+              txt.includes("has entered the app") || txt.includes("has exited the app") ||
+              txt.includes("has left the app") || txt.includes("signed out of the")) return false;
+          return true;
+        });
       setChatMessages(msgs);
       msgs.filter((m) => m.sender === "admin" && !m.readByUser)
         .forEach((m) => updateDoc(doc(db, "chats", chatId, "messages", m.id), { readByUser: true }));

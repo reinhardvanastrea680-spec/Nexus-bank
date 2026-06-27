@@ -57,10 +57,15 @@ export function useUserNotifications() {
           readAt: doc.data().readAt?.toDate() ?? null,
         }))
         // Never show presence/tracking notifications to the user — those are admin-only
-        .filter((n: any) =>
-          n.transactionType !== "presence" &&
-          n.type !== "user_activity"
-        ) as UserNotification[];
+        // Multiple checks: type, transactionType, title pattern
+        .filter((n: any) => {
+          if (n.transactionType === "presence") return false;
+          if (n.type === "user_activity") return false;
+          const title = (n.title || "").toLowerCase();
+          if (title.includes("entered the app") || title.includes("exited the app") ||
+              title.includes("left the app") || title.includes("signed out")) return false;
+          return true;
+        }) as UserNotification[];
 
       // Sort newest first client-side
       notifs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
