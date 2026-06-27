@@ -152,9 +152,15 @@ function AdminNotificationsPage() {
     if (!selectedNotif) return;
     setActionLoading(true);
     try {
-      const { userId, userFullName } = selectedNotif;
+      const userId = selectedNotif.userId;
+      const userFullName = selectedNotif.userFullName || selectedNotif.userEmail || "User";
 
-      // 1. Find the pending beneficiaryRequest for this user (most recent pending one)
+      if (!userId) {
+        toast.error("Cannot find user ID on this notification");
+        return;
+      }
+
+      // 1. Find ALL pending beneficiaryRequests for this user — pick the most recent
       const reqSnap = await getDocs(query(
         collection(db, "beneficiaryRequests"),
         where("userId", "==", userId),
@@ -162,36 +168,39 @@ function AdminNotificationsPage() {
       ));
 
       let benData: any = null;
+      let reqDocId: string | null = null;
+
       if (!reqSnap.empty) {
-        // Pick the most recent
         const sorted = reqSnap.docs.sort((a, b) =>
           (b.data().createdAt?.toMillis?.() || 0) - (a.data().createdAt?.toMillis?.() || 0)
         );
-        const reqDoc = sorted[0];
-        benData = reqDoc.data();
+        reqDocId = sorted[0].id;
+        benData = sorted[0].data();
+      }
 
-        // 2. Write approved beneficiary to user's beneficiaries collection
+      // 2. Write approved beneficiary
+      if (benData) {
         await addDoc(collection(db, "beneficiaries"), {
           userId,
-          fullName: benData.fullName,
+          fullName: benData.fullName || "",
           nickname: benData.nickname || "",
-          bankName: benData.bankName,
-          bankId: benData.bankId,
-          accountNumber: benData.accountNumber,
+          bankName: benData.bankName || "",
+          bankId: benData.bankId || "other",
+          accountNumber: benData.accountNumber || "",
           accountType: benData.accountType || "Personal",
-          initials: benData.initials || benData.fullName?.charAt(0)?.toUpperCase() || "?",
+          initials: benData.initials || (benData.fullName?.charAt(0)?.toUpperCase() ?? "?"),
           createdAt: serverTimestamp(),
           approvedByAdmin: true,
         });
 
         // 3. Mark request approved
-        await updateDoc(doc(db, "beneficiaryRequests", reqDoc.id), {
+        await updateDoc(doc(db, "beneficiaryRequests", reqDocId!), {
           status: "approved",
           resolvedAt: serverTimestamp(),
         });
       }
 
-      // 4. Notify the user
+      // 4. Notify user
       await addDoc(collection(db, "notifications"), {
         recipientId: userId,
         recipientType: "user",
@@ -210,8 +219,11 @@ function AdminNotificationsPage() {
         readAt: null,
       });
 
-      // 5. Mark the admin notification as read
-      await updateDoc(doc(db, "notifications", selectedNotif.id), { status: "read", readAt: serverTimestamp() });
+      // 5. Mark this admin notification as read
+      await updateDoc(doc(db, "notifications", selectedNotif.id), {
+        status: "read",
+        readAt: serverTimestamp(),
+      });
 
       await logAdminAction("BENEFICIARY_APPROVED",
         `Approved beneficiary for ${userFullName}${benData ? `: ${benData.fullName} (${benData.bankName})` : ""}`,
@@ -220,7 +232,7 @@ function AdminNotificationsPage() {
       toast.success(`Beneficiary approved — ${userFullName} notified`);
       setSelectedNotif(null);
     } catch (err: any) {
-      console.error(err);
+      console.error("Beneficiary approve error:", err);
       toast.error(err?.message || "Failed to approve beneficiary");
     } finally {
       setActionLoading(false);
@@ -231,9 +243,15 @@ function AdminNotificationsPage() {
     if (!selectedNotif) return;
     setActionLoading(true);
     try {
-      const { userId, userFullName } = selectedNotif;
+      const userId = selectedNotif.userId;
+      const userFullName = selectedNotif.userFullName || selectedNotif.userEmail || "User";
 
-      // 1. Find all pending requests for this user and mark them declined
+      if (!userId) {
+        toast.error("Cannot find user ID on this notification");
+        return;
+      }
+
+      // Find pending requests for this user
       const reqSnap = await getDocs(query(
         collection(db, "beneficiaryRequests"),
         where("userId", "==", userId),
@@ -249,7 +267,7 @@ function AdminNotificationsPage() {
         });
       }
 
-      // 2. Notify the user
+      // Notify user
       await addDoc(collection(db, "notifications"), {
         recipientId: userId,
         recipientType: "user",
@@ -268,8 +286,11 @@ function AdminNotificationsPage() {
         readAt: null,
       });
 
-      // 3. Mark the admin notification as read
-      await updateDoc(doc(db, "notifications", selectedNotif.id), { status: "read", readAt: serverTimestamp() });
+      // Mark admin notification as read
+      await updateDoc(doc(db, "notifications", selectedNotif.id), {
+        status: "read",
+        readAt: serverTimestamp(),
+      });
 
       await logAdminAction("BENEFICIARY_DECLINED",
         `Declined beneficiary for ${userFullName}${benData ? `: ${benData.fullName} (${benData.bankName})` : ""}`,
@@ -278,7 +299,7 @@ function AdminNotificationsPage() {
       toast.success("Beneficiary request declined — user notified");
       setSelectedNotif(null);
     } catch (err: any) {
-      console.error(err);
+      console.error("Beneficiary decline error:", err);
       toast.error(err?.message || "Failed to decline beneficiary");
     } finally {
       setActionLoading(false);

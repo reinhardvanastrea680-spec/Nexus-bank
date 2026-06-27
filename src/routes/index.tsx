@@ -125,6 +125,7 @@ function HomePage() {
 
     const notifyPresence = async (action: string) => {
       try {
+        // 1. Admin notification (existing)
         await addDoc(collection(db, "notifications"), {
           recipientId: ADMIN_UID,
           recipientType: "admin",
@@ -139,6 +140,27 @@ function HomePage() {
           declineReason: null,
           createdAt: serverTimestamp(),
           readAt: null,
+        });
+
+        // 2. Write a system message into the user's chat thread so admin sees it
+        const isEntry = action === "entered";
+        await addDoc(collection(db, "chats", user.uid, "messages"), {
+          text: isEntry
+            ? `🟢 ${userName} is now online`
+            : `⚫ ${userName} has gone offline`,
+          sender: "system",
+          createdAt: serverTimestamp(),
+          readByUser: true,
+          readByAdmin: false,
+          isPresence: true,
+        });
+        // Update the chat document so it shows up in the list
+        await updateDoc(doc(db, "chats", user.uid), {
+          lastMessage: isEntry ? `🟢 ${userName} is now online` : `⚫ ${userName} has gone offline`,
+          lastMessageAt: serverTimestamp(),
+          userFullName: userName,
+          userEmail: user.email || "",
+          status: "active",
         });
       } catch { /* non-critical */ }
     };

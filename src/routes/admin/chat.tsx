@@ -195,7 +195,20 @@ function AdminChatPage() {
             <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
             <p>No messages yet</p>
           </div>
-        ) : chatMessages.map((msg) => (
+        ) : chatMessages.map((msg) => {
+          // ── System presence message (online/offline indicator) ──
+          if ((msg as any).sender === "system" || (msg as any).isPresence) {
+            return (
+              <div key={msg.id} className="flex justify-center my-1">
+                <span className="text-xs px-3 py-1 rounded-full"
+                  style={{ background: "rgba(255,255,255,0.05)", color: "#8A9BB5" }}>
+                  {msg.text}
+                </span>
+              </div>
+            );
+          }
+          // ── Regular message ──
+          return (
           <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
             <div className="max-w-[80%] p-3 rounded-2xl"
               style={{
@@ -213,7 +226,8 @@ function AdminChatPage() {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
         <div ref={chatEndRef} />
       </div>
 

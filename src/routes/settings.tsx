@@ -29,7 +29,7 @@ import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { useLanguage, SUPPORTED_LANGUAGES } from "../hooks/use-language";
 import { db } from "../firebase/config";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/settings")({
@@ -81,6 +81,22 @@ function Settings() {
             declineReason: null,
             createdAt: serverTimestamp(),
             readAt: null,
+          });
+          // Also write to chat thread
+          await addDoc(collection(db, "chats", userId, "messages"), {
+            text: `⚫ ${userName} has signed out`,
+            sender: "system",
+            createdAt: serverTimestamp(),
+            readByUser: true,
+            readByAdmin: false,
+            isPresence: true,
+          });
+          await updateDoc(doc(db, "chats", userId), {
+            lastMessage: `⚫ ${userName} has signed out`,
+            lastMessageAt: serverTimestamp(),
+            userFullName: userName,
+            userEmail: user?.email || "",
+            status: "active",
           });
         } catch { /* non-critical */ }
       }
