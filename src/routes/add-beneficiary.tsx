@@ -94,6 +94,7 @@ function AddBeneficiary() {
   const [customBankName, setCustomBankName] = useState("");
   const [addingBank, setAddingBank] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
+  const [accountNumberBlurred, setAccountNumberBlurred] = useState(false);
   const [nickname, setNickname] = useState("");
   const [accountType, setAccountType] = useState<"Personal" | "Business">("Personal");
   const [saving, setSaving] = useState(false);
@@ -348,11 +349,20 @@ function AddBeneficiary() {
           {/* Account Number */}
           <div>
             <label className="block text-xs font-semibold mb-2" style={{ color: t.textMuted }}>Account Number *</label>
-            <input type="text" value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
-              placeholder="Enter account number" className="w-full px-4 py-3.5 rounded-xl outline-none"
-              style={{ background: t.inputBg, color: t.textPrimary }} />
-            {accountNumber.length >= 6 && selectedBankId && fullName.trim().length >= 3 && (
+            <input
+              type="text"
+              value={accountNumber}
+              onChange={(e) => {
+                setAccountNumber(e.target.value.replace(/\D/g, ""));
+                setAccountNumberBlurred(false); // reset on every keystroke
+              }}
+              onBlur={() => setAccountNumberBlurred(true)}
+              placeholder="Enter account number"
+              className="w-full px-4 py-3.5 rounded-xl outline-none"
+              style={{ background: t.inputBg, color: t.textPrimary }}
+            />
+            {/* Only show verified after user has finished typing (onBlur) */}
+            {accountNumberBlurred && accountNumber.length >= 4 && selectedBankId && fullName.trim().length >= 2 && (
               <div className="mt-2 p-3 rounded-xl flex items-center gap-2"
                 style={{ background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.25)" }}>
                 <CheckCircle2 size={16} style={{ color: "#00E676" }} />
