@@ -219,7 +219,7 @@ function HomePage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: pageBg, width: "100%", maxWidth: "100vw", overflowX: "hidden" }}>
       <div className="relative overflow-hidden"
-        style={{ background: dark ? "linear-gradient(160deg,#0D1829 0%,#1a2744 100%)" : "linear-gradient(160deg,#1565C0 0%,#0EA5E9 100%)" }}>
+        style={{ background: dark ? "linear-gradient(160deg,#0D1829 0%,#1a2744 100%)" : "linear-gradient(160deg,#1240A0 0%,#1E6FDB 100%)" }}>
         <div className="absolute top-6 right-6 w-36 h-36 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(56,189,248,0.22),transparent 70%)", animation: "nx-pulse-slow 4s ease-in-out infinite" }} />
         <div className="absolute top-28 left-3 w-24 h-24 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(99,102,241,0.18),transparent 70%)", animation: "nx-pulse-slow 5.5s ease-in-out 1.5s infinite" }} />
         <div className="absolute bottom-20 right-20 w-16 h-16 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(168,85,247,0.18),transparent 70%)", animation: "nx-float 3.5s ease-in-out infinite" }} />

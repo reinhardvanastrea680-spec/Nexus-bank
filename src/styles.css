@@ -5,8 +5,8 @@
 /* ── Design tokens — LIGHT theme (default) ─────────────────────────────── */
 :root,
 .light {
-  /* Page backgrounds */
-  --bg-page:        #1D6BE5;
+  /* Page backgrounds — deeper royal blue for light mode */
+  --bg-page:        #1648B0;
   --bg-card:        #FFFFFF;
   --bg-card-alt:    #FFFFFF;
   --bg-input:       #EEF2F7;
@@ -20,7 +20,7 @@
   --text-inverse:   #FFFFFF;
 
   /* Brand accents */
-  --accent-cyan:    #0EA5E9;
+  --accent-cyan:    #1E6FDB;
   --accent-violet:  #6366F1;
   --accent-green:   #10B981;
   --accent-red:     #EF4444;
