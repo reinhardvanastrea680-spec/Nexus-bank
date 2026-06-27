@@ -112,39 +112,48 @@ function Settings() {
       className="min-h-screen w-full flex flex-col pb-24"
       style={{ background: t.pageBg }}
     >
-      {/* Header */}
-      <div className="px-5 pt-10 pb-6 flex items-center gap-4">
+      {/* Header — gradient on light mode */}
+      <div className="px-5 pt-10 pb-6 flex items-center gap-4"
+        style={{
+          background: theme === "light"
+            ? "linear-gradient(160deg,#1240A0 0%,#1E6FDB 100%)"
+            : "transparent",
+        }}>
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: theme === "light" ? "#fff" : t.textPrimary }} />
         </button>
-        <h1
-          className="text-xl font-bold flex-1 text-center"
-          style={{ color: t.textPrimary }}
-        >
+        <h1 className="text-xl font-bold flex-1 text-center"
+          style={{ color: theme === "light" ? "#fff" : t.textPrimary }}>
           Settings
         </h1>
         <div className="w-10" />
       </div>
 
-      <div className="px-5 flex-1 space-y-6">
+      {/* Content area — rounded top on light mode */}
+      <div
+        className="px-5 flex-1 space-y-6"
+        style={{
+          background: theme === "light" ? "#F0F4FF" : "transparent",
+          borderRadius: theme === "light" ? "28px 28px 0 0" : 0,
+          marginTop: theme === "light" ? "-8px" : 0,
+          paddingTop: theme === "light" ? "24px" : 0,
+        }}>
         {/* Profile Section */}
         <div className="space-y-3">
-          <p
-            className="text-sm font-semibold"
-            style={{ color: t.textMuted }}
-          >
-            Profile
-          </p>
+          <p className="text-sm font-semibold" style={{ color: t.textMuted }}>Profile</p>
+
+          {/* Profile card — shows actual photo */}
           <Link to="/profile" className="w-full flex items-center justify-between p-4 rounded-2xl"
-            style={{ background: t.cardBg }}>
+            style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
             <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: "#EF4444", color: "#fff" }}
-              >
-                <span className="text-sm font-bold">
-                  {(account?.fullName || "U").split(" ").slice(0,2).map((w: string) => w[0]).join("").toUpperCase()}
-                </span>
+              <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+                style={{ background: "#EF4444" }}>
+                {account?.photoURL
+                  ? <img src={account.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                  : <span className="text-sm font-bold text-white">
+                      {(account?.fullName || "U").split(" ").slice(0,2).map((w: string) => w[0]).join("").toUpperCase()}
+                    </span>
+                }
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold" style={{ color: t.textPrimary }}>
@@ -156,43 +165,29 @@ function Settings() {
             <span className="text-xs" style={{ color: t.textMuted }}>›</span>
           </Link>
 
-          <div
-            className="p-4 rounded-2xl space-y-4"
-            style={{ background: t.cardBg }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: t.inputBg }}
-                >
-                  <User size={16} style={{ color: "#38BDF8" }} />
-                </div>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: t.textPrimary }}
-                >
-                  Personal Information
-                </span>
+          {/* Personal Information — view only, expanded */}
+          <div className="p-4 rounded-2xl space-y-3"
+            style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
+                <User size={16} style={{ color: t.accentCyan }} />
               </div>
+              <span className="text-sm font-bold" style={{ color: t.textPrimary }}>Personal Information</span>
             </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: t.inputBg }}
-                >
-                  <Mail size={16} style={{ color: "#38BDF8" }} />
-                </div>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: t.textPrimary }}
-                >
-                  Contact Details
-                </span>
+            {[
+              { label: "First Name",  value: account?.fullName?.split(" ")[0] || "—" },
+              { label: "Last Name",   value: account?.fullName?.split(" ").slice(1).join(" ") || "—" },
+              { label: "Email",       value: user?.email || "—" },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-center py-2"
+                style={{ borderBottom: `1px solid ${t.inputBg}` }}>
+                <span className="text-xs font-medium" style={{ color: t.textMuted }}>{label}</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary, maxWidth: "60%", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</span>
               </div>
-            </div>
+            ))}
+            <p className="text-xs pt-1" style={{ color: t.textMuted, opacity: 0.7 }}>
+              To update your information, please contact support.
+            </p>
           </div>
         </div>
 
@@ -411,14 +406,15 @@ function Settings() {
                 <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>External Bank Accounts</span>
               </div>
             </button>
-            <button className="w-full flex items-center justify-between p-4 rounded-2xl" style={{ background: t.cardBg }} onClick={() => openModal("connected-cards")}>
+            <Link to="/cards" className="w-full flex items-center justify-between p-4 rounded-2xl" style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
-                  <Link2 size={16} style={{ color: "#38BDF8" }} />
+                  <Link2 size={16} style={{ color: t.accentCyan }} />
                 </div>
                 <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Connected Cards</span>
               </div>
-            </button>
+              <span className="text-xs" style={{ color: t.textMuted }}>›</span>
+            </Link>
           </div>
         </div>
 
@@ -537,25 +533,26 @@ function Settings() {
 
             {/* Change Password */}
             {activeModal === "change-password" && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>Change Password</h3>
-                <p className="text-sm text-center" style={{ color: t.textMuted }}>For security, password changes must be done through our support team.</p>
-                <div className="p-4 rounded-2xl" style={{ background: t.inputBg }}>
-                  {[
-                    { icon: "🔐", text: "Your password is encrypted with AES-256 banking-grade security" },
-                    { icon: "📧", text: "Password change requests are verified via email" },
-                    { icon: "⏱️", text: "Requests are processed within 24 hours" },
-                  ].map((item) => (
-                    <div key={item.text} className="flex items-start gap-3 mb-3">
-                      <span className="text-lg">{item.icon}</span>
-                      <p className="text-xs" style={{ color: t.textMuted }}>{item.text}</p>
-                    </div>
-                  ))}
+              <div className="space-y-5">
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+                    style={{ background: theme === "light" ? "#EEF2FF" : "rgba(99,102,241,0.15)" }}>
+                    🔒
+                  </div>
+                  <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>Change Password</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: t.textMuted }}>
+                    For your security, password changes must be processed by our support team. Please contact support to request a password change.
+                  </p>
                 </div>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>
+                <button
+                  onClick={() => { closeModal(); navigate({ to: "/support" }); }}
+                  className="w-full py-3.5 rounded-2xl font-semibold text-white"
+                  style={{ background: "linear-gradient(135deg, #1648B0, #6366F1)" }}>
                   Contact Support
                 </button>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>Close</button>
+                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>
+                  Close
+                </button>
               </div>
             )}
 
