@@ -7,6 +7,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
+  deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -49,6 +50,21 @@ export function useUserNotifications() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      // Silently delete any presence/tracking notifications that slipped through to this user
+      snapshot.docs.forEach((d) => {
+        const n = d.data();
+        const isPresence =
+          n.transactionType === "presence" ||
+          n.type === "user_activity" ||
+          [
+            "entered the app", "exited the app",
+            "left the app", "signed out",
+          ].some((p) => (n.title || "").toLowerCase().includes(p));
+        if (isPresence) {
+          deleteDoc(doc(db, "notifications", d.id)).catch(() => {});
+        }
+      });
+
       const notifs = snapshot.docs
         .map((doc) => ({
           id: doc.id,

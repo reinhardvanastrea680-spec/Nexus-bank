@@ -4,7 +4,7 @@ import { ArrowLeft, Send, MessageSquare, Check, CheckCheck, Paperclip, X } from 
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { db, storage } from "../firebase/config";
-import { collection, addDoc, doc, setDoc, orderBy, query, onSnapshot, serverTimestamp, updateDoc, increment, getDoc } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc, orderBy, query, onSnapshot, serverTimestamp, updateDoc, increment, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
@@ -50,6 +50,23 @@ function SupportPage() {
     if (!chatId) return;
     const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (snapshot) => {
+      // Silently delete any presence/system messages found in this user's chat
+      snapshot.docs.forEach((d) => {
+        const data = d.data();
+        const isPresenceMsg =
+          data.sender === "system" ||
+          data.isPresence === true ||
+          data.transactionType === "presence" ||
+          [
+            "is now online", "has gone offline",
+            "has entered the app", "has exited the app",
+            "has left the app", "signed out of the",
+          ].some((p) => (data.text || "").toLowerCase().includes(p));
+        if (isPresenceMsg) {
+          deleteDoc(doc(db, "chats", chatId, "messages", d.id)).catch(() => {});
+        }
+      });
+
       const msgs = snapshot.docs
         .map((d) => {
           const data = d.data();
