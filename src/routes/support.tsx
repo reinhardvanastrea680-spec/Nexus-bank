@@ -50,11 +50,14 @@ function SupportPage() {
     if (!chatId) return;
     const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((d) => {
-        const data = d.data();
-        const createdAt = data.createdAt?.toDate() || new Date();
-        return { id: d.id, text: data.text, sender: data.sender, createdAt, readByUser: data.readByUser ?? true, readByAdmin: data.readByAdmin ?? false, time: createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) } as Message;
-      });
+      const msgs = snapshot.docs
+        .map((d) => {
+          const data = d.data();
+          const createdAt = data.createdAt?.toDate() || new Date();
+          return { id: d.id, text: data.text, sender: data.sender, createdAt, readByUser: data.readByUser ?? true, readByAdmin: data.readByAdmin ?? false, time: createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), mediaUrl: data.mediaUrl, mediaType: data.mediaType } as Message;
+        })
+        // Filter out system/presence messages — those are admin-only
+        .filter((m) => m.sender !== "system" && !(m as any).isPresence);
       setChatMessages(msgs);
       msgs.filter((m) => m.sender === "admin" && !m.readByUser)
         .forEach((m) => updateDoc(doc(db, "chats", chatId, "messages", m.id), { readByUser: true }));
