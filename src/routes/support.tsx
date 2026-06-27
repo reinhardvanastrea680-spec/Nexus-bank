@@ -3,12 +3,12 @@ import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Send, MessageSquare, Check, CheckCheck, Paperclip, X } from "lucide-react";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
-import { db, storage } from "../firebase/config";
+import { db } from "../firebase/config";
 import { collection, addDoc, doc, setDoc, orderBy, query, onSnapshot, serverTimestamp, updateDoc, increment, getDoc, deleteDoc } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
+import { toast } from "sonner";
 
 type Message = { id: string; text: string; sender: "user" | "admin" | "system"; createdAt: Date; readByUser: boolean; readByAdmin: boolean; time?: string; mediaUrl?: string; mediaType?: string; };
 
@@ -112,36 +112,65 @@ function SupportPage() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !chatId) return;
-    const maxSize = 50 * 1024 * 1024; // 50MB
-    if (file.size > maxSize) { alert("File too large. Max size is 50MB."); return; }
+    // Limit to 5MB for Firestore base64 storage (Firestore doc limit is 1MB per field,
+    // so we compress/resize images before storing)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File too large. Maximum size is 5MB for chat uploads.");
+      return;
+    }
     const isVideo = file.type.startsWith("video/");
     const isImage = file.type.startsWith("image/");
-    if (!isVideo && !isImage) { alert("Only images and videos are supported."); return; }
+    if (!isVideo && !isImage) {
+      toast.error("Only images and videos are supported.");
+      return;
+    }
     setUploading(true);
-    setUploadProgress(0);
+    setUploadProgress(10);
     try {
-      const storageRef = ref(storage, `chat-media/${chatId}/${Date.now()}-${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on("state_changed",
-        (snapshot) => setUploadProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)),
-        (err) => { console.error(err); setUploading(false); alert("Upload failed. Try again."); },
-        async () => {
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          const msgText = isVideo ? "📹 Video" : "🖼️ Image";
-          await addDoc(collection(db, "chats", chatId, "messages"), {
-            text: msgText, sender: "user", readByUser: true, readByAdmin: false,
-            createdAt: serverTimestamp(), mediaUrl: url, mediaType: file.type,
-          });
-          await updateDoc(doc(db, "chats", chatId), {
-            lastMessage: msgText, lastMessageAt: serverTimestamp(),
-            unreadByAdmin: increment(1), userFullName: account?.fullName || "User", userEmail: user?.email || "", status: "active",
-          });
-          setUploading(false);
-          setUploadProgress(0);
-          if (fileInputRef.current) fileInputRef.current.value = "";
-        }
-      );
-    } catch (err) { console.error(err); setUploading(false); }
+      // Convert to base64 — no CORS, no Firebase Storage, works everywhere
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setUploadProgress(60);
+          resolve(reader.result as string);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      setUploadProgress(80);
+      const msgText = isVideo ? "📹 Video" : "🖼️ Image";
+
+      await addDoc(collection(db, "chats", chatId, "messages"), {
+        text: msgText,
+        sender: "user",
+        readByUser: true,
+        readByAdmin: false,
+        createdAt: serverTimestamp(),
+        mediaUrl: base64,     // stored as data URL — no Storage needed
+        mediaType: file.type,
+        fileName: file.name,
+      });
+      await updateDoc(doc(db, "chats", chatId), {
+        lastMessage: msgText,
+        lastMessageAt: serverTimestamp(),
+        unreadByAdmin: increment(1),
+        userFullName: account?.fullName || "User",
+        userEmail: user?.email || "",
+        status: "active",
+      });
+
+      setUploadProgress(100);
+      setTimeout(() => { setUploading(false); setUploadProgress(0); }, 400);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      toast.success("Image sent!");
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      setUploading(false);
+      setUploadProgress(0);
+      toast.error("Upload failed — please try again");
+    }
   };
 
   return (
