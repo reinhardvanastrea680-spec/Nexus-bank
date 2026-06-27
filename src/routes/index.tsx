@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
   Bell, User, Eye, EyeOff,
@@ -217,7 +217,7 @@ function HomePage() {
     : (mounted ? { animation: "nx-scaleIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both", opacity: 0 } : { opacity: 0 } as any);
 
   return (
-    <div className="min-h-screen w-full flex flex-col" style={{ background: pageBg }}>
+    <div className="min-h-screen flex flex-col" style={{ background: pageBg, width: "100%", maxWidth: "100vw", overflowX: "hidden" }}>
       <div className="relative overflow-hidden"
         style={{ background: dark ? "linear-gradient(160deg,#0D1829 0%,#1a2744 100%)" : "linear-gradient(160deg,#1565C0 0%,#0EA5E9 100%)" }}>
         <div className="absolute top-6 right-6 w-36 h-36 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(56,189,248,0.22),transparent 70%)", animation: "nx-pulse-slow 4s ease-in-out infinite" }} />
@@ -257,7 +257,7 @@ function HomePage() {
                 <ChevronRight size={20} style={{ color: "white" }} />
               </button>
             )}
-            <div className="w-full rounded-3xl p-6 relative overflow-hidden" style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.18)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.25)", boxShadow: "0 24px 64px rgba(0,0,0,0.3)", ...cardSlideStyle }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            <div className="w-full rounded-3xl p-6 relative" style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.18)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.25)", boxShadow: "0 24px 64px rgba(0,0,0,0.3)", ...cardSlideStyle }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
               <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.07) 50%,transparent 60%)", backgroundSize: "200% 100%", animation: "nx-shimmer 3s linear infinite" }} />
               <div className="absolute inset-0 opacity-5 pointer-events-none">
                 {[...Array(4)].map((_, i) => (<div key={i} className="absolute rounded-full border border-white" style={{ width: 70 + i * 55, height: 70 + i * 55, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />))}
@@ -278,7 +278,7 @@ function HomePage() {
                 </div>
                 <p className="text-white/50 text-xs mb-1">Available Funds</p>
                 <div className="flex items-center gap-3 mb-5">
-                  <span className="text-white font-bold text-3xl font-mono leading-none" style={{ textShadow: "0 2px 12px rgba(56,189,248,0.25)" }}>
+                  <span className="text-white font-bold font-mono balance-figure" style={{ textShadow: "0 2px 12px rgba(56,189,248,0.25)", fontSize: "clamp(1rem, 5vw, 1.9rem)", wordBreak: "break-all", overflowWrap: "anywhere", maxWidth: "calc(100% - 40px)", display: "block" }}>
                     {balanceVisible ? formatInCurrency(accountData?.balance || 0, currency) : `${currencySymbol}��������`}
                   </span>
                   <button onClick={() => setBalanceVisible(!balanceVisible)} className="p-1.5 rounded-full transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)" }}>
@@ -317,7 +317,7 @@ function HomePage() {
           </div>
           <div className="grid grid-cols-3 gap-3">
             {quickLinks.map(({ label, icon: Icon, to, color }) => (
-              <Link key={label} to={to} className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95 hover:scale-105" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(56,189,248,0.12)"}` }}>
+              <Link key={label} to={to} className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95 hover:scale-105 ql-item" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(56,189,248,0.12)"}` }}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${color}18` }}>
                   <Icon size={20} style={{ color }} />
                 </div>
@@ -349,7 +349,7 @@ function HomePage() {
                   ? tx.createdAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) + ", " + tx.createdAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
                   : "�";
                 return (
-                  <div key={tx.id} className="flex items-center justify-between p-4 rounded-2xl transition-all" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)"}`, animation: mounted ? `nx-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) ${0.65+idx*0.08}s both` : "none", opacity: mounted ? 0 : 1 }}>
+                  <div key={tx.id} className="flex items-center justify-between p-4 rounded-2xl transition-all tx-row" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)"}`, animation: mounted ? `nx-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) ${0.65+idx*0.08}s both` : "none", opacity: mounted ? 0 : 1 }}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: isCredit ? "rgba(0,230,118,0.15)" : "rgba(255,77,106,0.15)" }}>
                         {isCredit ? <TrendingUp size={18} style={{ color: "#00E676" }} /> : <Send size={18} style={{ color: "#FF4D6A" }} />}

@@ -267,7 +267,144 @@ body {
   border-right: 1px solid var(--border);
 }
 
-/* ── Smooth transitions across all themed elements ──────────────────────── */
+/* ── Mobile viewport fix ────────────────────────────────────────────────── */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ── Additional animations for dashboard ───────────────────────────────── */
+@keyframes nx-ripple {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes nx-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.4); }
+  50% { box-shadow: 0 0 20px 8px rgba(56,189,248,0.15); }
+}
+@keyframes nx-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes nx-bounce-in {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes nx-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes nx-fade-down {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes nx-scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes nx-shimmer-fast {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Page enter animation — every user-facing route ────────────────────── */
+/* Wraps the whole page with a subtle fade-up on navigation */
+main, [data-nexus-page] {
+  animation: nx-fade-up 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Card hover lift ────────────────────────────────────────────────────── */
+.glass-card,
+.nexus-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.glass-card:hover,
+.nexus-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
+}
+
+/* ── Button press feedback ──────────────────────────────────────────────── */
+button:not(:disabled):active,
+a:active {
+  transform: scale(0.97);
+}
+
+/* ── Notification dot pulse ─────────────────────────────────────────────── */
+.notif-dot {
+  animation: nx-ripple 1.8s ease-out infinite;
+}
+
+/* ── Transaction row slide in ───────────────────────────────────────────── */
+.tx-row {
+  animation: nx-fade-up 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+.tx-row:nth-child(1) { animation-delay: 0.05s; }
+.tx-row:nth-child(2) { animation-delay: 0.10s; }
+.tx-row:nth-child(3) { animation-delay: 0.15s; }
+.tx-row:nth-child(4) { animation-delay: 0.20s; }
+.tx-row:nth-child(5) { animation-delay: 0.25s; }
+.tx-row:nth-child(n+6) { animation-delay: 0.30s; }
+
+/* ── Quick link card bounce-in ──────────────────────────────────────────── */
+.ql-item {
+  animation: nx-bounce-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.ql-item:nth-child(1) { animation-delay: 0.05s; }
+.ql-item:nth-child(2) { animation-delay: 0.10s; }
+.ql-item:nth-child(3) { animation-delay: 0.15s; }
+.ql-item:nth-child(4) { animation-delay: 0.20s; }
+.ql-item:nth-child(5) { animation-delay: 0.25s; }
+.ql-item:nth-child(6) { animation-delay: 0.30s; }
+.ql-item:nth-child(n+7) { animation-delay: 0.35s; }
+
+/* ── Section header fade-down ───────────────────────────────────────────── */
+.section-header {
+  animation: nx-fade-down 0.45s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Bottom nav glow on active item ─────────────────────────────────────── */
+.nav-active-glow {
+  animation: nx-glow-pulse 2.5s ease-in-out infinite;
+}
+
+/* ── Modal / sheet slide up ─────────────────────────────────────────────── */
+.sheet-content {
+  animation: nx-fade-up 0.35s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Loading skeleton shimmer ───────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-card-alt) 50%, var(--bg-muted) 75%);
+  background-size: 200% 100%;
+  animation: nx-shimmer-fast 1.4s linear infinite;
+  border-radius: 12px;
+}
+
+/* ── Input focus glow ───────────────────────────────────────────────────── */
+input:focus, textarea:focus, select:focus {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.18);
+}
+
+/* ── Balance figure — responsive clamp ─────────────────────────────────── */
+.balance-figure {
+  font-size: clamp(0.95rem, 5.5vw, 1.9rem);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  line-height: 1.15;
+}
+
+/* ── Prevent horizontal overflow everywhere ─────────────────────────────── */
+#root, .min-h-screen {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
 *,
 *::before,
 *::after {
