@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle } from "lucide-react";
+import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { useUsers } from "../../admin/hooks/useUsers";
 import { db } from "../../firebase/config";
 import {
   collection, addDoc, doc, orderBy, query,
-  onSnapshot, serverTimestamp, updateDoc, increment,
+  onSnapshot, serverTimestamp, updateDoc, increment, deleteDoc,
 } from "firebase/firestore";
 
 type Message = {
@@ -38,6 +38,19 @@ function AdminChatPage() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const selectedUser = selectedUserId ? users.find((u) => u.id === selectedUserId) : null;
   const totalUnread  = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
+  const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
+
+  const handleDeleteMessage = async (msgId: string) => {
+    if (!selectedUserId) return;
+    setDeletingMsgId(msgId);
+    try {
+      await deleteDoc(doc(db, "chats", selectedUserId, "messages", msgId));
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+    } finally {
+      setDeletingMsgId(null);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatInput(e.target.value);
@@ -214,7 +227,18 @@ function AdminChatPage() {
           }
           // ── Regular message ──
           return (
-          <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
+          <div key={msg.id} className={`flex items-end gap-1 group ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
+            {/* Delete button — user messages get it on the right, admin messages on the left */}
+            {msg.sender === "user" && (
+              <button
+                onClick={() => handleDeleteMessage(msg.id)}
+                disabled={deletingMsgId === msg.id}
+                className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-all"
+                style={{ color: "#EF4444" }}
+                title="Delete message">
+                <Trash2 size={13} />
+              </button>
+            )}
             <div className="max-w-[80%] p-3 rounded-2xl"
               style={{
                 background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#1A2438",
@@ -246,6 +270,17 @@ function AdminChatPage() {
                 )}
               </div>
             </div>
+            {/* Delete button on the right for admin messages */}
+            {msg.sender === "admin" && (
+              <button
+                onClick={() => handleDeleteMessage(msg.id)}
+                disabled={deletingMsgId === msg.id}
+                className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-all"
+                style={{ color: "#EF4444" }}
+                title="Delete message">
+                <Trash2 size={13} />
+              </button>
+            )}
           </div>
           );
         })}
