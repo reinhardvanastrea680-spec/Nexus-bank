@@ -50,6 +50,8 @@ function AdminNotificationsPage() {
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deletingAll, setDeletingAll] = useState(false);
+  // Separate loading state for beneficiary actions — fully independent
+  const [benLoading, setBenLoading] = useState(false);
 
   // Delete a single notification
   const handleDeleteNotif = async (e: React.MouseEvent, notifId: string) => {
@@ -160,8 +162,8 @@ function AdminNotificationsPage() {
   };
 
   const handleBeneficiaryApprove = async () => {
-    if (!selectedNotif) return;
-    setActionLoading(true);
+    if (!selectedNotif || benLoading) return;
+    setBenLoading(true);
     const userId = selectedNotif.userId;
     const userFullName = selectedNotif.userFullName || selectedNotif.userEmail || "User";
 
@@ -247,13 +249,13 @@ function AdminNotificationsPage() {
       console.error("Beneficiary approve error:", err);
       toast.error(err?.message || "Failed to approve — check console");
     } finally {
-      setActionLoading(false);
+      setBenLoading(false);
     }
   };
 
   const handleBeneficiaryDecline = async () => {
-    if (!selectedNotif) return;
-    setActionLoading(true);
+    if (!selectedNotif || benLoading) return;
+    setBenLoading(true);
     const userId = selectedNotif.userId;
     const userFullName = selectedNotif.userFullName || selectedNotif.userEmail || "User";
 
@@ -308,7 +310,7 @@ function AdminNotificationsPage() {
       console.error("Beneficiary decline error:", err);
       toast.error(err?.message || "Failed to decline — check console");
     } finally {
-      setActionLoading(false);
+      setBenLoading(false);
     }
   };
 
@@ -542,26 +544,32 @@ function AdminNotificationsPage() {
             </div>
           )}
 
-          <DialogFooter className="gap-2 mt-2">
+          <DialogFooter className="gap-2 mt-2 flex-col">
             {/* Beneficiary request — approve / decline */}
             {selectedNotif?.type === "beneficiary_request" ? (
               <>
-                <Button
-                  onClick={handleBeneficiaryDecline}
-                  disabled={actionLoading}
-                  className="flex-1 bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30"
-                >
-                  <UserX size={15} className="mr-1.5" />
-                  {actionLoading ? "…" : "Decline"}
-                </Button>
-                <Button
-                  onClick={handleBeneficiaryApprove}
-                  disabled={actionLoading}
-                  className="flex-1 bg-green-500/15 hover:bg-green-500/25 text-green-400 border border-green-500/30"
-                >
-                  <UserCheck size={15} className="mr-1.5" />
-                  {actionLoading ? "Approving…" : "Approve"}
-                </Button>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    onClick={handleBeneficiaryDecline}
+                    disabled={benLoading}
+                    className="flex-1 bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30"
+                  >
+                    <UserX size={15} className="mr-1.5" />
+                    {benLoading ? "…" : "Decline"}
+                  </Button>
+                  <Button
+                    onClick={handleBeneficiaryApprove}
+                    disabled={benLoading}
+                    className="flex-1 bg-green-500/15 hover:bg-green-500/25 text-green-400 border border-green-500/30"
+                  >
+                    <UserCheck size={15} className="mr-1.5" />
+                    {benLoading ? "Approving…" : "Approve"}
+                  </Button>
+                </div>
+                <Link to="/admin/beneficiary-requests" onClick={() => setSelectedNotif(null)}
+                  className="w-full text-center text-xs text-blue-300/50 hover:text-blue-300 pt-1">
+                  → Or manage all beneficiary requests
+                </Link>
               </>
             ) : relatedTx?.status === "pending" ? (
               <>
