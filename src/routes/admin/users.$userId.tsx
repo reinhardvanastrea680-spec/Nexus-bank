@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router"
 import {
   ArrowLeft, Mail, Phone, Shield, Clock, CreditCard, MessageSquare,
   Wallet, CheckCircle2, XCircle, Eye, EyeOff, Zap, Ban, SlidersHorizontal, Trash2,
-  CalendarRange,
+  CalendarRange, Bitcoin,
 } from "lucide-react";
 import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
 import { useUserTransactionsById } from "../../admin/hooks/useUserTransactionsById";
@@ -153,6 +153,37 @@ function AdminUserDetailPage() {
       toast.error("Failed to clear filter");
     }
   };
+
+  // ── Crypto deposit addresses ─────────────────────────────────────────────
+  const CRYPTO_COINS = [
+    { id: "btc",        label: "Bitcoin (BTC)"         },
+    { id: "eth",        label: "Ethereum ERC-20 (ETH)" },
+    { id: "usdt_erc20", label: "USDT ERC-20"           },
+    { id: "usdt_trc20", label: "USDT TRC-20"           },
+    { id: "sol",        label: "Solana (SOL)"          },
+    { id: "bnb",        label: "BNB Smart Chain (BNB)" },
+  ];
+  const [cryptoAddressInputs, setCryptoAddressInputs] = useState<Record<string, string>>({});
+  const [cryptoSaving, setCryptoSaving] = useState<string | null>(null);
+
+  const handleSaveCryptoAddress = async (coinId: string) => {
+    if (!user) return;
+    const addr = (cryptoAddressInputs[coinId] || "").trim();
+    if (!addr) { toast.error("Enter a wallet address"); return; }
+    setCryptoSaving(coinId);
+    try {
+      await updateDoc(doc(db, "users", user.id), {
+        [`cryptoAddresses.${coinId}`]: addr,
+      });
+      toast.success(`${coinId.toUpperCase()} deposit address saved`);
+      setCryptoAddressInputs((p) => ({ ...p, [coinId]: "" }));
+    } catch {
+      toast.error("Failed to save address");
+    } finally {
+      setCryptoSaving(null);
+    }
+  };
+
   if (authLoading || userLoading) {
     return (
       <div className="flex items-center justify-center h-full py-24">
@@ -463,6 +494,63 @@ function AdminUserDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* ── Crypto Deposit Addresses ── */}
+      <Card className="glass-card border-0">
+        <CardHeader>
+          <CardTitle className="text-white text-base flex items-center gap-2">
+            <Bitcoin size={18} className="text-cyan-400" />
+            Crypto Deposit Addresses
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-blue-300/50">
+            Set wallet addresses for each crypto. The customer will see these addresses on their Crypto Deposit page.
+          </p>
+          {CRYPTO_COINS.map((coin) => {
+            const saved = user?.cryptoAddresses?.[coin.id] || "";
+            return (
+              <div key={coin.id} className="space-y-1.5">
+                <label className="text-xs font-semibold text-blue-300/60">{coin.label}</label>
+                {saved && (
+                  <div className="flex items-center justify-between px-3 py-2 rounded-xl"
+                    style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.2)" }}>
+                    <p className="text-xs font-mono text-cyan-400 truncate flex-1">{saved}</p>
+                    <button
+                      onClick={() => updateDoc(doc(db, "users", user.id), { [`cryptoAddresses.${coin.id}`]: "" })
+                        .then(() => toast.success("Address cleared"))
+                        .catch(() => toast.error("Failed"))}
+                      className="text-xs text-red-400 ml-2 flex-shrink-0 hover:text-red-300">
+                      Clear
+                    </button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={cryptoAddressInputs[coin.id] || ""}
+                    onChange={(e) => setCryptoAddressInputs((p) => ({ ...p, [coin.id]: e.target.value }))}
+                    placeholder={saved ? "Update address…" : "Paste wallet address…"}
+                    className="flex-1 px-3 py-2 rounded-xl text-xs font-mono outline-none"
+                    style={{ background: "#070B14", border: "1px solid rgba(255,255,255,0.1)", color: "#fff" }}
+                  />
+                  <button
+                    onClick={() => handleSaveCryptoAddress(coin.id)}
+                    disabled={!cryptoAddressInputs[coin.id]?.trim() || cryptoSaving === coin.id}
+                    className="px-3 py-2 rounded-xl text-xs font-semibold text-white flex-shrink-0"
+                    style={{
+                      background: !cryptoAddressInputs[coin.id]?.trim() || cryptoSaving === coin.id
+                        ? "rgba(56,189,248,0.3)" : "linear-gradient(135deg,#38BDF8,#6366F1)",
+                      opacity: !cryptoAddressInputs[coin.id]?.trim() ? 0.5 : 1,
+                    }}>
+                    {cryptoSaving === coin.id ? "…" : "Save"}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
 
       {/* ── Transaction History ── */}
       <Card className="glass-card border-0">
