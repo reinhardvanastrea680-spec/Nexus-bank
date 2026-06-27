@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Copy, Share2, Check, AlertTriangle, Clock, CheckCircle2, XCircle, ChevronDown } from "lucide-react";
+import { ArrowLeft, Copy, Share2, Check, AlertTriangle, Clock, CheckCircle2, XCircle, ChevronDown, Pencil, X } from "lucide-react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
 import { useTheme } from "../hooks/use-theme";
@@ -9,10 +9,10 @@ import { BottomNav } from "../dashboard/components/BottomNav";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
-import { submitTransaction } from "../dashboard/functions/submitTransaction";
-import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 import { db } from "../firebase/config";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { generateTransactionRef } from "../utils/generateTransactionRef";
+import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/crypto-deposit")({
   head: () => ({ meta: [{ title: "Crypto Deposit - Nexus Bank" }] }),
@@ -94,6 +94,11 @@ function CryptoDeposit() {
   const [loading, setLoading]         = useState(false);
   const [successData, setSuccessData] = useState<any>(null);
 
+  // Edit address state
+  const [editingAddress, setEditingAddress] = useState(false);
+  const [editAddressValue, setEditAddressValue] = useState("");
+  const [savingAddress, setSavingAddress]     = useState(false);
+
   // Load admin-set crypto addresses from user's Firestore document
   useEffect(() => {
     if (!user?.uid) return;
@@ -145,35 +150,83 @@ function CryptoDeposit() {
       toast.error(`Minimum deposit is ${selectedCrypto.minDeposit} ${selectedCrypto.symbol}`);
       return;
     }
+    if (!user) { toast.error("Please log in"); return; }
 
     setLoading(true);
     try {
-      const { transactionRef, status: txStatus } = await submitTransaction({
+      const txRef = generateTransactionRef();
+      const userName = account?.fullName || user.email || "User";
+
+      // Write deposit request directly — no balance deduction (it's incoming)
+      await addDoc(collection(db, "transactions"), {
+        userId: user.uid,
+        userFullName: userName,
+        userEmail: user.email || "",
         type: "crypto_deposit",
         subType: "incoming",
         description: `Crypto Deposit — ${rawAmt} ${selectedCrypto.symbol}`,
         category: "Deposit",
-        // We use a nominal $1 so it doesn't debit the account — admin will credit after confirmation
-        amount: 0.01,
+        amount: rawAmt,
+        currency: selectedCrypto.symbol,
         fundingAccount: "checking",
-        note: `${selectedCrypto.symbol} deposit of ${rawAmt} on ${network}${txHash ? ` | TxHash: ${txHash}` : ""}`,
         cryptoSymbol: selectedCrypto.symbol,
         cryptoAmount: rawAmt,
         toBank: selectedCrypto.network,
         toAccountNumber: depositAddress,
+        note: txHash ? `TxHash: ${txHash}` : "",
+        status: "pending",
+        transactionRef: txRef,
+        createdByUser: true,
+        balanceAtSubmission: account?.checkingBalance || 0,
+        balanceAfter: null,
+        adminNotified: false,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       });
 
-      setSuccessData({
-        amount: 0.01,
-        transactionRef,
-        fundingAccount: "checking",
-        recipientName: `${rawAmt} ${selectedCrypto.symbol}`,
-        status: txStatus,
-      });
+      // Notify admin
+      try {
+        await addDoc(collection(db, "notifications"), {
+          recipientId: ADMIN_UID,
+          recipientType: "admin",
+          type: "new_transaction",
+          title: "New Crypto Deposit Request",
+          message: `${userName} has submitted a crypto deposit of ${rawAmt} ${selectedCrypto.symbol} on ${selectedCrypto.network}${txHash ? ` (TxHash: ${txHash})` : ""}`,
+          userId: user.uid,
+          userFullName: userName,
+          amount: rawAmt,
+          transactionType: "crypto_deposit",
+          status: "unread",
+          declineReason: null,
+          createdAt: serverTimestamp(),
+          readAt: null,
+        });
+      } catch { /* non-critical */ }
+
+      setSuccessData({ transactionRef: txRef });
     } catch (err: any) {
+      console.error("Crypto deposit error:", err);
       toast.error(err?.message || "Failed to submit deposit request");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Save admin-editable deposit address
+  const handleSaveAddress = async () => {
+    if (!user?.uid || !editAddressValue.trim()) return;
+    setSavingAddress(true);
+    try {
+      await updateDoc(doc(db, "users", user.uid), {
+        [`cryptoAddresses.${selectedCrypto.id}`]: editAddressValue.trim(),
+      });
+      toast.success(`${selectedCrypto.symbol} deposit address updated`);
+      setEditingAddress(false);
+      setEditAddressValue("");
+    } catch (err: any) {
+      toast.error("Failed to save address");
+    } finally {
+      setSavingAddress(false);
     }
   };
 
@@ -195,12 +248,12 @@ function CryptoDeposit() {
           <div className="text-center space-y-2">
             <h2 className="text-xl font-bold" style={{ color: t.textPrimary }}>Deposit Request Submitted</h2>
             <p className="text-sm" style={{ color: t.textMuted }}>
-              Your {selectedCrypto.symbol} deposit has been received and is pending confirmation. Funds will be credited once the blockchain confirms the transaction.
+              Your {selectedCrypto.symbol} deposit has been received and is pending admin confirmation. Funds will be credited to your account once verified.
             </p>
           </div>
           <div className="w-full p-5 rounded-2xl space-y-3" style={{ background: t.cardBg }}>
             <div className="flex justify-between">
-              <span className="text-sm" style={{ color: t.textMuted }}>Crypto</span>
+              <span className="text-sm" style={{ color: t.textMuted }}>Asset</span>
               <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{selectedCrypto.name}</span>
             </div>
             <div className="flex justify-between">
@@ -209,7 +262,7 @@ function CryptoDeposit() {
             </div>
             <div className="flex justify-between">
               <span className="text-sm" style={{ color: t.textMuted }}>Reference</span>
-              <span className="text-sm font-mono font-semibold" style={{ color: t.accentCyan }}>{successData.transactionRef}</span>
+              <span className="text-xs font-mono font-semibold" style={{ color: t.accentCyan }}>{successData.transactionRef}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm" style={{ color: t.textMuted }}>Status</span>
@@ -305,11 +358,44 @@ function CryptoDeposit() {
           </div>
 
           {/* Address */}
-          <div className="p-3 rounded-xl flex items-start gap-2" style={{ background: t.inputBg }}>
-            <p className="flex-1 text-xs font-mono break-all leading-relaxed" style={{ color: t.textPrimary }}>
-              {depositAddress}
-            </p>
-          </div>
+          {editingAddress ? (
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={editAddressValue}
+                onChange={(e) => setEditAddressValue(e.target.value)}
+                placeholder={`Paste your ${selectedCrypto.symbol} wallet address`}
+                className="w-full px-4 py-3 rounded-xl text-xs font-mono break-all outline-none"
+                style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.accentCyan}60` }}
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button onClick={() => { setEditingAddress(false); setEditAddressValue(""); }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1"
+                  style={{ background: t.inputBg, color: t.textMuted }}>
+                  <X size={14} /> Cancel
+                </button>
+                <button onClick={handleSaveAddress} disabled={savingAddress || !editAddressValue.trim()}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1 text-white"
+                  style={{ background: savingAddress ? `${t.accentCyan}60` : "linear-gradient(135deg,#38BDF8,#6366F1)", opacity: !editAddressValue.trim() ? 0.5 : 1 }}>
+                  <Check size={14} /> {savingAddress ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 rounded-xl flex items-start gap-2" style={{ background: t.inputBg }}>
+              <p className="flex-1 text-xs font-mono break-all leading-relaxed" style={{ color: t.textPrimary }}>
+                {depositAddress}
+              </p>
+              <button
+                onClick={() => { setEditingAddress(true); setEditAddressValue(adminAddresses[selectedCrypto.id] || ""); }}
+                className="flex-shrink-0 p-1.5 rounded-lg transition-all"
+                style={{ background: `${t.accentCyan}15`, color: t.accentCyan }}
+                title="Edit deposit address">
+                <Pencil size={13} />
+              </button>
+            </div>
+          )}
 
           {/* Copy + Share */}
           <div className="grid grid-cols-2 gap-3">
