@@ -3,8 +3,8 @@ import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
   Bell, User, Eye, EyeOff,
   ArrowUpRight, ArrowLeftRight, Building2, Bitcoin,
-  Receipt, UserPlus, FileCheck,
-  Home as HomeIcon, CreditCard,
+  Receipt, UserPlus, FileCheck, Settings,
+  Home as HomeIcon, CreditCard, Headphones,
   ChevronLeft, ChevronRight, TrendingUp, Send,
   Activity,
 } from "lucide-react";
@@ -238,12 +238,21 @@ function HomePage() {
               <p className="text-white font-bold text-base leading-tight">{account?.fullName?.split(" ")[0] || "User"}</p>
             </div>
           </div>
-          <Link to="/notifications" className="relative" style={mounted ? { animation: "nx-fadeIn 0.4s 0.15s both", opacity: 0 } : { opacity: 0 }}>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
-              <Bell size={18} style={{ color: "white" }} />
-            </div>
-            <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style={{ background: "#FFAB00" }} />
-          </Link>
+          <div className="flex items-center gap-2" style={mounted ? { animation: "nx-fadeIn 0.4s 0.15s both", opacity: 0 } : { opacity: 0 }}>
+            {/* Settings */}
+            <Link to="/settings">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
+                <Settings size={17} style={{ color: "white" }} />
+              </div>
+            </Link>
+            {/* Notifications */}
+            <Link to="/notifications" className="relative">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
+                <Bell size={18} style={{ color: "white" }} />
+              </div>
+              <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style={{ background: "#FFAB00" }} />
+            </Link>
+          </div>
         </div>
         <div className="px-5 pb-8 relative z-10">
           <div className="relative" style={{ paddingLeft: "28px", paddingRight: "28px" }}>
@@ -377,7 +386,7 @@ function HomePage() {
             { label: t("Transfer"), icon: ArrowUpRight, to: "/local-transfer" },
             { label: t("Home"), icon: HomeIcon, to: "/", active: true },
             { label: t("Cards"), icon: CreditCard, to: "/cards" },
-            { label: t("Profile"), icon: User, to: "/profile" },
+            { label: t("Support"), icon: Headphones, to: "/support" },
           ].map(({ label, icon: Icon, to, active }: any) => (
             <Link key={label} to={to} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-all min-w-0" style={{ background: active ? (dark ? "rgba(56,189,248,0.15)" : "rgba(56,189,248,0.12)") : "transparent" }}>
               <Icon size={22} style={{ color: active ? accentCyan : (dark ? "#8A9BB5" : "#9CA3AF") }} strokeWidth={active ? 2.5 : 1.8} />
