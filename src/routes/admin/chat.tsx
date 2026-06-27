@@ -11,8 +11,9 @@ import {
 } from "firebase/firestore";
 
 type Message = {
-  id: string; text: string; sender: "user" | "admin";
+  id: string; text: string; sender: "user" | "admin" | "system";
   createdAt: Date; readByUser: boolean; readByAdmin: boolean; time: string;
+  mediaUrl?: string; mediaType?: string;
 };
 type Chat = {
   id: string; userFullName: string; userEmail: string;
@@ -70,9 +71,13 @@ function AdminChatPage() {
       const msgs: Message[] = snap.docs.map((d) => {
         const data = d.data();
         const createdAt = data.createdAt?.toDate() || new Date();
-        return { id: d.id, text: data.text, sender: data.sender, createdAt,
+        return {
+          id: d.id, text: data.text, sender: data.sender, createdAt,
           readByUser: data.readByUser ?? false, readByAdmin: data.readByAdmin ?? true,
-          time: createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
+          time: createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          mediaUrl: data.mediaUrl || undefined,
+          mediaType: data.mediaType || undefined,
+        };
       });
       setChatMessages(msgs);
       msgs.filter((m) => m.sender === "user" && !m.readByAdmin)
@@ -216,20 +221,20 @@ function AdminChatPage() {
                 borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
               }}>
               {/* Render image if mediaUrl is an image */}
-              {(msg as any).mediaUrl && (
-                (msg as any).mediaType?.startsWith("video/") ? (
-                  <video src={(msg as any).mediaUrl} controls
+              {msg.mediaUrl && (
+                msg.mediaType?.startsWith("video/") ? (
+                  <video src={msg.mediaUrl} controls
                     className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 220 }} />
                 ) : (
-                  <img src={(msg as any).mediaUrl} alt="Shared image"
+                  <img src={msg.mediaUrl} alt="Shared image"
                     className="rounded-xl mb-2 max-w-full cursor-pointer"
                     style={{ maxHeight: 220 }}
-                    onClick={() => window.open((msg as any).mediaUrl, "_blank")}
+                    onClick={() => window.open(msg.mediaUrl, "_blank")}
                   />
                 )
               )}
               {/* Only show text if it's not just an emoji label */}
-              {!(msg as any).mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text) ? (
+              {(!msg.mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text)) ? (
                 <p className="text-sm leading-relaxed text-white">{msg.text}</p>
               ) : null}
               <div className="flex items-center justify-end gap-1 mt-1">
