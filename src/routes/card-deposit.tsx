@@ -31,6 +31,14 @@ function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatAmountDisplay(val: string): string {
+  // Strip everything except digits and first decimal point
+  const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const [int, dec] = clean.split(".");
+  const formatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+}
+
 function CardDeposit() {
   
   const { theme } = useTheme();
@@ -57,7 +65,7 @@ function CardDeposit() {
       toast.error("Please select a card");
       return;
     }
-    if (!amount || parseFloat(amount) <= 0) {
+    if (!amount || parseFloat(amount.replace(/,/g,"")) <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
@@ -73,14 +81,14 @@ function CardDeposit() {
         subType: "card_deposit",
         description: `Card Deposit — ${selectedCard?.brand} ****${selectedCard?.last4}`,
         category: "Deposit",
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         fundingAccount: destinationAccount.toLowerCase() as "checking" | "savings",
         toAccount: destinationAccount,
         note: `Card: ${selectedCard?.brand} ****${selectedCard?.last4}`,
       });
 
       setSuccessData({
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         transactionRef,
         status: txStatus,
         fundingAccount: destinationAccount,
@@ -184,9 +192,10 @@ function CardDeposit() {
           <div className="flex items-center justify-center gap-2 py-6 rounded-2xl" style={{ background: t.cardBg }}>
             <span className="text-3xl font-mono" style={{ color: t.textMuted }}>$</span>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(formatAmountDisplay(e.target.value))}
               placeholder="0.00"
               className="text-4xl font-mono font-bold bg-transparent outline-none text-center w-48"
               style={{ color: t.textPrimary }}
@@ -196,7 +205,7 @@ function CardDeposit() {
             {[100, 500, 1000, 5000].map((preset) => (
               <button
                 key={preset}
-                onClick={() => setAmount(preset.toString())}
+                onClick={() => setAmount(formatAmountDisplay(preset.toString()))}
                 className="px-3 py-1.5 rounded-full text-xs font-semibold"
                 style={{ background: t.inputBg, color: t.accentCyan }}
               >
@@ -251,12 +260,12 @@ function CardDeposit() {
       <div className="px-5 pb-8">
         <button
           onClick={handleContinue}
-          disabled={!selectedCardId || !amount || parseFloat(amount) <= 0 || loading}
+          disabled={!selectedCardId || !amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading}
           className="w-full py-4 rounded-xl font-semibold transition-all"
           style={{
             background: "linear-gradient(135deg, #38BDF8, #6366F1)",
             color: t.textPrimary,
-            opacity: !selectedCardId || !amount || parseFloat(amount) <= 0 || loading ? 0.5 : 1,
+            opacity: !selectedCardId || !amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading ? 0.5 : 1,
           }}
         >
           Continue
@@ -286,7 +295,7 @@ function CardDeposit() {
               <div className="flex justify-between">
                 <span className="text-sm" style={{ color: t.textMuted }}>Amount</span>
                 <span className="text-xl font-mono font-bold" style={{ color: t.textPrimary }}>
-                  ${formatCurrency(parseFloat(amount))}
+                  ${formatCurrency(parseFloat(amount.replace(/,/g,"") || "0"))}
                 </span>
               </div>
               <div className="flex justify-between">

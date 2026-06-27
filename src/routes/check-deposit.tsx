@@ -23,6 +23,13 @@ export const Route = createFileRoute("/check-deposit")({
   component: CheckDeposit,
 });
 
+function formatAmountDisplay(val: string): string {
+  const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const [int, dec] = clean.split(".");
+  const formatted = (int || "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+}
+
 function CheckDeposit() {
   
   const { theme } = useTheme();
@@ -123,7 +130,7 @@ function CheckDeposit() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const depositAmount = parseFloat(amount || "0");
+      const depositAmount = parseFloat((amount || "0").replace(/,/g, ""));
       const { transactionRef, status: txStatus } = await submitTransaction({
         type: "check_deposit",
         subType: "incoming",
@@ -377,9 +384,10 @@ function CheckDeposit() {
                   $
                 </span>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => setAmount(formatAmountDisplay(e.target.value))}
                   placeholder="0.00"
                   className="w-full pl-10 pr-4 py-4 rounded-xl outline-none"
                   style={{ background: t.inputBg, color: t.textPrimary }}
@@ -492,7 +500,7 @@ function CheckDeposit() {
                   </span>
                   <span className="text-lg font-mono font-bold" style={{ color: t.textPrimary }}>
                     $
-                    {parseFloat(amount || "0").toLocaleString("en-US", {
+                    {parseFloat((amount || "0").replace(/,/g, "")).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}

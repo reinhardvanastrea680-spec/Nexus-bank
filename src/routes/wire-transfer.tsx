@@ -216,6 +216,13 @@ function WireTransferWizard() {
     return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  const formatAmountDisplay = (val: string): string => {
+    const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+    const [int, dec] = clean.split(".");
+    const formatted = (int || "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return dec !== undefined ? `${formatted}.${dec}` : formatted;
+  };
+
   // Show success screen as full-page takeover
   if (successData) {
     return (
@@ -447,12 +454,11 @@ function WireTransferWizard() {
                   type="text"
                   inputMode="decimal"
                   min="0"
-                  value={transfer.amount ? Number(transfer.amount.replace(/,/g, "")).toLocaleString("en-US") : ""}
+                  value={transfer.amount ? formatAmountDisplay(transfer.amount) : ""}
                   placeholder="0.00"
                   className="w-full pl-10 pr-4 py-4 rounded-xl outline-none text-xl font-mono"
                   style={{ background: t.inputBg, color: t.textPrimary }}
                   onChange={(e) => {
-                    // Strip commas, keep only digits and one decimal point
                     const raw = e.target.value.replace(/,/g, "").replace(/[^0-9.]/g, "");
                     setTransfer({ ...transfer, amount: raw });
                   }}

@@ -348,24 +348,16 @@ function AddBeneficiary() {
           {/* Account Number */}
           <div>
             <label className="block text-xs font-semibold mb-2" style={{ color: t.textMuted }}>Account Number *</label>
-            <div className="flex gap-3">
-              <input type="text" value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
-                placeholder="Enter account number" className="flex-1 px-4 py-3.5 rounded-xl outline-none"
-                style={{ background: t.inputBg, color: t.textPrimary }} />
-              <button onClick={() => accountNumber && toast.success("Account Verified")}
-                disabled={!accountNumber || !selectedBankId}
-                className="px-5 py-3.5 rounded-xl font-semibold text-sm"
-                style={{ background: "#38BDF8", color: "#0B1120", opacity: !accountNumber || !selectedBankId ? 0.4 : 1 }}>
-                Verify
-              </button>
-            </div>
-            {accountNumber.length >= 6 && selectedBankId && (
+            <input type="text" value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
+              placeholder="Enter account number" className="w-full px-4 py-3.5 rounded-xl outline-none"
+              style={{ background: t.inputBg, color: t.textPrimary }} />
+            {accountNumber.length >= 6 && selectedBankId && fullName.trim().length >= 3 && (
               <div className="mt-2 p-3 rounded-xl flex items-center gap-2"
                 style={{ background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.25)" }}>
                 <CheckCircle2 size={16} style={{ color: "#00E676" }} />
                 <span className="text-xs font-semibold" style={{ color: "#00E676" }}>
-                  {fullName || "Account holder"} — {selectedBankName}
+                  ✓ {fullName.trim()} — {selectedBankName}
                 </span>
               </div>
             )}

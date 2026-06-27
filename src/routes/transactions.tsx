@@ -14,6 +14,27 @@ function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Determine if a transaction is a credit (incoming money) or debit (outgoing)
+function isTransactionCredit(tx: any): boolean {
+  const type = tx.type || "";
+  // Explicit credit types
+  if (type === "credit" || type === "check_deposit" || type === "crypto_deposit") return true;
+  // Explicit debit types — always outgoing regardless of status
+  if (
+    type === "debit" ||
+    type === "wire_transfer" ||
+    type === "local_transfer" ||
+    type === "internal_transfer" ||
+    type === "buy_crypto" ||
+    type === "bill_payment"
+  ) return false;
+  // Admin-posted with explicit type field
+  if (tx.subType === "incoming") return true;
+  if (tx.subType === "outgoing") return false;
+  // Fallback: check_deposit / crypto_deposit as credit
+  return false;
+}
+
 function formatDate(dateInput: any) {
   let d: Date | null = null;
 
@@ -75,16 +96,10 @@ function Transactions() {
 
   const filteredTransactions = transactions.filter((tx: any) => {
     if (filterType) {
-      // Old-schema: type === "credit"/"debit"
-      // New-schema: debit-like types (wire_transfer, local_transfer, etc.) vs credit-like (check_deposit)
-      const isCredit = tx.type === "credit" || tx.type === "check_deposit" || tx.type === "crypto_deposit";
-      const isDebit = tx.type === "debit" || 
-        tx.type === "wire_transfer" || tx.type === "local_transfer" || 
-        tx.type === "internal_transfer" || tx.type === "buy_crypto" || tx.type === "bill_payment";
+      const isCredit = isTransactionCredit(tx);
       if (filterType === "credits" && !isCredit) return false;
-      if (filterType === "debits" && !isDebit) return false;
+      if (filterType === "debits" && isCredit) return false;
     }
-    // Support both old schema (account) and new schema (fundingAccount)
     const txAccount = (tx.account || tx.fundingAccount || "").toLowerCase();
     if (filterAccount && txAccount !== filterAccount.toLowerCase()) return false;
     return true;
@@ -183,7 +198,7 @@ function Transactions() {
               {groupedTransactions[dateKey].map((tx: any) => {
                 const badge = getStatusBadge(tx.status || "approved");
                 const IconComponent = badge.icon;
-                const isCredit = tx.type === "credit" || tx.type === "check_deposit" || tx.type === "crypto_deposit";
+                const isCredit = isTransactionCredit(tx);
                 const txAccount = tx.account || tx.fundingAccount || "account";
                 const txDescription = tx.description || tx.type?.replace(/_/g, " ") || "Transaction";
                 return (
@@ -240,7 +255,7 @@ function Transactions() {
             <div className="w-12 h-1 rounded-full mx-auto mb-6" style={{ background: t.mutedBg }} />
             <div className="text-center mb-6">
               {(() => {
-                const isCredit = selectedTransaction.type === "credit" || selectedTransaction.type === "check_deposit" || selectedTransaction.type === "crypto_deposit";
+                const isCredit = isTransactionCredit(selectedTransaction);
                 const badge = getStatusBadge(selectedTransaction.status || "approved");
                 const txAccount = selectedTransaction.account || selectedTransaction.fundingAccount || "account";
                 const txDesc = selectedTransaction.description || selectedTransaction.type?.replace(/_/g, " ") || "Transaction";

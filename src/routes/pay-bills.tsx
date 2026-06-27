@@ -72,6 +72,14 @@ function formatCurrency(v: number) {
   return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatAmountDisplay(val: string): string {
+  // Strip everything except digits and first decimal point
+  const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const [int, dec] = clean.split(".");
+  const formatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+}
+
 function PayBills() {
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -83,6 +91,7 @@ function PayBills() {
   const [searchQuery, setSearchQuery]   = useState("");
   const [customerNumber, setCustomerNumber] = useState("");
   const [customerVerified, setCustomerVerified] = useState(false);
+  const [customerName, setCustomerName] = useState("");
   const [amount, setAmount]             = useState("");
   const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings">("Checking");
   const [showConfirm, setShowConfirm]   = useState(false);
@@ -105,12 +114,12 @@ function PayBills() {
         type: "bill_payment", subType: "outgoing",
         description: `Bill Payment - ${selectedBiller?.name}`,
         category: categories.find((c) => c.id === selectedBiller?.category)?.name || "Bills",
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         fundingAccount: selectedAccount.toLowerCase() as "checking" | "savings",
         recipientName: selectedBiller?.name || "Biller",
         note: `Customer Ref: ${customerNumber}`,
       });
-      setSuccessData({ amount: parseFloat(amount), transactionRef, status: txStatus, fundingAccount: selectedAccount, recipientName: selectedBiller?.name || "Biller" });
+      setSuccessData({ amount: parseFloat(amount.replace(/,/g,"")), transactionRef, status: txStatus, fundingAccount: selectedAccount, recipientName: selectedBiller?.name || "Biller" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Payment failed");
     } finally { setLoading(false); }
@@ -133,23 +142,29 @@ function PayBills() {
         {/* Customer number */}
         <div className="space-y-3">
           <label className="block text-sm font-semibold" style={{ color: t.textMuted }}>Customer Number / Reference</label>
-          <div className="flex gap-3">
-            <input type="text" value={customerNumber} onChange={(e) => setCustomerNumber(e.target.value)}
-              placeholder="Enter customer number" className="flex-1 px-4 py-4 rounded-xl outline-none"
+          <div className="space-y-3">
+            <input type="text" value={customerNumber} onChange={(e) => { setCustomerNumber(e.target.value); setCustomerVerified(false); setCustomerName(""); }}
+              placeholder="Enter customer number" className="w-full px-4 py-4 rounded-xl outline-none"
               style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.border}` }} />
-            <button onClick={() => { if (!customerNumber) { toast.error("Enter customer number"); return; } setCustomerVerified(true); toast.success("Verified"); }}
-              disabled={!customerNumber} className="px-6 py-4 rounded-xl font-semibold"
-              style={{ background: t.accentCyan, color: "#0B1120", opacity: !customerNumber ? 0.5 : 1 }}>
-              Verify
-            </button>
+            {customerNumber.trim().length >= 4 && (
+              <div>
+                <label className="block text-xs font-semibold mb-2" style={{ color: t.textMuted }}>Customer Name *</label>
+                <input type="text" value={customerName}
+                  onChange={(e) => { setCustomerName(e.target.value); setCustomerVerified(false); }}
+                  onBlur={() => { if (customerName.trim().length >= 2) setCustomerVerified(true); }}
+                  placeholder="Enter customer name"
+                  className="w-full px-4 py-4 rounded-xl outline-none"
+                  style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.border}` }} />
+              </div>
+            )}
+            {customerVerified && customerName.trim().length >= 2 && (
+              <div className="p-4 rounded-xl flex items-center gap-3"
+                style={{ background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.3)" }}>
+                <CheckCircle2 size={20} style={{ color: t.accentGreen }} />
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Customer Verified — {customerName.trim()}</span>
+              </div>
+            )}
           </div>
-          {customerVerified && (
-            <div className="p-4 rounded-xl flex items-center gap-3"
-              style={{ background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.3)" }}>
-              <CheckCircle2 size={20} style={{ color: t.accentGreen }} />
-              <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Customer Verified — John Doe</span>
-            </div>
-          )}
         </div>
 
         {/* Amount */}
@@ -157,7 +172,7 @@ function PayBills() {
           <label className="block text-sm font-semibold" style={{ color: t.textMuted }}>Amount</label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-mono" style={{ color: t.textMuted }}>$</span>
-            <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00"
+            <input type="text" inputMode="decimal" value={amount} onChange={(e) => setAmount(formatAmountDisplay(e.target.value))} placeholder="0.00"
               className="w-full pl-10 pr-4 py-4 rounded-xl text-xl font-mono outline-none"
               style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.border}` }} />
           </div>
@@ -179,10 +194,10 @@ function PayBills() {
       </div>
 
       <div className="px-5 pb-8">
-        <button onClick={() => { if (!amount || parseFloat(amount) <= 0) { toast.error("Enter valid amount"); return; } if (parseFloat(amount) > fromBalance) { toast.error("Insufficient funds"); return; } setShowConfirm(true); }}
-          disabled={!customerVerified || !amount || parseFloat(amount) <= 0}
+        <button onClick={() => { if (!amount || parseFloat(amount.replace(/,/g,"")) <= 0) { toast.error("Enter valid amount"); return; } if (parseFloat(amount.replace(/,/g,"")) > fromBalance) { toast.error("Insufficient funds"); return; } setShowConfirm(true); }}
+          disabled={!customerVerified || !customerName.trim() || !amount || parseFloat(amount.replace(/,/g,"")) <= 0}
           className="w-full py-4 rounded-xl font-semibold text-white"
-          style={{ background: t.gradientBtn, opacity: !customerVerified || !amount || parseFloat(amount) <= 0 ? 0.5 : 1 }}>
+          style={{ background: t.gradientBtn, opacity: !customerVerified || !customerName.trim() || !amount || parseFloat(amount.replace(/,/g,"")) <= 0 ? 0.5 : 1 }}>
           Continue to Payment
         </button>
       </div>
@@ -195,7 +210,7 @@ function PayBills() {
             <div className="w-12 h-1 rounded-full mx-auto mb-6" style={{ background: t.mutedBg }} />
             <h3 className="text-xl font-bold mb-6 text-center" style={{ color: t.textPrimary }}>Confirm Payment</h3>
             <div className="space-y-4 mb-8">
-              {[["Biller", selectedBiller.name], ["Amount", `$${formatCurrency(parseFloat(amount))}`]].map(([label, value]) => (
+              {[["Biller", selectedBiller.name], ["Amount", `$${formatCurrency(parseFloat(amount.replace(/,/g,"") || "0"))}`]].map(([label, value]) => (
                 <div key={label} className="flex justify-between">
                   <span className="text-sm" style={{ color: t.textMuted }}>{label}</span>
                   <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{value}</span>

@@ -44,6 +44,14 @@ function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatAmountDisplay(val: string): string {
+  // Strip everything except digits and first decimal point
+  const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const [int, dec] = clean.split(".");
+  const formatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+}
+
 function BuyCrypto() {
   
   const { theme } = useTheme();
@@ -70,7 +78,7 @@ function BuyCrypto() {
   const fromBalance =
     selectedAccount === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
   const cryptoAmount =
-    amount && selectedCrypto.price ? (parseFloat(amount) / selectedCrypto.price).toFixed(6) : "0";
+    amount && selectedCrypto.price ? (parseFloat(amount.replace(/,/g, "") || "0") / selectedCrypto.price).toFixed(6) : "0";
 
   // Fetch real-time crypto rates from CoinGecko
   const fetchCryptoRates = async () => {
@@ -120,11 +128,11 @@ function BuyCrypto() {
   }, [cryptos]);
 
   const handleBuy = () => {
-    if (!amount || parseFloat(amount) <= 0) {
+    if (!amount || parseFloat(amount.replace(/,/g,"")) <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (parseFloat(amount) > fromBalance) {
+    if (parseFloat(amount.replace(/,/g,"")) > fromBalance) {
       toast.error("Insufficient funds");
       return;
     }
@@ -136,23 +144,23 @@ function BuyCrypto() {
     setLoading(true);
 
     try {
-      const cryptoQty = amount && selectedCrypto.price ? parseFloat(amount) / selectedCrypto.price : 0;
+      const cryptoQty = amount && selectedCrypto.price ? parseFloat(amount.replace(/,/g,"")) / selectedCrypto.price : 0;
       const { transactionRef, status: txStatus } = await submitTransaction({
         type: "buy_crypto",
         subType: "outgoing",
-        description: `Bought ${cryptoQty.toFixed(6)} ${selectedCrypto.symbol} for $${formatCurrency(parseFloat(amount))}`,
+        description: `Bought ${cryptoQty.toFixed(6)} ${selectedCrypto.symbol} for $${formatCurrency(parseFloat(amount.replace(/,/g,"")))}`,
         category: "Crypto",
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         fundingAccount: selectedAccount.toLowerCase() as "checking" | "savings",
         cryptoId: selectedCrypto.id,
         cryptoSymbol: selectedCrypto.symbol,
         cryptoAmount: cryptoQty,
-        fiatAmount: parseFloat(amount),
+        fiatAmount: parseFloat(amount.replace(/,/g,"")),
         priceAtTime: selectedCrypto.price,
       });
 
       setSuccessData({
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         transactionRef,
         status: txStatus,
         fundingAccount: selectedAccount,
@@ -271,9 +279,10 @@ function BuyCrypto() {
               $
             </span>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(formatAmountDisplay(e.target.value))}
               placeholder="0.00"
               className="w-full pl-10 pr-4 py-4 rounded-xl text-xl font-mono outline-none"
               style={{ background: t.inputBg, color: t.textPrimary }}
@@ -340,7 +349,7 @@ function BuyCrypto() {
               Total
             </span>
             <span className="text-lg font-mono font-bold" style={{ color: t.textPrimary }}>
-              ${formatCurrency(parseFloat(amount || "0") + 3.98)}
+            ${formatCurrency(parseFloat(amount.replace(/,/g,"") || "0") + 3.98)}
             </span>
           </div>
         </div>
@@ -350,12 +359,12 @@ function BuyCrypto() {
       <div className="px-5 pb-8">
         <button
           onClick={handleBuy}
-          disabled={!amount || parseFloat(amount) <= 0 || loading}
+          disabled={!amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading}
           className="w-full py-4 rounded-xl font-semibold transition-all"
           style={{
             background: "linear-gradient(135deg, #38BDF8, #6366F1)",
             color: t.textPrimary,
-            opacity: !amount || parseFloat(amount) <= 0 || loading ? 0.5 : 1,
+            opacity: !amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading ? 0.5 : 1,
           }}
         >
           {loading ? "Submitting…" : "Buy Now"}
@@ -389,7 +398,7 @@ function BuyCrypto() {
                   You Pay
                 </span>
                 <span className="text-lg font-mono font-bold" style={{ color: t.textPrimary }}>
-                  ${formatCurrency(parseFloat(amount))}
+                  ${formatCurrency(parseFloat(amount.replace(/,/g,"") || "0"))}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -405,7 +414,7 @@ function BuyCrypto() {
                   Total
                 </span>
                 <span className="text-lg font-mono font-bold" style={{ color: t.textPrimary }}>
-                  ${formatCurrency(parseFloat(amount) + 3.98)}
+                  ${formatCurrency(parseFloat(amount.replace(/,/g,"") || "0") + 3.98)}
                 </span>
               </div>
             </div>

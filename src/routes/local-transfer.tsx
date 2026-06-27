@@ -150,6 +150,14 @@ function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatAmountDisplay(val: string): string {
+  // Strip everything except digits and first decimal point
+  const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const [int, dec] = clean.split(".");
+  const formatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+}
+
 function LocalTransfer() {
   
   const { theme } = useTheme();
@@ -231,11 +239,11 @@ function LocalTransfer() {
       toast.error("Please enter account number");
       return;
     }
-    if (!amount || parseFloat(amount) <= 0) {
+    if (!amount || parseFloat(amount.replace(/,/g,"")) <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (parseFloat(amount) > fromBalance) {
+    if (parseFloat(amount.replace(/,/g,"")) > fromBalance) {
       toast.error("Insufficient funds");
       return;
     }
@@ -247,7 +255,7 @@ function LocalTransfer() {
         subType: "outgoing",
         description: `Local Transfer to ${recipientName} (${selectedBank.name})`,
         category: "Transfer",
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         fundingAccount: sourceAccount.toLowerCase() as "checking" | "savings",
         recipientName,
         recipientAccount: accountNumber,
@@ -261,7 +269,7 @@ function LocalTransfer() {
       });
 
       setSuccessData({
-        amount: parseFloat(amount),
+        amount: parseFloat(amount.replace(/,/g,"")),
         transactionRef,
         status: txStatus,
         fundingAccount: sourceAccount,
@@ -535,9 +543,10 @@ function LocalTransfer() {
                   $
                 </span>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => setAmount(formatAmountDisplay(e.target.value))}
                   placeholder="0.00"
                   className="text-5xl font-mono font-bold bg-transparent outline-none text-center w-48"
                   style={{ color: t.textPrimary }}
@@ -548,7 +557,7 @@ function LocalTransfer() {
                   Available: ${formatCurrency(fromBalance)}
                 </span>
                 <button
-                  onClick={() => setAmount(fromBalance.toString())}
+                  onClick={() => setAmount(formatAmountDisplay(fromBalance.toFixed(2)))}
                   className="text-sm font-semibold"
                   style={{ color: t.accentCyan }}
                 >
@@ -622,7 +631,7 @@ function LocalTransfer() {
                   Total
                 </span>
                 <span className="text-xl font-mono font-bold" style={{ color: t.accentCyan }}>
-                  ${parseFloat(amount || "0").toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  ${parseFloat((amount || "0").replace(/,/g,"")).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
@@ -643,12 +652,12 @@ function LocalTransfer() {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={!amount || parseFloat(amount) <= 0 || loading}
+              disabled={!amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading}
               className="py-4 rounded-xl font-semibold"
               style={{
                 background: "linear-gradient(135deg, #38BDF8, #6366F1)",
                 color: t.textPrimary,
-                opacity: !amount || parseFloat(amount) <= 0 || loading ? 0.5 : 1,
+                opacity: !amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading ? 0.5 : 1,
               }}
             >
               {loading ? "Submitting…" : "Confirm Transfer"}
