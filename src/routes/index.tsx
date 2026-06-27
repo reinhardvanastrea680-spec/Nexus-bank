@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
-  Bell, User, Eye, EyeOff, Copy,
+  Bell, User, Eye, EyeOff,
   ArrowUpRight, ArrowLeftRight, Building2, Bitcoin,
-  Receipt, UserPlus, FileCheck, Settings,
-  Home as HomeIcon, Headphones, CreditCard,
+  Receipt, UserPlus, FileCheck,
+  Home as HomeIcon, CreditCard,
   ChevronLeft, ChevronRight, TrendingUp, Send,
   Activity,
 } from "lucide-react";
@@ -18,6 +18,33 @@ import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/fi
 import { ADMIN_UID } from "../config/adminConfig";
 import { formatInCurrency, getCurrencySymbol, type CurrencyCode } from "../utils/currency";
 import { isTransactionCredit } from "../routes/transactions";
+
+// Inject animation keyframes once
+const ANIM_STYLES = `
+@keyframes nx-fadeUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes nx-fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes nx-scaleIn  { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+@keyframes nx-fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes nx-slideLeft{ from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+@keyframes nx-pulse-slow { 0%,100%{opacity:0.15;transform:scale(1)} 50%{opacity:0.30;transform:scale(1.12)} }
+@keyframes nx-float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes nx-shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+@keyframes nx-spin-slow{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+`;
+
+if (typeof document !== "undefined") {
+  const id = "nx-home-anims";
+  if (!document.getElementById(id)) {
+    const s = document.createElement("style");
+    s.id = id;
+    s.textContent = ANIM_STYLES;
+    document.head.appendChild(s);
+  }
+}
+
+function a(name: string, delay = 0, duration = 0.55, fill: "both"|"forwards" = "both") {
+  return { animation: `${name} ${duration}s cubic-bezier(0.22,1,0.36,1) ${delay}s ${fill}`, opacity: 0 };
+}
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -66,6 +93,22 @@ function HomePage() {
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [currentAccount, setCurrentAccount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [cardSlideDir, setCardSlideDir] = useState<"left"|"right"|null>(null);
+
+  // Trigger mount animations
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 50); return () => clearTimeout(t); }, []);
+
+  const switchAccount = (dir: "next" | "prev") => {
+    if (dir === "next" && currentAccount < accounts.length - 1) {
+      setCardSlideDir("left");
+      setTimeout(() => { setCurrentAccount((p) => p + 1); setCardSlideDir(null); }, 220);
+    }
+    if (dir === "prev" && currentAccount > 0) {
+      setCardSlideDir("right");
+      setTimeout(() => { setCurrentAccount((p) => p - 1); setCardSlideDir(null); }, 220);
+    }
+  };
 
   const touchStartX = useRef<number | null>(null);
   const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
@@ -73,8 +116,8 @@ function HomePage() {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 30) {
-      if (diff > 0 && currentAccount < accounts.length - 1) setCurrentAccount((p) => p + 1);
-      if (diff < 0 && currentAccount > 0) setCurrentAccount((p) => p - 1);
+      if (diff > 0) switchAccount("next");
+      else switchAccount("prev");
     }
     touchStartX.current = null;
   };
@@ -153,163 +196,113 @@ function HomePage() {
   ] : [];
 
   const accountData = accounts[currentAccount];
-  const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
-
-  // Recent transactions — last 3
   const recentTx = transactions.slice(0, 3);
 
   if (authLoading || accountLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: pageBg }}>
-        <div className="animate-pulse text-lg font-semibold" style={{ color: accentCyan }}>Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: "rgba(56,189,248,0.3)", borderTopColor: "#38BDF8" }} />
+          <p className="text-sm font-semibold" style={{ color: "#38BDF8" }}>Loading...</p>
+        </div>
       </div>
     );
   }
   if (!user) return null;
 
   const photoURL = account?.photoURL || null;
-  const initials = (account?.fullName || "U").split(" ").slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join("");
+  const initials = (account?.fullName || "U").split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
+  const cardSlideStyle = cardSlideDir
+    ? { animation: `nx-slideLeft 0.22s cubic-bezier(0.22,1,0.36,1) both${cardSlideDir === "right" ? " reverse" : ""}` }
+    : (mounted ? { animation: "nx-scaleIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both", opacity: 0 } : { opacity: 0 } as any);
 
   return (
     <div className="min-h-screen w-full flex flex-col" style={{ background: pageBg }}>
-
-      {/* ── TOP SECTION — dark gradient hero ─────────────────────────── */}
       <div className="relative overflow-hidden"
         style={{ background: dark ? "linear-gradient(160deg,#0D1829 0%,#1a2744 100%)" : "linear-gradient(160deg,#1565C0 0%,#0EA5E9 100%)" }}>
-        {/* Decorative blobs */}
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 -translate-y-1/2 translate-x-1/4"
-          style={{ background: "radial-gradient(circle,#38BDF8,transparent)" }} />
-        <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-10 translate-y-1/2 -translate-x-1/4"
-          style={{ background: "radial-gradient(circle,#6366F1,transparent)" }} />
-
-        {/* Header */}
-        <div className="px-5 pt-12 pb-4 flex items-center justify-between relative z-10">
+        <div className="absolute top-6 right-6 w-36 h-36 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(56,189,248,0.22),transparent 70%)", animation: "nx-pulse-slow 4s ease-in-out infinite" }} />
+        <div className="absolute top-28 left-3 w-24 h-24 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(99,102,241,0.18),transparent 70%)", animation: "nx-pulse-slow 5.5s ease-in-out 1.5s infinite" }} />
+        <div className="absolute bottom-20 right-20 w-16 h-16 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle,rgba(168,85,247,0.18),transparent 70%)", animation: "nx-float 3.5s ease-in-out infinite" }} />
+        <div className="absolute -top-8 -right-8 w-44 h-44 rounded-full border border-white/5 pointer-events-none" style={{ animation: "nx-spin-slow 22s linear infinite" }} />
+        <div className="absolute -bottom-12 -left-12 w-52 h-52 rounded-full border border-white/5 pointer-events-none" style={{ animation: "nx-spin-slow 32s linear infinite reverse" }} />
+        <div className="px-5 pt-12 pb-4 flex items-center justify-between relative z-10"
+          style={mounted ? { animation: "nx-fadeDown 0.5s cubic-bezier(0.22,1,0.36,1) both", opacity: 0 } : { opacity: 0 }}>
           <div className="flex items-center gap-3">
             <Link to="/profile">
-              <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/30 flex items-center justify-center"
-                style={{ background: "#EF4444" }}>
-                {photoURL
-                  ? <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
-                  : <span className="text-white font-bold text-sm">{initials}</span>}
+              <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/30 flex items-center justify-center" style={{ background: "#EF4444", boxShadow: "0 0 0 3px rgba(255,255,255,0.12)" }}>
+                {photoURL ? <img src={photoURL} alt="Profile" className="w-full h-full object-cover" /> : <span className="text-white font-bold text-sm">{initials}</span>}
               </div>
             </Link>
             <div>
               <p className="text-white/60 text-xs">{getGreeting()},</p>
-              <p className="text-white font-bold text-base leading-tight">
-                {account?.fullName?.split(" ")[0] || "User"}
-              </p>
+              <p className="text-white font-bold text-base leading-tight">{account?.fullName?.split(" ")[0] || "User"}</p>
             </div>
           </div>
-          <Link to="/notifications" className="relative">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
+          <Link to="/notifications" className="relative" style={mounted ? { animation: "nx-fadeIn 0.4s 0.15s both", opacity: 0 } : { opacity: 0 }}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
               <Bell size={18} style={{ color: "white" }} />
             </div>
             <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style={{ background: "#FFAB00" }} />
           </Link>
         </div>
-
-        {/* ── Account Card ──────────────────────────────────────────── */}
         <div className="px-5 pb-8 relative z-10">
           <div className="relative" style={{ paddingLeft: "28px", paddingRight: "28px" }}>
-            {/* Arrow buttons */}
             {currentAccount > 0 && (
-              <button onClick={() => setCurrentAccount((p) => Math.max(0, p - 1))}
-                className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg"
-                style={{ left: "-4px", width: "36px", height: "36px", background: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+              <button onClick={() => switchAccount("prev")} className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg" style={{ left: "-4px", width: "36px", height: "36px", background: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                 <ChevronLeft size={20} style={{ color: "white" }} />
               </button>
             )}
             {currentAccount < accounts.length - 1 && (
-              <button onClick={() => setCurrentAccount((p) => Math.min(accounts.length - 1, p + 1))}
-                className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg"
-                style={{ right: "-4px", width: "36px", height: "36px", background: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+              <button onClick={() => switchAccount("next")} className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg" style={{ right: "-4px", width: "36px", height: "36px", background: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                 <ChevronRight size={20} style={{ color: "white" }} />
               </button>
             )}
-
-            {/* Card body */}
-            <div className="w-full rounded-3xl p-6 relative overflow-hidden"
-              style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.18)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.25)" }}
-              onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-              {/* Subtle pattern */}
-              <div className="absolute inset-0 opacity-5">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="absolute rounded-full border border-white"
-                    style={{ width: 80 + i * 50, height: 80 + i * 50, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
-                ))}
+            <div className="w-full rounded-3xl p-6 relative overflow-hidden" style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.18)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.25)", boxShadow: "0 24px 64px rgba(0,0,0,0.3)", ...cardSlideStyle }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+              <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.07) 50%,transparent 60%)", backgroundSize: "200% 100%", animation: "nx-shimmer 3s linear infinite" }} />
+              <div className="absolute inset-0 opacity-5 pointer-events-none">
+                {[...Array(4)].map((_, i) => (<div key={i} className="absolute rounded-full border border-white" style={{ width: 70 + i * 55, height: 70 + i * 55, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />))}
               </div>
-
               <div className="relative z-10">
-                {/* Balance type + account number */}
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <p className="text-white/60 text-xs tracking-widest uppercase">FIAT BALANCE</p>
                     <p className="text-white text-sm font-bold mt-0.5">{accountData?.label || "Account"}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-white/50 text-xs">
-                      **** {accountData?.number?.slice(-4) || "----"}
-                    </p>
-                    {/* Status badge */}
-                    <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-                      style={{ background: "rgba(0,230,118,0.2)", color: "#00E676" }}>
+                    <p className="text-white/50 text-xs">**** {accountData?.number?.slice(-4) || "----"}</p>
+                    <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(0,230,118,0.2)", color: "#00E676" }}>
                       <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                       {(accountData?.status || "active").toUpperCase()}
                     </span>
                   </div>
                 </div>
-
-                {/* Available Funds label */}
                 <p className="text-white/50 text-xs mb-1">Available Funds</p>
-
-                {/* Balance */}
                 <div className="flex items-center gap-3 mb-5">
-                  <span className="text-white font-bold text-3xl font-mono leading-none">
-                    {balanceVisible
-                      ? formatInCurrency(accountData?.balance || 0, currency)
-                      : `${currencySymbol}••••••••`}
+                  <span className="text-white font-bold text-3xl font-mono leading-none" style={{ textShadow: "0 2px 12px rgba(56,189,248,0.25)" }}>
+                    {balanceVisible ? formatInCurrency(accountData?.balance || 0, currency) : `${currencySymbol}��������`}
                   </span>
-                  <button onClick={() => setBalanceVisible(!balanceVisible)}
-                    className="p-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.15)" }}>
+                  <button onClick={() => setBalanceVisible(!balanceVisible)} className="p-1.5 rounded-full transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)" }}>
                     {balanceVisible ? <EyeOff size={14} color="white" /> : <Eye size={14} color="white" />}
                   </button>
                 </div>
-
-                {/* Account Status row */}
-                <div className="flex items-center justify-between pt-3"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
+                <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
                   <span className="text-white/50 text-xs">Account Status</span>
-                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>
-                    • {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}
-                  </span>
+                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>� {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
                 </div>
               </div>
             </div>
-
-            {/* Dot indicators */}
             <div className="flex justify-center gap-1.5 mt-3">
-              {accounts.map((_, i) => (
-                <button key={i} onClick={() => setCurrentAccount(i)}
-                  className="rounded-full transition-all"
-                  style={{ width: i === currentAccount ? "20px" : "6px", height: "6px",
-                    background: i === currentAccount ? "white" : "rgba(255,255,255,0.4)" }} />
-              ))}
+              {accounts.map((_, i) => (<button key={i} onClick={() => setCurrentAccount(i)} className="rounded-full transition-all duration-300" style={{ width: i === currentAccount ? "20px" : "6px", height: "6px", background: i === currentAccount ? "white" : "rgba(255,255,255,0.4)" }} />))}
             </div>
           </div>
-
-          {/* ── 3 action buttons: Top Up / Send / Activity ──────────── */}
           <div className="flex items-center justify-center gap-8 mt-6">
             {[
-              { label: t("Top Up"),  icon: "➕", color: "#FBBF24", bg: "#FBBF24", to: "/card-deposit" },
-              { label: t("Send"),    icon: "📤", color: "#fff",    bg: "rgba(255,255,255,0.2)", to: "/local-transfer" },
-              { label: t("Activity"),icon: "📊", color: "#fff",    bg: "rgba(255,255,255,0.2)", to: "/transactions" },
-            ].map(({ label, icon, bg, to }) => (
-              <Link key={label} to={to} className="flex flex-col items-center gap-2">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-lg transition-transform active:scale-95"
-                  style={{ background: bg, backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                  {icon}
-                </div>
+              { label: t("Top Up"), icon: "?", bg: "#FBBF24", to: "/card-deposit", delay: 0.25 },
+              { label: t("Send"), icon: "??", bg: "rgba(255,255,255,0.2)", to: "/local-transfer", delay: 0.35 },
+              { label: t("Activity"), icon: "??", bg: "rgba(255,255,255,0.2)", to: "/transactions", delay: 0.45 },
+            ].map(({ label, icon, bg, to, delay }) => (
+              <Link key={label} to={to} className="flex flex-col items-center gap-2" style={mounted ? { animation: `nx-fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) ${delay}s both`, opacity: 0 } : { opacity: 0 }}>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-lg transition-all duration-200 active:scale-90 hover:scale-110" style={{ background: bg, backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>{icon}</div>
                 <span className="text-xs font-semibold text-white/80">{label}</span>
               </Link>
             ))}
@@ -317,43 +310,31 @@ function HomePage() {
         </div>
       </div>
 
-      {/* ── BOTTOM WHITE/DARK SECTION ─────────────────────────────── */}
       <div className="flex-1 rounded-t-[28px] -mt-4 relative z-10 px-5 pt-6 pb-24" style={{ background: pageBg }}>
-
-        {/* Quick Links */}
-        <div className="mb-6">
+        <div className="mb-6" style={mounted ? { animation: "nx-fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.45s both", opacity: 0 } : { opacity: 0 }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold" style={{ color: textPrimary }}>{t("Quick Links")}</h2>
           </div>
           <div className="grid grid-cols-3 gap-3">
             {quickLinks.map(({ label, icon: Icon, to, color }) => (
-              <Link key={label} to={to}
-                className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95"
-                style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(56,189,248,0.12)"}` }}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                  style={{ background: `${color}18` }}>
+              <Link key={label} to={to} className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95 hover:scale-105" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(56,189,248,0.12)"}` }}>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${color}18` }}>
                   <Icon size={20} style={{ color }} />
                 </div>
-                <span className="text-xs font-medium text-center leading-tight" style={{ color: textMuted }}>
-                  {label}
-                </span>
+                <span className="text-xs font-medium text-center leading-tight" style={{ color: textMuted }}>{label}</span>
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Recent Transactions */}
-        <div>
+        <div style={mounted ? { animation: "nx-fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.6s both", opacity: 0 } : { opacity: 0 }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold" style={{ color: textPrimary }}>Recent Transactions</h2>
             <Link to="/transactions" className="text-sm font-semibold" style={{ color: accentCyan }}>View All</Link>
           </div>
-
           {txLoading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 rounded-2xl animate-pulse" style={{ background: mutedBg }} />
-              ))}
+              {[1,2,3].map((i) => (<div key={i} className="h-16 rounded-2xl" style={{ background: `linear-gradient(90deg,${mutedBg} 25%,${dark?"#243450":"#E2EAFF"} 50%,${mutedBg} 75%)`, backgroundSize: "200% 100%", animation: "nx-shimmer 1.5s linear infinite" }} />))}
             </div>
           ) : recentTx.length === 0 ? (
             <div className="p-6 rounded-2xl text-center" style={{ background: dark ? "rgba(255,255,255,0.03)" : "#F8FAFF" }}>
@@ -361,32 +342,24 @@ function HomePage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {recentTx.map((tx: any) => {
+              {recentTx.map((tx: any, idx: number) => {
                 const isCredit = isTransactionCredit(tx);
                 const desc = tx.description || tx.type?.replace(/_/g, " ") || "Transaction";
                 const timeStr = tx.createdAt instanceof Date
-                  ? tx.createdAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) + ", " +
-                    tx.createdAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-                  : "—";
-
+                  ? tx.createdAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) + ", " + tx.createdAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+                  : "�";
                 return (
-                  <div key={tx.id}
-                    className="flex items-center justify-between p-4 rounded-2xl transition-all"
-                    style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)"}` }}>
+                  <div key={tx.id} className="flex items-center justify-between p-4 rounded-2xl transition-all" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)"}`, animation: mounted ? `nx-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) ${0.65+idx*0.08}s both` : "none", opacity: mounted ? 0 : 1 }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{ background: isCredit ? "rgba(0,230,118,0.15)" : "rgba(255,77,106,0.15)" }}>
-                        {isCredit
-                          ? <TrendingUp size={18} style={{ color: "#00E676" }} />
-                          : <Send size={18} style={{ color: "#FF4D6A" }} />}
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: isCredit ? "rgba(0,230,118,0.15)" : "rgba(255,77,106,0.15)" }}>
+                        {isCredit ? <TrendingUp size={18} style={{ color: "#00E676" }} /> : <Send size={18} style={{ color: "#FF4D6A" }} />}
                       </div>
                       <div>
                         <p className="text-sm font-semibold" style={{ color: textPrimary }}>{desc}</p>
                         <p className="text-xs" style={{ color: textMuted }}>{timeStr}</p>
                       </div>
                     </div>
-                    <p className="text-sm font-mono font-bold"
-                      style={{ color: isCredit ? "#00E676" : "#FF4D6A" }}>
+                    <p className="text-sm font-mono font-bold" style={{ color: isCredit ? "#00E676" : "#FF4D6A" }}>
                       {isCredit ? "+" : "-"}{formatInCurrency(tx.amount || 0, currency)}
                     </p>
                   </div>
@@ -397,27 +370,18 @@ function HomePage() {
         </div>
       </div>
 
-      {/* ── Bottom Nav ────────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t"
-        style={{ background: dark ? "#0A0F1E" : "#FFFFFF", borderColor: dark ? "rgba(255,255,255,0.08)" : "#E5E7EB" }}>
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t" style={{ background: dark ? "#0A0F1E" : "#FFFFFF", borderColor: dark ? "rgba(255,255,255,0.08)" : "#E5E7EB", boxShadow: dark ? "0 -4px 24px rgba(0,0,0,0.4)" : "0 -4px 24px rgba(0,0,0,0.06)" }}>
         <div className="flex items-center justify-around px-2 py-2">
           {[
-            { label: t("Activity"),  icon: Activity,    to: "/transactions" },
-            { label: t("Transfer"),  icon: ArrowUpRight, to: "/local-transfer" },
-            { label: t("Home"),      icon: HomeIcon,    to: "/",            active: true },
-            { label: t("Cards"),     icon: CreditCard,  to: "/cards" },
-            { label: t("Profile"),   icon: User,        to: "/profile" },
-          ].map(({ label, icon: Icon, to, active }) => (
-            <Link key={label} to={to}
-              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-all min-w-0"
-              style={{ background: active ? (dark ? "rgba(56,189,248,0.15)" : "rgba(56,189,248,0.12)") : "transparent" }}>
-              <Icon size={22}
-                style={{ color: active ? accentCyan : (dark ? "#8A9BB5" : "#9CA3AF") }}
-                strokeWidth={active ? 2.5 : 1.8} />
-              <span className="text-xs font-medium"
-                style={{ color: active ? accentCyan : (dark ? "#8A9BB5" : "#9CA3AF") }}>
-                {label}
-              </span>
+            { label: t("Activity"), icon: Activity, to: "/transactions" },
+            { label: t("Transfer"), icon: ArrowUpRight, to: "/local-transfer" },
+            { label: t("Home"), icon: HomeIcon, to: "/", active: true },
+            { label: t("Cards"), icon: CreditCard, to: "/cards" },
+            { label: t("Profile"), icon: User, to: "/profile" },
+          ].map(({ label, icon: Icon, to, active }: any) => (
+            <Link key={label} to={to} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-all min-w-0" style={{ background: active ? (dark ? "rgba(56,189,248,0.15)" : "rgba(56,189,248,0.12)") : "transparent" }}>
+              <Icon size={22} style={{ color: active ? accentCyan : (dark ? "#8A9BB5" : "#9CA3AF") }} strokeWidth={active ? 2.5 : 1.8} />
+              <span className="text-xs font-medium" style={{ color: active ? accentCyan : (dark ? "#8A9BB5" : "#9CA3AF") }}>{label}</span>
             </Link>
           ))}
         </div>
