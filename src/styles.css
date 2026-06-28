@@ -454,22 +454,9 @@ input:focus, textarea:focus, select:focus {
 .glass-card {
   animation: adm-scale-in 0.45s cubic-bezier(0.22,1,0.36,1) both;
   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-  position: relative;
-  overflow: hidden;
 }
 .glass-card:hover {
   transform: translateY(-2px) !important;
-}
-/* Subtle shimmer sweep on glass cards */
-.glass-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.035) 50%, transparent 62%);
-  background-size: 200% 100%;
-  animation: adm-shimmer 5s linear infinite;
-  pointer-events: none;
-  border-radius: inherit;
 }
 
 /* ── Table row hover ───────────────────────────────────────────────────── */
@@ -494,10 +481,9 @@ aside nav a[aria-current="page"] {
   animation: adm-glow-cyan 3s ease-in-out infinite;
 }
 
-/* ── Sidebar decorative orb ───────────────────────────────────────────── */
+/* ── Sidebar decorative orb — no overflow:hidden so nav isn't clipped ─── */
 aside {
   position: relative;
-  overflow: hidden;
 }
 aside::before {
   content: "";
@@ -507,8 +493,9 @@ aside::before {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,198,255,0.07), transparent 70%);
+  background: radial-gradient(circle, rgba(0,198,255,0.06), transparent 70%);
   pointer-events: none;
+  z-index: 0;
   animation: adm-float-orb 7s ease-in-out infinite;
 }
 aside::after {
@@ -519,9 +506,15 @@ aside::after {
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99,102,241,0.07), transparent 70%);
+  background: radial-gradient(circle, rgba(99,102,241,0.06), transparent 70%);
   pointer-events: none;
+  z-index: 0;
   animation: adm-float-orb 9s ease-in-out 2s infinite;
+}
+/* Keep nav and content above the orbs */
+aside > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── DARK MODE admin sidebar & header ─────────────────────────────────── */
