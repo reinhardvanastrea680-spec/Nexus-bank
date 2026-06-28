@@ -448,15 +448,7 @@ input:focus, textarea:focus, select:focus {
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ── Page content stagger-in ───────────────────────────────────────────── */
-.admin-page-content > * {
-  animation: adm-fade-up 0.42s cubic-bezier(0.22,1,0.36,1) both;
-}
-.admin-page-content > *:nth-child(1) { animation-delay: 0.00s; }
-.admin-page-content > *:nth-child(2) { animation-delay: 0.06s; }
-.admin-page-content > *:nth-child(3) { animation-delay: 0.12s; }
-.admin-page-content > *:nth-child(4) { animation-delay: 0.18s; }
-.admin-page-content > *:nth-child(n+5) { animation-delay: 0.24s; }
+/* ── Page content stagger-in — applied per page via glass-card children ─── */
 
 /* ── Stat card entry + hover ───────────────────────────────────────────── */
 .glass-card {

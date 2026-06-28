@@ -405,9 +405,7 @@ function AdminLayout() {
 
         {/* Main */}
         <main className="p-4 md:p-6 min-h-[calc(100vh-64px)] overflow-x-hidden">
-          <div className="admin-page-content space-y-4">
-            <Outlet />
-          </div>
+          <Outlet />
         </main>
         <AdminInstallPrompt />
       </div>
