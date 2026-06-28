@@ -14,6 +14,7 @@ import { useUserNotifications } from "../dashboard/hooks/useUserNotifications";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useTheme } from "../hooks/use-theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
+import { useLanguage } from "../hooks/use-language";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({ meta: [{ title: "Notifications - Nexus Bank" }] }),
@@ -29,6 +30,7 @@ function Notifications() {
   const { notifications, unreadCount, loading, markNotificationRead, markAllRead } = useUserNotifications();
   const { transactions } = useUserTransactions();
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [selectedNotif, setSelectedNotif] = useState<any>(null);
 
@@ -96,7 +98,7 @@ function Notifications() {
           <ArrowLeft size={24} style={{ color: textPrimary }} />
         </button>
         <h1 className="text-xl font-bold flex-1 text-center" style={{ color: textPrimary }}>
-          Notifications
+          {t("Notifications")}
         </h1>
         <div className="w-10 relative">
           {unreadCount > 0 && (
@@ -123,7 +125,7 @@ function Notifications() {
                 color: filter === f ? "#0B1120" : textMuted,
               }}
             >
-              {f}
+              {f === "all" ? t("All") : t("Unread")}
               {f === "unread" && unreadCount > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full text-xs font-bold" style={{ background: theme === "dark" ? "#1E2D45" : "#d1d5db" }}>
                   {unreadCount}

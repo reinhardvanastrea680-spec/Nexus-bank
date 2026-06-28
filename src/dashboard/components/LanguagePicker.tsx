@@ -11,6 +11,14 @@ const FLAGS: Record<string, string> = {
   pt: "🇧🇷",
   ar: "🇸🇦",
   zh: "🇨🇳",
+  it: "🇮🇹",
+  ru: "🇷🇺",
+  ja: "🇯🇵",
+  ko: "🇰🇷",
+  nl: "🇳🇱",
+  tr: "🇹🇷",
+  hi: "🇮🇳",
+  sw: "🇰🇪",
 };
 
 export function LanguagePicker() {
@@ -71,24 +79,25 @@ export function LanguagePicker() {
         </div>
       )}
 
-      {/* Floating button */}
+      {/* Floating button — bigger, flag + code only */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-20 left-4 z-[95] flex items-center gap-2 px-3 py-2 rounded-2xl shadow-lg transition-all active:scale-95 hover:scale-105"
+        className="fixed bottom-20 left-4 z-[95] flex items-center gap-2.5 px-4 py-2.5 rounded-2xl shadow-xl transition-all active:scale-95 hover:scale-105"
         style={{
-          background: "rgba(10,16,32,0.85)",
-          border: "1px solid rgba(255,255,255,0.15)",
+          background: "rgba(10,16,32,0.90)",
+          border: "1px solid rgba(255,255,255,0.18)",
           backdropFilter: "blur(16px)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+          minWidth: "80px",
         }}
         aria-label="Select language"
       >
-        <span className="text-lg leading-none">{FLAGS[language]}</span>
-        <span className="text-xs font-bold text-white uppercase tracking-wide">
-          {language}
+        <span className="text-2xl leading-none">{FLAGS[language] || "🌐"}</span>
+        <span className="text-sm font-bold text-white uppercase tracking-wide">
+          {language.toUpperCase()}
         </span>
         <ChevronUp
-          size={13}
+          size={14}
           className="text-white/60 transition-transform duration-200"
           style={{ transform: open ? "rotate(0deg)" : "rotate(180deg)" }}
         />

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
@@ -9,6 +9,7 @@ import {
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { BottomNav } from "../dashboard/components/BottomNav";
+import { useLanguage } from "../hooks/use-language";
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -87,6 +88,7 @@ function Transactions() {
   const { theme } = useTheme();
   const t = themeColors(theme);
   const { user } = useUserAuth();
+  const { t: tl } = useLanguage();
   const [showFilters, setShowFilters] = useState(false);
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterAccount, setFilterAccount] = useState<string | null>(null);
@@ -132,7 +134,7 @@ function Transactions() {
           <ArrowLeft size={24} style={{ color: t.textPrimary }} />
         </button>
         <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>
-          Transaction History
+          {tl("Transaction History")}
         </h1>
         <button onClick={() => setShowFilters(!showFilters)} className="p-2">
           <Filter size={24} style={{ color: t.accentCyan }} />
@@ -144,9 +146,9 @@ function Transactions() {
         <div className="px-5 pb-6 space-y-4">
           <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
             {[
-              { id: null, label: "All" },
-              { id: "credits", label: "Credits Only" },
-              { id: "debits", label: "Debits Only" },
+              { id: null, label: tl("All") },
+              { id: "credits", label: tl("Credits Only") },
+              { id: "debits", label: tl("Debits Only") },
             ].map((opt) => (
               <button
                 key={opt.id || "all"}
@@ -163,9 +165,9 @@ function Transactions() {
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
             {[
-              { id: null, label: "All Accounts" },
-              { id: "checking", label: "Checking" },
-              { id: "savings", label: "Savings" },
+              { id: null, label: tl("All Accounts") },
+              { id: "checking", label: tl("Checking") },
+              { id: "savings", label: tl("Savings") },
             ].map((opt) => (
               <button
                 key={opt.id || "all"}
