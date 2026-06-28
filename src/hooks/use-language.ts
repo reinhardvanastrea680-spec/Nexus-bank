@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "nexus-user-language";
 
@@ -43,6 +43,7 @@ type TranslationKey =
   | "Crypto Deposit"
   | "Transaction History"
   | "Card Deposit"
+  | "Cards"
   | "Cancel"
   | "Continue"
   | "Confirm"
@@ -50,7 +51,15 @@ type TranslationKey =
   | "Send"
   | "Amount"
   | "Note"
-  | "Account";
+  | "Account"
+  | "Activity"
+  | "Profile"
+  | "Top Up"
+  | "Recent Transactions"
+  | "View All"
+  | "Total Balance"
+  | "Available Funds"
+  | "Account Status";
 
 type Translations = Record<TranslationKey, string>;
 
@@ -85,6 +94,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "Amount",
     "Note":                "Note",
     "Account":             "Account",
+    "Cards":               "Cards",
+    "Activity":            "Activity",
+    "Profile":             "Profile",
+    "Top Up":              "Top Up",
+    "Recent Transactions": "Recent Transactions",
+    "View All":            "View All",
+    "Total Balance":       "Total Balance",
+    "Available Funds":     "Available Funds",
+    "Account Status":      "Account Status",
   },
   fr: {
     "Welcome back":        "Bienvenue",
@@ -116,6 +134,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "Montant",
     "Note":                "Note",
     "Account":             "Compte",
+    "Cards":               "Cartes",
+    "Activity":            "Activité",
+    "Profile":             "Profil",
+    "Top Up":              "Recharger",
+    "Recent Transactions": "Transactions récentes",
+    "View All":            "Voir tout",
+    "Total Balance":       "Solde total",
+    "Available Funds":     "Fonds disponibles",
+    "Account Status":      "Statut du compte",
   },
   es: {
     "Welcome back":        "Bienvenido",
@@ -147,6 +174,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "Monto",
     "Note":                "Nota",
     "Account":             "Cuenta",
+    "Cards":               "Tarjetas",
+    "Activity":            "Actividad",
+    "Profile":             "Perfil",
+    "Top Up":              "Recargar",
+    "Recent Transactions": "Transacciones recientes",
+    "View All":            "Ver todo",
+    "Total Balance":       "Saldo total",
+    "Available Funds":     "Fondos disponibles",
+    "Account Status":      "Estado de la cuenta",
   },
   de: {
     "Welcome back":        "Willkommen zurück",
@@ -178,6 +214,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "Betrag",
     "Note":                "Notiz",
     "Account":             "Konto",
+    "Cards":               "Karten",
+    "Activity":            "Aktivität",
+    "Profile":             "Profil",
+    "Top Up":              "Aufladen",
+    "Recent Transactions": "Letzte Transaktionen",
+    "View All":            "Alle anzeigen",
+    "Total Balance":       "Gesamtguthaben",
+    "Available Funds":     "Verfügbare Mittel",
+    "Account Status":      "Kontostatus",
   },
   pt: {
     "Welcome back":        "Bem-vindo de volta",
@@ -209,6 +254,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "Valor",
     "Note":                "Nota",
     "Account":             "Conta",
+    "Cards":               "Cartões",
+    "Activity":            "Atividade",
+    "Profile":             "Perfil",
+    "Top Up":              "Recarregar",
+    "Recent Transactions": "Transações recentes",
+    "View All":            "Ver tudo",
+    "Total Balance":       "Saldo total",
+    "Available Funds":     "Fundos disponíveis",
+    "Account Status":      "Status da conta",
   },
   ar: {
     "Welcome back":        "مرحباً بعودتك",
@@ -240,6 +294,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "المبلغ",
     "Note":                "ملاحظة",
     "Account":             "الحساب",
+    "Cards":               "البطاقات",
+    "Activity":            "النشاط",
+    "Profile":             "الملف الشخصي",
+    "Top Up":              "إضافة رصيد",
+    "Recent Transactions": "المعاملات الأخيرة",
+    "View All":            "عرض الكل",
+    "Total Balance":       "الرصيد الإجمالي",
+    "Available Funds":     "الأموال المتاحة",
+    "Account Status":      "حالة الحساب",
   },
   zh: {
     "Welcome back":        "欢迎回来",
@@ -271,6 +334,15 @@ const translations: Record<LanguageCode, Translations> = {
     "Amount":              "金额",
     "Note":                "备注",
     "Account":             "账户",
+    "Cards":               "银行卡",
+    "Activity":            "活动",
+    "Profile":             "个人资料",
+    "Top Up":              "充值",
+    "Recent Transactions": "近期交易",
+    "View All":            "查看全部",
+    "Total Balance":       "总余额",
+    "Available Funds":     "可用资金",
+    "Account Status":      "账户状态",
   },
 };
 

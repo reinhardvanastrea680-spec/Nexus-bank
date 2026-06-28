@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { InstallPrompt } from "../dashboard/components/InstallPrompt";
+import { LanguagePicker } from "../dashboard/components/LanguagePicker";
 
 function NotFoundComponent() {
   return (
@@ -146,11 +147,16 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const pathname = router.state.location.pathname;
+  const isAdmin = pathname.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <InstallPrompt />
+      {/* Language picker — only on user-facing pages, not admin */}
+      {!isAdmin && <LanguagePicker />}
     </QueryClientProvider>
   );
 }
