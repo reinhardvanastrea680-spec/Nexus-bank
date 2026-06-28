@@ -639,7 +639,7 @@ function Settings() {
             {/* Language Selector */}
             {activeModal === "language" && (
               <div className="space-y-3">
-                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>Select Language</h3>
+                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Select Language")}</h3>
                 {[
                   { code: "en", label: "English", native: "English" },
                   { code: "fr", label: "French", native: "Français" },
@@ -649,14 +649,12 @@ function Settings() {
                   { code: "ar", label: "Arabic", native: "العربية" },
                   { code: "zh", label: "Chinese", native: "中文" },
                 ].map((lang) => {
-                  const stored = typeof window !== "undefined" ? localStorage.getItem("nexus-user-language") || "en" : "en";
-                  const isActive = stored === lang.code;
+                  const isActive = language === lang.code;
                   return (
                     <button key={lang.code}
                       onClick={() => {
-                        localStorage.setItem("nexus-user-language", lang.code);
+                        setLanguage(lang.code as any);
                         closeModal();
-                        window.location.reload(); // Apply language change
                       }}
                       className="w-full flex items-center justify-between p-3 rounded-xl transition-all"
                       style={{

@@ -3,15 +3,20 @@ import { useState, useEffect } from "react";
 type Theme = "light" | "dark";
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark";
-    // 1. Check if user has manually set a preference
+  // Always start with "dark" to match SSR, then sync from localStorage after mount
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  useEffect(() => {
+    // Read stored theme after hydration to avoid SSR mismatch
     const stored = localStorage.getItem("nexus-bank-theme");
-    if (stored === "light" || stored === "dark") return stored;
-    // 2. Fall back to system preference
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    return "light";
-  });
+    if (stored === "light" || stored === "dark") {
+      setTheme(stored);
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  }, []);
 
   useEffect(() => {
     // Apply theme to document

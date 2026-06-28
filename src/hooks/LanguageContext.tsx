@@ -13,16 +13,19 @@ interface LangCtx {
 const LanguageContext = createContext<LangCtx | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLang] = useState<LanguageCode>(() => {
+  // Always start with "en" so SSR and first client render match (avoids hydration mismatch).
+  // The real stored value is applied after mount in useEffect.
+  const [language, setLang] = useState<LanguageCode>("en");
+
+  useEffect(() => {
+    // Read localStorage only after hydration
     try {
       const s = localStorage.getItem(STORAGE_KEY) as LanguageCode;
-      if (s && SUPPORTED_LANGUAGES.some(l => l.code === s)) return s;
+      if (s && SUPPORTED_LANGUAGES.some(l => l.code === s)) {
+        setLang(s);
+      }
     } catch {}
-    return "en";
-  });
 
-  // Always sync from event — no stale closure
-  useEffect(() => {
     const handler = (e: Event) => {
       const code = (e as CustomEvent).detail || localStorage.getItem(STORAGE_KEY);
       if (code && SUPPORTED_LANGUAGES.some(l => l.code === code)) {
@@ -62,12 +65,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 export function useLang(): LangCtx {
   const ctx = useContext(LanguageContext);
   if (ctx) return ctx;
-  // Fallback outside provider
-  const stored = (() => { try { return localStorage.getItem(STORAGE_KEY) as LanguageCode || "en"; } catch { return "en" as LanguageCode; } })();
+  // Fallback outside provider — safe for SSR (no localStorage access)
   return {
-    language: stored,
+    language: "en",
     setLanguage: () => {},
-    t: (k: string) => (translations as any)[stored]?.[k] ?? (translations as any)["en"]?.[k] ?? k,
-    currentLanguage: SUPPORTED_LANGUAGES.find(l => l.code === stored) ?? SUPPORTED_LANGUAGES[0],
+    t: (k: string) => (translations as any)["en"]?.[k] ?? k,
+    currentLanguage: SUPPORTED_LANGUAGES[0],
   };
 }

@@ -414,19 +414,20 @@ export const translations: Record<LanguageCode, Translations> = {
 };
 
 export function useLanguage() {
-  const [language, setLanguageState] = useState<LanguageCode>(() => {
+  // Always start with "en" to match SSR output, then hydrate from localStorage after mount
+  const [language, setLanguageState] = useState<LanguageCode>("en");
+
+  useEffect(() => {
+    // Read stored language after mount (safe — no SSR access)
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as LanguageCode | null;
-      if (stored && SUPPORTED_LANGUAGES.some((l) => l.code === stored)) return stored;
+      if (stored && SUPPORTED_LANGUAGES.some((l) => l.code === stored)) {
+        setLanguageState(stored);
+      }
     } catch {}
-    return "en";
-  });
 
-  // Listen for language changes from any source — no stale closure issue
-  useEffect(() => {
     const handler = (e?: Event) => {
       try {
-        // Use event detail if available (faster), fallback to localStorage
         const code = (e as CustomEvent)?.detail ||
           localStorage.getItem(STORAGE_KEY);
         if (code && SUPPORTED_LANGUAGES.some((l) => l.code === code)) {
@@ -440,7 +441,7 @@ export function useLanguage() {
       window.removeEventListener("nexus-language-change", handler);
       window.removeEventListener("storage", handler);
     };
-  }, []); // Empty deps — no stale closure, always reads fresh from event
+  }, []);
 
   const setLanguage = (code: LanguageCode) => {
     setLanguageState(code);
