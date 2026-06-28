@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "nexus-user-language";
 
@@ -410,9 +410,29 @@ export function useLanguage() {
     return "en";
   });
 
+  // Listen for language changes from other components/tabs
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY) as LanguageCode | null;
+        if (stored && stored !== language) setLanguageState(stored as LanguageCode);
+      } catch {}
+    };
+    window.addEventListener("nexus-language-change", handler);
+    window.addEventListener("storage", handler);
+    return () => {
+      window.removeEventListener("nexus-language-change", handler);
+      window.removeEventListener("storage", handler);
+    };
+  }, [language]);
+
   const setLanguage = (code: LanguageCode) => {
     setLanguageState(code);
-    try { localStorage.setItem(STORAGE_KEY, code); } catch {}
+    try {
+      localStorage.setItem(STORAGE_KEY, code);
+      // Broadcast to all other hook instances on the same page
+      window.dispatchEvent(new CustomEvent("nexus-language-change", { detail: code }));
+    } catch {}
   };
 
   const t = (key: TranslationKey): string =>
