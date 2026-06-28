@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { InstallPrompt } from "../dashboard/components/InstallPrompt";
 import { LanguagePicker } from "../dashboard/components/LanguagePicker";
+import { LanguageProvider } from "../hooks/LanguageContext";
 
 function NotFoundComponent() {
   return (
@@ -152,11 +153,12 @@ function RootComponent() {
   const isAdmin = pathname.startsWith("/admin");
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <InstallPrompt />
-      {/* Language picker — only on user-facing pages, not admin */}
-      {!isAdmin && <LanguagePicker />}
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+        <InstallPrompt />
+        {!isAdmin && <LanguagePicker />}
+      </QueryClientProvider>
+    </LanguageProvider>
   );
 }

@@ -76,6 +76,18 @@ const EN: Translations = {
   "Close":"Close","Transaction Failed":"Transaction Failed",
   "Transaction Declined":"Transaction Declined",
   "Beneficiary Approved":"Beneficiary Approved","Balance Updated":"Balance Updated",
+  "Enable Notifications":"Enable Notifications",
+  "Email Alerts":"Email Alerts",
+  "Push Alerts":"Push Alerts",
+  "Two-Factor Authentication":"Two-Factor Authentication",
+  "Biometric Login":"Biometric Login",
+  "Login Activity":"Login Activity",
+  "Privacy Controls":"Privacy Controls",
+  "External Bank Accounts":"External Bank Accounts",
+  "Connected Cards":"Connected Cards",
+  "Personal Information":"Personal Information",
+  "Region":"Region",
+  "United States":"United States",
 };
 
 const FR: Translations = {
@@ -396,7 +408,7 @@ const SW: Translations = { ...EN,
   "Beneficiary Approved":"Mnufaika Ameidhinishwa","Balance Updated":"Salio Limesasishwa",
 };
 
-const translations: Record<LanguageCode, Translations> = {
+export const translations: Record<LanguageCode, Translations> = {
   en: EN, fr: FR, es: ES, de: DE, pt: PT, it: IT,
   nl: NL, ru: RU, tr: TR, hi: HI, ar: AR, zh: ZH, ja: JA, ko: KO, sw: SW,
 };

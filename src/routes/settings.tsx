@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -28,6 +28,7 @@ import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { useLanguage, SUPPORTED_LANGUAGES } from "../hooks/use-language";
+import { useLang } from "../hooks/LanguageContext";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { ADMIN_UID } from "../config/adminConfig";
@@ -45,6 +46,7 @@ function Settings() {
   const t = themeColors(theme);
 
   const { language, setLanguage, currentLanguage } = useLanguage();
+  const { t: tl } = useLang();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [pushAlerts, setPushAlerts] = useState(true);
@@ -140,7 +142,7 @@ function Settings() {
         }}>
         {/* Profile Section */}
         <div className="space-y-3">
-          <p className="text-sm font-semibold" style={{ color: t.textMuted }}>Profile</p>
+          <p className="text-sm font-semibold" style={{ color: t.textMuted }}>{tl("Profile")}</p>
 
           {/* Profile card — shows actual photo */}
           <Link to="/profile" className="w-full flex items-center justify-between p-4 rounded-2xl"
@@ -172,7 +174,7 @@ function Settings() {
               <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                 <User size={16} style={{ color: t.accentCyan }} />
               </div>
-              <span className="text-sm font-bold" style={{ color: t.textPrimary }}>Personal Information</span>
+              <span className="text-sm font-bold" style={{ color: t.textPrimary }}>{tl("Personal Information")}</span>
             </div>
             {[
               { label: "First Name",  value: account?.fullName?.split(" ")[0] || "—" },
@@ -295,7 +297,7 @@ function Settings() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                   <Lock size={16} style={{ color: "#38BDF8" }} />
                 </div>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Change Password</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("Change Password")}</span>
               </div>
             </button>
 
@@ -363,7 +365,7 @@ function Settings() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                   <History size={16} style={{ color: "#38BDF8" }} />
                 </div>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Login Activity</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("Login Activity")}</span>
               </div>
             </button>
           </div>
@@ -383,7 +385,7 @@ function Settings() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                   <Eye size={16} style={{ color: "#38BDF8" }} />
                 </div>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Privacy Controls</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("Privacy Controls")}</span>
               </div>
             </button>
           </div>
@@ -403,7 +405,7 @@ function Settings() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                   <Link2 size={16} style={{ color: "#38BDF8" }} />
                 </div>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>External Bank Accounts</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("External Bank Accounts")}</span>
               </div>
             </button>
             <Link to="/cards" className="w-full flex items-center justify-between p-4 rounded-2xl" style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
@@ -411,7 +413,7 @@ function Settings() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                   <Link2 size={16} style={{ color: t.accentCyan }} />
                 </div>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Connected Cards</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("Connected Cards")}</span>
               </div>
               <span className="text-xs" style={{ color: t.textMuted }}>›</span>
             </Link>
@@ -500,7 +502,7 @@ function Settings() {
                     className="text-sm font-semibold"
                     style={{ color: t.textPrimary }}
                   >
-                    {theme === "dark" ? "Dark" : "Light"}
+                    {theme === "dark" ? tl("Dark") : tl("Light")}
                   </span>
                 </button>
               </div>
@@ -539,7 +541,7 @@ function Settings() {
                     style={{ background: theme === "light" ? "#EEF2FF" : "rgba(99,102,241,0.15)" }}>
                     🔒
                   </div>
-                  <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>Change Password</h3>
+                  <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>{tl("Change Password")}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: t.textMuted }}>
                     For your security, password changes must be processed by our support team. Please contact support to request a password change.
                   </p>
@@ -559,7 +561,7 @@ function Settings() {
             {/* Login Activity */}
             {activeModal === "login-activity" && (
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>Login Activity</h3>
+                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Login Activity")}</h3>
                 <div className="space-y-3">
                   {[
                     { device: "iPhone 15 Pro", location: "Current session", time: "Now", current: true },
@@ -578,14 +580,14 @@ function Settings() {
                     </div>
                   ))}
                 </div>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted, background: t.inputBg }}>Close</button>
+                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted, background: t.inputBg }}>{tl("Close")}</button>
               </div>
             )}
 
             {/* Privacy Controls */}
             {activeModal === "privacy" && (
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>Privacy Controls</h3>
+                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Privacy Controls")}</h3>
                 {[
                   { label: "Share data for service improvement", desc: "Help us improve Nexus Bank" },
                   { label: "Personalised recommendations", desc: "Receive tailored financial tips" },
@@ -609,28 +611,28 @@ function Settings() {
             {/* External Bank Accounts */}
             {activeModal === "external-banks" && (
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>External Bank Accounts</h3>
+                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("External Bank Accounts")}</h3>
                 <div className="flex flex-col items-center py-6">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>🏦</div>
                   <p className="text-sm font-semibold text-center" style={{ color: t.textPrimary }}>No external banks linked yet</p>
                   <p className="text-xs text-center mt-2 max-w-xs" style={{ color: t.textMuted }}>To link an external bank account, please contact support. We support ACH, SWIFT, and SEPA transfers.</p>
                 </div>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>Contact Support</button>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>Close</button>
+                <button onClick={closeModal} className="w-full py-3 rounded-2xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>{tl("Contact Support")}</button>
+                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>{tl("Close")}</button>
               </div>
             )}
 
             {/* Connected Cards */}
             {activeModal === "connected-cards" && (
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>Connected Cards</h3>
+                <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Connected Cards")}</h3>
                 <div className="flex flex-col items-center py-6">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>💳</div>
                   <p className="text-sm font-semibold text-center" style={{ color: t.textPrimary }}>No cards connected yet</p>
                   <p className="text-xs text-center mt-2 max-w-xs" style={{ color: t.textMuted }}>To add a card, please contact support. We accept Visa, Mastercard, and American Express.</p>
                 </div>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>Contact Support</button>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>Close</button>
+                <button onClick={closeModal} className="w-full py-3 rounded-2xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>{tl("Contact Support")}</button>
+                <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>{tl("Close")}</button>
               </div>
             )}
 

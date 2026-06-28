@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronUp, Check, Languages } from "lucide-react";
-import { useLanguage, SUPPORTED_LANGUAGES } from "../../hooks/use-language";
+import { SUPPORTED_LANGUAGES } from "../../hooks/use-language";
+import { useLang } from "../../hooks/LanguageContext";
 
 // All 15 language flags
 const FLAGS: Record<string, string> = {
@@ -10,7 +11,7 @@ const FLAGS: Record<string, string> = {
 };
 
 export function LanguagePicker() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage } = useLang();
   const [open, setOpen] = useState(false);
 
   // ── Feature 3: Scroll lock while menu is open ────────────────────────────
