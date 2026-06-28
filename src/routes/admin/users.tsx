@@ -11,6 +11,7 @@ import { deleteUserAndData } from "../../admin/utils/deleteUserAndData";
 import { AddUserModal } from "../../admin/components/AddUserModal";
 import { db } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
+import { formatInCurrency, type CurrencyCode } from "../../utils/currency";
 
 export const Route = createFileRoute("/admin/users")({
   component: AdminUsersPage,
@@ -162,10 +163,10 @@ function AdminUsersPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-white font-mono text-sm whitespace-nowrap">
-                        ${(user.checkingBalance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        {formatInCurrency(user.checkingBalance || 0, (user.dashboardCurrency as CurrencyCode) || "USD")}
                       </td>
                       <td className="py-3 px-4 text-white font-mono text-sm whitespace-nowrap">
-                        ${(user.savingsBalance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        {formatInCurrency(user.savingsBalance || 0, (user.dashboardCurrency as CurrencyCode) || "USD")}
                       </td>
                       <td className="py-3 px-4 text-blue-300/60 text-xs whitespace-nowrap">
                         {user.createdAt?.toLocaleDateString?.() || "-"}

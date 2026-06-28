@@ -16,6 +16,7 @@ import { postTransaction }    from "../../admin/utils/postTransaction";
 import { db } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { CURRENCIES } from "../../utils/currency";
+import { formatInCurrency, type CurrencyCode } from "../../utils/currency";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/accounts")({
@@ -153,7 +154,9 @@ function AdminAccountsPage() {
                     </div>
                   </div>
                   <div className="sm:text-right">
-                    <p className="text-white font-bold font-mono text-xl">${formatCurrency(totalBalance)}</p>
+                    <p className="text-white font-bold font-mono text-xl">
+                      {formatInCurrency(totalBalance, (selectedUser.dashboardCurrency as CurrencyCode) || "USD")}
+                    </p>
                     <p className="text-blue-300/60 text-xs">Total Balance</p>
                   </div>
                 </div>
@@ -185,7 +188,9 @@ function AdminAccountsPage() {
                         {/* Balance */}
                         <div className="text-center py-3 rounded-xl" style={{ background: "rgba(56,189,248,0.05)" }}>
                           <p className="text-blue-300/60 text-xs mb-1">Current Balance</p>
-                          <p className="text-3xl font-bold text-cyan-400 font-mono">${formatCurrency(acct.balance)}</p>
+                          <p className="text-3xl font-bold text-cyan-400 font-mono">
+                            {formatInCurrency(acct.balance, (selectedUser.dashboardCurrency as CurrencyCode) || "USD")}
+                          </p>
                         </div>
 
                         {/* Action buttons */}

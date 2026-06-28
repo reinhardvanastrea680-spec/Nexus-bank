@@ -13,6 +13,7 @@ import { db } from "../../firebase/config";
 import { doc, onSnapshot, updateDoc, deleteDoc, collection, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { toggleUserFreeze } from "../../admin/utils/toggleUserFreeze";
+import { formatInCurrency, type CurrencyCode } from "../../utils/currency";
 
 type TransactionMode = "manual" | "auto_approve" | "auto_decline";
 
@@ -477,7 +478,7 @@ function AdminUserDetailPage() {
               <p className="text-xs text-blue-300/60 mb-2">Checking Account</p>
               <p className="text-2xl font-mono font-bold text-cyan-400">
                 {showBalances
-                  ? `$${(user.checkingBalance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+                  ? formatInCurrency(user.checkingBalance || 0, (user.dashboardCurrency as CurrencyCode) || "USD")
                   : "••••••"}
               </p>
               <p className="text-xs text-blue-300/50 mt-1">#{user.checkingAccountNumber || "---"}</p>
@@ -486,7 +487,7 @@ function AdminUserDetailPage() {
               <p className="text-xs text-blue-300/60 mb-2">Savings Account</p>
               <p className="text-2xl font-mono font-bold text-violet-400">
                 {showBalances
-                  ? `$${(user.savingsBalance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+                  ? formatInCurrency(user.savingsBalance || 0, (user.dashboardCurrency as CurrencyCode) || "USD")
                   : "••••••"}
               </p>
               <p className="text-xs text-blue-300/50 mt-1">#{user.savingsAccountNumber || "---"}</p>

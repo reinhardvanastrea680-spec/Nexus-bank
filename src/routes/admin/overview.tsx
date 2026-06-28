@@ -8,6 +8,7 @@ import { useUsers } from "../../admin/hooks/useUsers";
 import { useTransactions } from "../../admin/hooks/useTransactions";
 import { db } from "../../firebase/config";
 import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
+import { formatInCurrency, type CurrencyCode } from "../../utils/currency";
 
 export const Route = createFileRoute("/admin/overview")({
   component: AdminOverviewPage,
@@ -330,7 +331,10 @@ function AdminOverviewPage() {
                       <p className="text-blue-300/60 text-xs truncate">{user.email}</p>
                     </div>
                     <p className="text-white font-mono text-xs font-semibold flex-shrink-0 whitespace-nowrap">
-                      {formatCurrency((user.checkingBalance || 0) + (user.savingsBalance || 0))}
+                      {formatInCurrency(
+                        (user.checkingBalance || 0) + (user.savingsBalance || 0),
+                        (user.dashboardCurrency as CurrencyCode) || "USD"
+                      )}
                     </p>
                   </Link>
                 ));
