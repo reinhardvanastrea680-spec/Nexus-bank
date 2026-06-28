@@ -265,12 +265,15 @@ function HomePage() {
                 <p className="text-white font-bold font-mono leading-tight mt-0.5"
                   style={{ fontSize: "clamp(0.9rem, 4vw, 1.3rem)" }}>
                   {balanceVisible
-                    ? formatInCurrency(accounts.reduce((s, a) => s + a.balance, 0), currency)
+                    ? formatInCurrency(
+                        (account?.checkingBalance || 0) + (account?.savingsBalance || 0),
+                        currency
+                      )
                     : `${currencySymbol}••••••••`}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-white/45 text-xs">{accounts.length} account{accounts.length !== 1 ? "s" : ""}</p>
+                <p className="text-white/45 text-xs">Checking + Savings</p>
                 <p className="text-xs font-semibold mt-0.5" style={{ color: "#00E676" }}>● All Active</p>
               </div>
             </div>
