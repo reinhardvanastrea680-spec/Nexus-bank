@@ -126,7 +126,7 @@ function Settings() {
         </button>
         <h1 className="text-xl font-bold flex-1 text-center"
           style={{ color: theme === "light" ? "#fff" : t.textPrimary }}>
-          Settings
+          {tl("Settings")}
         </h1>
         <div className="w-10" />
       </div>
@@ -199,7 +199,7 @@ function Settings() {
             className="text-sm font-semibold"
             style={{ color: t.textMuted }}
           >
-            Notifications
+            {tl("Notifications")}
           </p>
           <div
             className="p-4 rounded-2xl space-y-4"
@@ -217,7 +217,7 @@ function Settings() {
                   className="text-sm font-semibold"
                   style={{ color: t.textPrimary }}
                 >
-                  Enable Notifications
+                  {tl("Enable Notifications")}
                 </span>
               </div>
               <button
@@ -241,7 +241,7 @@ function Settings() {
                       className="text-sm"
                       style={{ color: t.textPrimary }}
                     >
-                      Email Alerts
+                      {tl("Email Alerts")}
                     </span>
                   </div>
                   <button
@@ -260,7 +260,7 @@ function Settings() {
                   <div className="flex items-center gap-3">
                     <Smartphone size={16} style={{ color: "#38BDF8" }} />
                     <span className="text-sm" style={{ color: t.textPrimary }}>
-                      Push Alerts
+                      {tl("Push Alerts")}
                     </span>
                   </div>
                   <button
@@ -285,7 +285,7 @@ function Settings() {
             className="text-sm font-semibold"
             style={{ color: t.textMuted }}
           >
-            Security
+            {tl("Security")}
           </p>
           <div className="space-y-3">
             <button
@@ -317,7 +317,7 @@ function Settings() {
                     className="text-sm font-semibold"
                     style={{ color: t.textPrimary }}
                   >
-                    Two-Factor Authentication
+                    {tl("Two-Factor Authentication")}
                   </span>
                 </div>
                 <button
@@ -344,7 +344,7 @@ function Settings() {
                     className="text-sm font-semibold"
                     style={{ color: t.textPrimary }}
                   >
-                    Biometric Login
+                    {tl("Biometric Login")}
                   </span>
                 </div>
                 <button
@@ -377,7 +377,7 @@ function Settings() {
             className="text-sm font-semibold"
             style={{ color: t.textMuted }}
           >
-            Privacy
+            {tl("Privacy")}
           </p>
           <div className="space-y-3">
             <button className="w-full flex items-center justify-between p-4 rounded-2xl" style={{ background: t.cardBg }} onClick={() => openModal("privacy")}>
@@ -397,7 +397,7 @@ function Settings() {
             className="text-sm font-semibold"
             style={{ color: t.textMuted }}
           >
-            Linked Accounts
+            {tl("Linked Accounts")}
           </p>
           <div className="space-y-3">
             <button className="w-full flex items-center justify-between p-4 rounded-2xl" style={{ background: t.cardBg }} onClick={() => openModal("external-banks")}>
@@ -426,7 +426,7 @@ function Settings() {
             className="text-sm font-semibold"
             style={{ color: t.textMuted }}
           >
-            Preferences
+            {tl("Preferences")}
           </p>
           <div className="space-y-3">
             <button
@@ -445,7 +445,7 @@ function Settings() {
                   className="text-sm font-semibold"
                   style={{ color: t.textPrimary }}
                 >
-                  Language
+                  {tl("Language")}
                 </span>
               </div>
               <span className="text-sm" style={{ color: t.textMuted }}>
@@ -467,11 +467,11 @@ function Settings() {
                   className="text-sm font-semibold"
                   style={{ color: t.textPrimary }}
                 >
-                  Region
+                  {tl("Region")}
                 </span>
               </div>
               <span className="text-sm" style={{ color: t.textMuted }}>
-                United States
+                {tl("United States")}
               </span>
             </button>
             <div
@@ -490,7 +490,7 @@ function Settings() {
                     className="text-sm font-semibold"
                     style={{ color: t.textPrimary }}
                   >
-                    Theme
+                    {tl("Theme")}
                   </span>
                 </div>
                 <button
@@ -518,7 +518,7 @@ function Settings() {
         >
           <LogOut size={18} style={{ color: "#FF4D6A" }} />
           <span className="text-sm font-semibold" style={{ color: "#FF4D6A" }}>
-            Sign Out
+            {tl("Sign Out")}
           </span>
         </button>
       </div>

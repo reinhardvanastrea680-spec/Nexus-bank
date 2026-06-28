@@ -9,7 +9,7 @@ import {
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { BottomNav } from "../dashboard/components/BottomNav";
-import { useLanguage } from "../hooks/use-language";
+import { useLang } from "../hooks/LanguageContext";
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -88,7 +88,7 @@ function Transactions() {
   const { theme } = useTheme();
   const t = themeColors(theme);
   const { user } = useUserAuth();
-  const { t: tl } = useLanguage();
+  const { t: tl } = useLang();
   const [showFilters, setShowFilters] = useState(false);
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterAccount, setFilterAccount] = useState<string | null>(null);
@@ -188,9 +188,9 @@ function Transactions() {
       {/* Transactions List */}
       <div className="px-5 flex-1 space-y-6 overflow-y-auto">
         {loading ? (
-          <div className="text-center py-12 text-[#8A9BB5]">Loading transactions...</div>
+          <div className="text-center py-12 text-[#8A9BB5]">{tl("Loading")}...</div>
         ) : filteredTransactions.length === 0 ? (
-          <div className="text-center py-12 text-[#8A9BB5]">No transactions found.</div>
+          <div className="text-center py-12 text-[#8A9BB5]">{tl("No transactions found")}</div>
         ) : (
           Object.keys(groupedTransactions).map((dateKey) => (
             <div key={dateKey} className="space-y-3">
@@ -319,7 +319,7 @@ function Transactions() {
             <div className="grid grid-cols-2 gap-4 mt-4">
               <button onClick={() => setSelectedTransaction(null)} className="py-4 rounded-xl font-semibold"
                 style={{ background: t.inputBg, color: t.textMuted }}>
-                Close
+                {tl("Close")}
               </button>
             </div>
           </div>

@@ -422,12 +422,16 @@ export function useLanguage() {
     return "en";
   });
 
-  // Listen for language changes from other components/tabs
+  // Listen for language changes from any source — no stale closure issue
   useEffect(() => {
-    const handler = () => {
+    const handler = (e?: Event) => {
       try {
-        const stored = localStorage.getItem(STORAGE_KEY) as LanguageCode | null;
-        if (stored && stored !== language) setLanguageState(stored as LanguageCode);
+        // Use event detail if available (faster), fallback to localStorage
+        const code = (e as CustomEvent)?.detail ||
+          localStorage.getItem(STORAGE_KEY);
+        if (code && SUPPORTED_LANGUAGES.some((l) => l.code === code)) {
+          setLanguageState(code as LanguageCode);
+        }
       } catch {}
     };
     window.addEventListener("nexus-language-change", handler);
@@ -436,19 +440,20 @@ export function useLanguage() {
       window.removeEventListener("nexus-language-change", handler);
       window.removeEventListener("storage", handler);
     };
-  }, [language]);
+  }, []); // Empty deps — no stale closure, always reads fresh from event
 
   const setLanguage = (code: LanguageCode) => {
     setLanguageState(code);
     try {
       localStorage.setItem(STORAGE_KEY, code);
-      // Broadcast to all other hook instances on the same page
       window.dispatchEvent(new CustomEvent("nexus-language-change", { detail: code }));
     } catch {}
   };
 
-  const t = (key: TranslationKey): string =>
-    translations[language]?.[key] ?? translations.en[key] ?? key;
+  const t = (key: string): string =>
+    (translations as any)[language]?.[key] ??
+    (translations as any)["en"]?.[key] ??
+    key;
 
   const currentLanguage = SUPPORTED_LANGUAGES.find((l) => l.code === language)!;
 

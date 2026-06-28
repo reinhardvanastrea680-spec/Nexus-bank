@@ -1,27 +1,19 @@
-/**
- * LanguageContext — wraps the entire app so every component re-renders
- * when the language changes. This is the permanent fix for site-wide
- * language switching without needing to import useLanguage in every file.
- */
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { SUPPORTED_LANGUAGES, type LanguageCode, type TranslationKey } from "./use-language";
+import { SUPPORTED_LANGUAGES, translations, type LanguageCode } from "./use-language";
 
 const STORAGE_KEY = "nexus-user-language";
 
-interface LanguageContextType {
+interface LangCtx {
   language: LanguageCode;
   setLanguage: (code: LanguageCode) => void;
   t: (key: string) => string;
   currentLanguage: typeof SUPPORTED_LANGUAGES[0];
 }
 
-const LanguageContext = createContext<LanguageContextType | null>(null);
-
-// Import translations from the hook file
-import { translations } from "./use-language";
+const LanguageContext = createContext<LangCtx | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<LanguageCode>(() => {
+  const [language, setLang] = useState<LanguageCode>(() => {
     try {
       const s = localStorage.getItem(STORAGE_KEY) as LanguageCode;
       if (s && SUPPORTED_LANGUAGES.some(l => l.code === s)) return s;
@@ -29,12 +21,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return "en";
   });
 
+  // Always sync from event — no stale closure
   useEffect(() => {
-    const handler = () => {
-      try {
-        const s = localStorage.getItem(STORAGE_KEY) as LanguageCode;
-        if (s && SUPPORTED_LANGUAGES.some(l => l.code === s)) setLanguageState(s);
-      } catch {}
+    const handler = (e: Event) => {
+      const code = (e as CustomEvent).detail || localStorage.getItem(STORAGE_KEY);
+      if (code && SUPPORTED_LANGUAGES.some(l => l.code === code)) {
+        setLang(code as LanguageCode);
+      }
     };
     window.addEventListener("nexus-language-change", handler);
     window.addEventListener("storage", handler);
@@ -45,7 +38,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setLanguage = (code: LanguageCode) => {
-    setLanguageState(code);
+    setLang(code);
     try {
       localStorage.setItem(STORAGE_KEY, code);
       window.dispatchEvent(new CustomEvent("nexus-language-change", { detail: code }));
@@ -57,7 +50,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     (translations as any)["en"]?.[key] ??
     key;
 
-  const currentLanguage = SUPPORTED_LANGUAGES.find(l => l.code === language)!;
+  const currentLanguage = SUPPORTED_LANGUAGES.find(l => l.code === language) ?? SUPPORTED_LANGUAGES[0];
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, currentLanguage }}>
@@ -66,17 +59,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useLang() {
+export function useLang(): LangCtx {
   const ctx = useContext(LanguageContext);
-  if (!ctx) {
-    // Fallback when used outside provider — read from localStorage directly
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY) as LanguageCode || "en";
-      const t = (key: string): string =>
-        (translations as any)[stored]?.[key] ?? (translations as any)["en"]?.[key] ?? key;
-      return { language: stored, setLanguage: () => {}, t, currentLanguage: SUPPORTED_LANGUAGES.find(l => l.code === stored)! };
-    } catch {}
-    return { language: "en" as LanguageCode, setLanguage: () => {}, t: (k: string) => k, currentLanguage: SUPPORTED_LANGUAGES[0] };
-  }
-  return ctx;
+  if (ctx) return ctx;
+  // Fallback outside provider
+  const stored = (() => { try { return localStorage.getItem(STORAGE_KEY) as LanguageCode || "en"; } catch { return "en" as LanguageCode; } })();
+  return {
+    language: stored,
+    setLanguage: () => {},
+    t: (k: string) => (translations as any)[stored]?.[k] ?? (translations as any)["en"]?.[k] ?? k,
+    currentLanguage: SUPPORTED_LANGUAGES.find(l => l.code === stored) ?? SUPPORTED_LANGUAGES[0],
+  };
 }

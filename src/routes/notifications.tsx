@@ -14,7 +14,7 @@ import { useUserNotifications } from "../dashboard/hooks/useUserNotifications";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useTheme } from "../hooks/use-theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
-import { useLanguage } from "../hooks/use-language";
+import { useLang } from "../hooks/LanguageContext";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({ meta: [{ title: "Notifications - Nexus Bank" }] }),
@@ -30,7 +30,7 @@ function Notifications() {
   const { notifications, unreadCount, loading, markNotificationRead, markAllRead } = useUserNotifications();
   const { transactions } = useUserTransactions();
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { t } = useLang();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [selectedNotif, setSelectedNotif] = useState<any>(null);
 
@@ -141,7 +141,7 @@ function Notifications() {
             style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}
           >
             <Check size={12} />
-            Mark all read
+            {t("Mark all read")}
           </button>
         )}
       </div>
@@ -149,13 +149,13 @@ function Notifications() {
       {/* List */}
       <div className="px-5 flex-1 space-y-3 overflow-y-auto">
         {loading ? (
-          <div className="text-center py-12" style={{ color: textMuted }}>Loading...</div>
+          <div className="text-center py-12" style={{ color: textMuted }}>{t("Loading")}...</div>
         ) : filteredNotifications.length === 0 ? (
           <div className="flex flex-col items-center py-16 gap-4">
             <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: theme === "dark" ? "#1A2438" : "#f3f4f6" }}>
               <Bell size={28} style={{ color: "#8A9BB5" }} />
             </div>
-            <p style={{ color: textMuted }}>{filter === "unread" ? "All caught up!" : "No notifications yet."}</p>
+            <p style={{ color: textMuted }}>{filter === "unread" ? "All caught up!" : t("No notifications yet")}</p>
           </div>
         ) : (
           filteredNotifications.map((n) => (
@@ -320,14 +320,14 @@ function Notifications() {
                 className="py-4 rounded-xl font-semibold text-sm"
                 style={{ background: "linear-gradient(135deg, #00C6FF, #7B2FFF)", color: "#FFFFFF" }}
               >
-                View History
+                {t("Transaction History")}
               </button>
               <button
                 onClick={() => setSelectedNotif(null)}
                 className="py-4 rounded-xl font-semibold text-sm"
                 style={{ background: theme === "dark" ? "#1A2438" : "#f3f4f6", color: textMuted }}
               >
-                Close
+                {t("Close")}
               </button>
             </div>
           </div>
