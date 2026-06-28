@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
-  Bell, User, Eye, EyeOff,
+  Bell, User, Eye, EyeOff, Moon, Sun,
   ArrowUpRight, ArrowLeftRight, Building2, Bitcoin,
   Receipt, UserPlus, FileCheck, Settings,
   Home as HomeIcon, CreditCard, Headphones,
@@ -72,7 +72,7 @@ function HomePage() {
   const { user, loading: authLoading } = useUserAuth();
   const { account, loading: accountLoading } = useUserAccount();
   const { transactions, loading: txLoading } = useUserTransactions();
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
 
   const currency: CurrencyCode = (account?.dashboardCurrency as CurrencyCode) || "USD";
@@ -86,7 +86,7 @@ function HomePage() {
     { label: t("Buy Crypto"),        icon: Bitcoin,        to: "/buy-crypto",        color: "#F59E0B" },
     { label: t("Pay Bills"),         icon: Receipt,        to: "/pay-bills",         color: "#10B981" },
     { label: t("Add Beneficiary"),   icon: UserPlus,       to: "/add-beneficiary",   color: "#EC4899" },
-    { label: t("Cards"),             icon: CreditCard,     to: "/cards",             color: "#38BDF8" },
+    { label: t("Transactions"),      icon: Activity,       to: "/transactions",      color: "#38BDF8" },
     { label: t("Crypto Deposit"),    icon: Bitcoin,        to: "/crypto-deposit",    color: "#F97316" },
     { label: t("Check Deposit"),     icon: FileCheck,      to: "/check-deposit",     color: "#14B8A6" },
   ];
@@ -239,12 +239,12 @@ function HomePage() {
             </div>
           </div>
           <div className="flex items-center gap-2" style={mounted ? { animation: "nx-fadeIn 0.4s 0.15s both", opacity: 0 } : { opacity: 0 }}>
-            {/* Settings */}
-            <Link to="/settings">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
-                <Settings size={17} style={{ color: "white" }} />
-              </div>
-            </Link>
+            {/* Theme toggle */}
+            <button onClick={toggleTheme}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90"
+              style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
+              {dark ? <Sun size={17} style={{ color: "white" }} /> : <Moon size={17} style={{ color: "white" }} />}
+            </button>
             {/* Notifications */}
             <Link to="/notifications" className="relative">
               <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
@@ -255,6 +255,27 @@ function HomePage() {
           </div>
         </div>
         <div className="px-5 pb-8 relative z-10">
+          {/* ── Total Balance mini bar ─────────────────────────────── */}
+          <div className="mb-4 px-1"
+            style={mounted ? { animation: "nx-fadeDown 0.45s cubic-bezier(0.22,1,0.36,1) 0.05s both", opacity: 0 } : { opacity: 0 }}>
+            <div className="flex items-center justify-between px-4 py-3 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.10)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.18)" }}>
+              <div>
+                <p className="text-white/55 text-xs tracking-wide uppercase">Total Balance</p>
+                <p className="text-white font-bold font-mono leading-tight mt-0.5"
+                  style={{ fontSize: "clamp(0.9rem, 4vw, 1.3rem)" }}>
+                  {balanceVisible
+                    ? formatInCurrency(accounts.reduce((s, a) => s + a.balance, 0), currency)
+                    : `${currencySymbol}••••••••`}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-white/45 text-xs">{accounts.length} account{accounts.length !== 1 ? "s" : ""}</p>
+                <p className="text-xs font-semibold mt-0.5" style={{ color: "#00E676" }}>● All Active</p>
+              </div>
+            </div>
+          </div>
+
           <div className="relative" style={{ paddingLeft: "28px", paddingRight: "28px" }}>
             {currentAccount > 0 && (
               <button onClick={() => switchAccount("prev")} className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full shadow-lg" style={{ left: "-4px", width: "36px", height: "36px", background: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.25)" }}>
@@ -303,18 +324,6 @@ function HomePage() {
             <div className="flex justify-center gap-1.5 mt-3">
               {accounts.map((_, i) => (<button key={i} onClick={() => setCurrentAccount(i)} className="rounded-full transition-all duration-300" style={{ width: i === currentAccount ? "20px" : "6px", height: "6px", background: i === currentAccount ? "white" : "rgba(255,255,255,0.4)" }} />))}
             </div>
-          </div>
-          <div className="flex items-center justify-center gap-8 mt-6">
-            {[
-              { label: t("Top Up"), icon: "?", bg: "#FBBF24", to: "/card-deposit", delay: 0.25 },
-              { label: t("Send"), icon: "??", bg: "rgba(255,255,255,0.2)", to: "/local-transfer", delay: 0.35 },
-              { label: t("Activity"), icon: "??", bg: "rgba(255,255,255,0.2)", to: "/transactions", delay: 0.45 },
-            ].map(({ label, icon, bg, to, delay }) => (
-              <Link key={label} to={to} className="flex flex-col items-center gap-2" style={mounted ? { animation: `nx-fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) ${delay}s both`, opacity: 0 } : { opacity: 0 }}>
-                <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-lg transition-all duration-200 active:scale-90 hover:scale-110" style={{ background: bg, backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>{icon}</div>
-                <span className="text-xs font-semibold text-white/80">{label}</span>
-              </Link>
-            ))}
           </div>
         </div>
       </div>
@@ -382,10 +391,10 @@ function HomePage() {
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t" style={{ background: dark ? "#0A0F1E" : "#FFFFFF", borderColor: dark ? "rgba(255,255,255,0.08)" : "#E5E7EB", boxShadow: dark ? "0 -4px 24px rgba(0,0,0,0.4)" : "0 -4px 24px rgba(0,0,0,0.06)" }}>
         <div className="flex items-center justify-around px-2 py-2">
           {[
-            { label: t("Activity"), icon: Activity, to: "/transactions" },
+            { label: t("Settings"), icon: Settings, to: "/settings" },
             { label: t("Transfer"), icon: ArrowUpRight, to: "/local-transfer" },
             { label: t("Home"), icon: HomeIcon, to: "/", active: true },
-            { label: t("Cards"), icon: CreditCard, to: "/cards" },
+            { label: t("Transactions"), icon: Activity, to: "/transactions" },
             { label: t("Support"), icon: Headphones, to: "/support" },
           ].map(({ label, icon: Icon, to, active }: any) => (
             <Link key={label} to={to} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-all min-w-0" style={{ background: active ? (dark ? "rgba(56,189,248,0.15)" : "rgba(56,189,248,0.12)") : "transparent" }}>
