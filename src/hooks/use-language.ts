@@ -44,7 +44,7 @@ export type TranslationKey =
   "Language"|"Select Language"|"Theme"|"Dark"|"Light"|
   "Sign Out"|"Security"|"Privacy"|"Preferences"|"Linked Accounts"|
   "Change Password"|"Contact Support"|"Close"|"Transaction Failed"|
-  "Transaction Declined"|"Beneficiary Approved"|"Balance Updated"|
+  "Transaction Declined"|"Transaction Approved"|"Beneficiary Approved"|"Balance Updated"|
   "First Name"|"Last Name"|"Email"|"To update your information, please contact support."|
   "Just now";
 
@@ -76,7 +76,7 @@ const EN: Translations = {
   "Preferences":"Preferences","Linked Accounts":"Linked Accounts",
   "Change Password":"Change Password","Contact Support":"Contact Support",
   "Close":"Close","Transaction Failed":"Transaction Failed",
-  "Transaction Declined":"Transaction Declined",
+  "Transaction Declined":"Transaction Declined","Transaction Approved":"Transaction Approved",
   "Beneficiary Approved":"Beneficiary Approved","Balance Updated":"Balance Updated",
   "Enable Notifications":"Enable Notifications",
   "Email Alerts":"Email Alerts",
@@ -123,7 +123,7 @@ const FR: Translations = {
   "Preferences":"Préférences","Linked Accounts":"Comptes liés",
   "Change Password":"Changer le mot de passe","Contact Support":"Contacter le support",
   "Close":"Fermer","Transaction Failed":"Transaction échouée",
-  "Transaction Declined":"Transaction refusée",
+  "Transaction Declined":"Transaction refusée","Transaction Approved":"Transaction approuvée",
   "Beneficiary Approved":"Bénéficiaire approuvé","Balance Updated":"Solde mis à jour",
   "Enable Notifications":"Activer les notifications",
   "Email Alerts":"Alertes e-mail",
@@ -170,7 +170,7 @@ const ES: Translations = {
   "Preferences":"Preferencias","Linked Accounts":"Cuentas vinculadas",
   "Change Password":"Cambiar contraseña","Contact Support":"Contactar soporte",
   "Close":"Cerrar","Transaction Failed":"Transacción fallida",
-  "Transaction Declined":"Transacción rechazada",
+  "Transaction Declined":"Transacción rechazada","Transaction Approved":"Transacción aprobada",
   "Beneficiary Approved":"Beneficiario aprobado","Balance Updated":"Saldo actualizado",
   "Enable Notifications":"Activar notificaciones",
   "Email Alerts":"Alertas de correo",

@@ -26,6 +26,27 @@ function formatCurrency(v: number) {
   return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Maps Firebase-stored English titles to translation keys
+const TITLE_KEY_MAP: Record<string, string> = {
+  "Transaction Failed":            "Transaction Failed",
+  "Transaction Declined":          "Transaction Declined",
+  "Transaction Approved":          "Transaction Approved",
+  "Transaction Approved ✓":        "Transaction Approved",
+  "Transaction Auto-Declined":     "Transaction Failed",
+  "Transaction Auto-Approved":     "Transaction Approved",
+  "Beneficiary Approved":          "Beneficiary Approved",
+  "Beneficiary Approved ✓":        "Beneficiary Approved",
+  "Beneficiary Request Declined":  "Transaction Declined",
+  "Beneficiary Approval Request":  "Beneficiary Approved",
+  "Balance Updated":               "Balance Updated",
+  "Balance Override":              "Balance Updated",
+};
+
+function translateTitle(rawTitle: string, tFn: (k: string) => string): string {
+  const key = TITLE_KEY_MAP[rawTitle] ?? TITLE_KEY_MAP[rawTitle?.replace(/\s*[✓✗]$/, "").trim()];
+  return key ? tFn(key) : rawTitle;
+}
+
 function Notifications() {
   const navigate = useNavigate();
   const { notifications, unreadCount, loading, markNotificationRead, markAllRead } = useUserNotifications();
@@ -175,7 +196,7 @@ function Notifications() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-semibold truncate" style={{ color: tc.textPrimary }}>
-                    {n.title}
+                    {translateTitle(n.title, t)}
                   </p>
                   {n.status === "unread" && (
                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-2" style={{ background: tc.accentCyan }} />
@@ -210,7 +231,7 @@ function Notifications() {
                 {getIcon(selectedNotif.type)}
               </div>
               <div>
-                <p className="font-bold text-base" style={{ color: tc.textPrimary }}>{selectedNotif.title}</p>
+                <p className="font-bold text-base" style={{ color: tc.textPrimary }}>{translateTitle(selectedNotif.title, t)}</p>
                 <p className="text-xs" style={{ color: tc.textMuted }}>
                   {selectedNotif.createdAt?.toLocaleString() || t("Just now")}
                 </p>
@@ -230,7 +251,7 @@ function Notifications() {
                     <XCircle size={32} color="#fff" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold mb-3" style={{ color: tc.textPrimary }}>Transaction Failed</p>
+                <p className="text-2xl font-bold mb-3" style={{ color: tc.textPrimary }}>{t("Transaction Failed")}</p>
                 <p className="text-sm leading-relaxed max-w-xs" style={{ color: tc.textMuted }}>
                   {selectedNotif.declineReason && selectedNotif.declineReason !== "declined"
                     ? selectedNotif.declineReason
