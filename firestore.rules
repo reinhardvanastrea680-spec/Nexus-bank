@@ -19,6 +19,11 @@ service cloud.firestore {
       match /transactions/{txId} {
         allow read, write: if isAdmin() || request.auth.uid == userId;
       }
+
+      match /customAccounts/{accountId} {
+        allow read: if isAdmin() || request.auth.uid == userId;
+        allow write: if isAdmin();
+      }
     }
 
     // ── Transactions ─────────────────────────────────────────────────────────

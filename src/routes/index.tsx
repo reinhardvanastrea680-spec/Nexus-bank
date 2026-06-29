@@ -11,6 +11,7 @@ import {
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { useTheme } from "../hooks/use-theme";
 import { useLanguage } from "../hooks/use-language";
 import { db } from "../firebase/config";
@@ -72,6 +73,7 @@ function HomePage() {
   const { user, loading: authLoading } = useUserAuth();
   const { account, loading: accountLoading } = useUserAccount();
   const { transactions, loading: txLoading } = useUserTransactions();
+  const { customAccounts } = useCustomAccounts(user?.uid);
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
 
@@ -193,6 +195,9 @@ function HomePage() {
   const accounts = account ? [
     { id: 1, label: "Checking Account", number: account.checkingAccountNumber || "---", balance: account.checkingBalance || 0, status: account.status || "active" },
     { id: 2, label: "Savings Account",  number: account.savingsAccountNumber  || "---", balance: account.savingsBalance  || 0, status: account.status || "active" },
+    ...customAccounts.filter(a => a.status === "active").map((a, i) => ({
+      id: 100 + i, label: a.name, number: a.accountNumber || "---", balance: a.balance || 0, status: a.status,
+    })),
   ] : [];
 
   const accountData = accounts[currentAccount];
@@ -266,7 +271,8 @@ function HomePage() {
                   style={{ fontSize: "clamp(0.9rem, 4vw, 1.3rem)" }}>
                   {balanceVisible
                     ? formatInCurrency(
-                        (account?.checkingBalance || 0) + (account?.savingsBalance || 0),
+                        (account?.checkingBalance || 0) + (account?.savingsBalance || 0) +
+                        customAccounts.reduce((s, a) => s + (a.balance || 0), 0),
                         currency
                       )
                     : `${currencySymbol}••••••••`}
