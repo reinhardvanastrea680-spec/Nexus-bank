@@ -18,20 +18,28 @@ export function useCustomAccounts(userId: string | null | undefined) {
       return;
     }
 
-    const q = query(
-      collection(db, "users", userId, "customAccounts"),
-      orderBy("createdAt", "asc"),
-    );
+    // Use a simple collection query without orderBy to avoid needing a composite index.
+    // Sort client-side instead.
+    const q = query(collection(db, "users", userId, "customAccounts"));
 
     const unsub = onSnapshot(
       q,
       (snap) => {
-        setCustomAccounts(
-          snap.docs.map((d) => ({ id: d.id, ...d.data() }) as CustomAccount),
-        );
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as CustomAccount);
+        // Sort by createdAt ascending (handles both Timestamp and Date)
+        docs.sort((a, b) => {
+          const ta = a.createdAt?.toMillis?.() ?? a.createdAt?.getTime?.() ?? 0;
+          const tb = b.createdAt?.toMillis?.() ?? b.createdAt?.getTime?.() ?? 0;
+          return ta - tb;
+        });
+        setCustomAccounts(docs);
         setLoading(false);
       },
-      () => setLoading(false),
+      (err) => {
+        console.error("useCustomAccounts error:", err);
+        setCustomAccounts([]);
+        setLoading(false);
+      },
     );
 
     return unsub;
