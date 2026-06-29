@@ -12,19 +12,21 @@ interface LangCtx {
 
 const LanguageContext = createContext<LangCtx | null>(null);
 
+// Read language synchronously on the client (safe with typeof window guard).
+// On server returns "en". On client returns stored value immediately — no flash.
+function getInitialLanguage(): LanguageCode {
+  if (typeof window === "undefined") return "en";
+  try {
+    const s = localStorage.getItem(STORAGE_KEY) as LanguageCode;
+    if (s && SUPPORTED_LANGUAGES.some(l => l.code === s)) return s;
+  } catch {}
+  return "en";
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Always start with "en" so SSR and first client render match (avoids hydration mismatch).
-  // The real stored value is applied after mount in useEffect.
-  const [language, setLang] = useState<LanguageCode>("en");
+  const [language, setLang] = useState<LanguageCode>(getInitialLanguage);
 
   useEffect(() => {
-    // Read localStorage only after hydration
-    try {
-      const s = localStorage.getItem(STORAGE_KEY) as LanguageCode;
-      if (s && SUPPORTED_LANGUAGES.some(l => l.code === s)) {
-        setLang(s);
-      }
-    } catch {}
 
     const handler = (e: Event) => {
       const code = (e as CustomEvent).detail || localStorage.getItem(STORAGE_KEY);

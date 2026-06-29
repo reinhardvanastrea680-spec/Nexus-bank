@@ -117,14 +117,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Apply saved theme
-    const stored = localStorage.getItem("nexus-bank-theme");
-    if (stored === "light" || stored === "dark") {
-      document.documentElement.classList.add(stored);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark");
-    }
-
     // Register service worker for PWA
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -133,10 +125,15 @@ function RootShell({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Blocking inline script — runs before React hydrates, prevents theme flash
+  const themeScript = `(function(){try{var t=localStorage.getItem('nexus-bank-theme');if(t==='light'||t==='dark'){document.documentElement.className=t;}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.className='dark';}else{document.documentElement.className='dark';}}catch(e){}})();`;
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Must be first in head — blocks render until theme class is set */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         {children}

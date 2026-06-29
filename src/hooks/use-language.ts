@@ -414,17 +414,17 @@ export const translations: Record<LanguageCode, Translations> = {
 };
 
 export function useLanguage() {
-  // Always start with "en" to match SSR output, then hydrate from localStorage after mount
-  const [language, setLanguageState] = useState<LanguageCode>("en");
-
-  useEffect(() => {
-    // Read stored language after mount (safe — no SSR access)
+  // Read synchronously on the client, "en" on server
+  const [language, setLanguageState] = useState<LanguageCode>(() => {
+    if (typeof window === "undefined") return "en";
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as LanguageCode | null;
-      if (stored && SUPPORTED_LANGUAGES.some((l) => l.code === stored)) {
-        setLanguageState(stored);
-      }
+      if (stored && SUPPORTED_LANGUAGES.some((l) => l.code === stored)) return stored;
     } catch {}
+    return "en";
+  });
+
+  useEffect(() => {
 
     const handler = (e?: Event) => {
       try {
