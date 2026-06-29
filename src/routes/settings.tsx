@@ -177,9 +177,9 @@ function Settings() {
               <span className="text-sm font-bold" style={{ color: t.textPrimary }}>{tl("Personal Information")}</span>
             </div>
             {[
-              { label: "First Name",  value: account?.fullName?.split(" ")[0] || "—" },
-              { label: "Last Name",   value: account?.fullName?.split(" ").slice(1).join(" ") || "—" },
-              { label: "Email",       value: user?.email || "—" },
+              { label: tl("First Name"),  value: account?.fullName?.split(" ")[0] || "—" },
+              { label: tl("Last Name"),   value: account?.fullName?.split(" ").slice(1).join(" ") || "—" },
+              { label: tl("Email"),       value: user?.email || "—" },
             ].map(({ label, value }) => (
               <div key={label} className="flex justify-between items-center py-2"
                 style={{ borderBottom: `1px solid ${t.inputBg}` }}>
@@ -188,7 +188,7 @@ function Settings() {
               </div>
             ))}
             <p className="text-xs pt-1" style={{ color: t.textMuted, opacity: 0.7 }}>
-              To update your information, please contact support.
+              {tl("To update your information, please contact support.")}
             </p>
           </div>
         </div>

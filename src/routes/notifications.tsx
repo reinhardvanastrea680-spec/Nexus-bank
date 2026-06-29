@@ -183,7 +183,7 @@ function Notifications() {
                 </div>
                 <p className="text-xs mb-1" style={{ color: tc.textMuted }}>{n.message?.replace(/\\. Reason:.*$/, "").replace(/ Reason:.*$/, "")}</p>
                 <p className="text-xs mt-1" style={{ color: tc.textMuted }}>
-                  {n.createdAt?.toLocaleString() || "Just now"}
+                  {n.createdAt?.toLocaleString() || t("Just now")}
                 </p>
               </div>
             </div>
@@ -212,7 +212,7 @@ function Notifications() {
               <div>
                 <p className="font-bold text-base" style={{ color: tc.textPrimary }}>{selectedNotif.title}</p>
                 <p className="text-xs" style={{ color: tc.textMuted }}>
-                  {selectedNotif.createdAt?.toLocaleString() || "Just now"}
+                  {selectedNotif.createdAt?.toLocaleString() || t("Just now")}
                 </p>
               </div>
             </div>

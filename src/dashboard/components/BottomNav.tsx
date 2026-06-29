@@ -1,23 +1,25 @@
 import { Link } from "@tanstack/react-router";
-import { Settings, Bell, Home as HomeIcon, History, Headphones, CreditCard, User } from "lucide-react";
+import { Settings, Bell, Home as HomeIcon, History, Headphones } from "lucide-react";
 import { useTheme } from "../../hooks/use-theme";
 import { themeColors } from "../../utils/theme";
+import { useLang } from "../../hooks/LanguageContext";
 
 interface BottomNavProps {
   active?: "home" | "notifications" | "transactions" | "settings" | "support" | "cards" | "profile";
 }
 
-const items = [
-  { key: "settings",      label: "Settings",      icon: Settings,     to: "/settings"      },
-  { key: "notifications", label: "Notifications", icon: Bell,         to: "/notifications" },
-  { key: "home",          label: "Home",          icon: HomeIcon,     to: "/"              },
-  { key: "transactions",  label: "Transactions",  icon: History,      to: "/transactions"  },
-  { key: "support",       label: "Support",       icon: Headphones,   to: "/support"       },
-];
-
 export function BottomNav({ active }: BottomNavProps) {
   const { theme } = useTheme();
   const t = themeColors(theme);
+  const { t: tl } = useLang();
+
+  const items = [
+    { key: "settings",      label: tl("Settings"),      icon: Settings,     to: "/settings"      },
+    { key: "notifications", label: tl("Notifications"), icon: Bell,         to: "/notifications" },
+    { key: "home",          label: tl("Home"),           icon: HomeIcon,     to: "/"              },
+    { key: "transactions",  label: tl("Transactions"),  icon: History,      to: "/transactions"  },
+    { key: "support",       label: tl("Support"),       icon: Headphones,   to: "/support"       },
+  ];
 
   return (
     <div

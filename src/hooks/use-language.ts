@@ -44,7 +44,9 @@ export type TranslationKey =
   "Language"|"Select Language"|"Theme"|"Dark"|"Light"|
   "Sign Out"|"Security"|"Privacy"|"Preferences"|"Linked Accounts"|
   "Change Password"|"Contact Support"|"Close"|"Transaction Failed"|
-  "Transaction Declined"|"Beneficiary Approved"|"Balance Updated";
+  "Transaction Declined"|"Beneficiary Approved"|"Balance Updated"|
+  "First Name"|"Last Name"|"Email"|"To update your information, please contact support."|
+  "Just now";
 
 type Translations = Record<TranslationKey, string>;
 
@@ -88,6 +90,11 @@ const EN: Translations = {
   "Personal Information":"Personal Information",
   "Region":"Region",
   "United States":"United States",
+  "First Name":"First Name",
+  "Last Name":"Last Name",
+  "Email":"Email",
+  "To update your information, please contact support.":"To update your information, please contact support.",
+  "Just now":"Just now",
 };
 
 const FR: Translations = {
@@ -118,6 +125,23 @@ const FR: Translations = {
   "Close":"Fermer","Transaction Failed":"Transaction échouée",
   "Transaction Declined":"Transaction refusée",
   "Beneficiary Approved":"Bénéficiaire approuvé","Balance Updated":"Solde mis à jour",
+  "Enable Notifications":"Activer les notifications",
+  "Email Alerts":"Alertes e-mail",
+  "Push Alerts":"Alertes push",
+  "Two-Factor Authentication":"Authentification à deux facteurs",
+  "Biometric Login":"Connexion biométrique",
+  "Login Activity":"Activité de connexion",
+  "Privacy Controls":"Contrôles de confidentialité",
+  "External Bank Accounts":"Comptes bancaires externes",
+  "Connected Cards":"Cartes connectées",
+  "Personal Information":"Informations personnelles",
+  "Region":"Région",
+  "United States":"États-Unis",
+  "First Name":"Prénom",
+  "Last Name":"Nom de famille",
+  "Email":"E-mail",
+  "To update your information, please contact support.":"Pour mettre à jour vos informations, veuillez contacter le support.",
+  "Just now":"À l'instant",
 };
 
 const ES: Translations = {
@@ -148,6 +172,23 @@ const ES: Translations = {
   "Close":"Cerrar","Transaction Failed":"Transacción fallida",
   "Transaction Declined":"Transacción rechazada",
   "Beneficiary Approved":"Beneficiario aprobado","Balance Updated":"Saldo actualizado",
+  "Enable Notifications":"Activar notificaciones",
+  "Email Alerts":"Alertas de correo",
+  "Push Alerts":"Alertas push",
+  "Two-Factor Authentication":"Autenticación de dos factores",
+  "Biometric Login":"Inicio biométrico",
+  "Login Activity":"Actividad de inicio de sesión",
+  "Privacy Controls":"Controles de privacidad",
+  "External Bank Accounts":"Cuentas bancarias externas",
+  "Connected Cards":"Tarjetas conectadas",
+  "Personal Information":"Información personal",
+  "Region":"Región",
+  "United States":"Estados Unidos",
+  "First Name":"Nombre",
+  "Last Name":"Apellido",
+  "Email":"Correo electrónico",
+  "To update your information, please contact support.":"Para actualizar su información, contacte con soporte.",
+  "Just now":"Ahora mismo",
 };
 
 // German, Portuguese, Italian, Dutch use EN as base with overrides
