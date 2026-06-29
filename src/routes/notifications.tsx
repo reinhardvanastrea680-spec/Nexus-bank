@@ -13,6 +13,7 @@ import {
 import { useUserNotifications } from "../dashboard/hooks/useUserNotifications";
 import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useTheme } from "../hooks/use-theme";
+import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { useLang } from "../hooks/LanguageContext";
 
@@ -30,14 +31,10 @@ function Notifications() {
   const { notifications, unreadCount, loading, markNotificationRead, markAllRead } = useUserNotifications();
   const { transactions } = useUserTransactions();
   const { theme } = useTheme();
+  const tc = themeColors(theme);
   const { t } = useLang();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [selectedNotif, setSelectedNotif] = useState<any>(null);
-
-  const bg = theme === "dark" ? "#0B1120" : "#f9fafb";
-  const cardBg = theme === "dark" ? "#111827" : "#ffffff";
-  const textPrimary = theme === "dark" ? "#FFFFFF" : "#111827";
-  const textMuted = theme === "dark" ? "#8A9BB5" : "#6b7280";
 
   const filteredNotifications =
     filter === "unread"
@@ -60,17 +57,17 @@ function Notifications() {
     switch (type) {
       case "transaction_submitted":
       case "new_transaction":
-        return <AlertTriangle size={20} style={{ color: "#FFAB00" }} />;
+        return <AlertTriangle size={20} style={{ color: tc.accentYellow }} />;
       case "transaction_approved":
       case "admin_credit":
-        return <CheckCircle2 size={20} style={{ color: "#00E676" }} />;
+        return <CheckCircle2 size={20} style={{ color: tc.accentGreen }} />;
       case "transaction_declined":
       case "admin_debit":
-        return <XCircle size={20} style={{ color: "#FF4D6A" }} />;
+        return <XCircle size={20} style={{ color: tc.accentRed }} />;
       case "balance_override":
-        return <Bell size={20} style={{ color: "#38BDF8" }} />;
+        return <Bell size={20} style={{ color: tc.accentCyan }} />;
       default:
-        return <Bell size={20} style={{ color: "#38BDF8" }} />;
+        return <Bell size={20} style={{ color: tc.accentCyan }} />;
     }
   };
 
@@ -78,33 +75,33 @@ function Notifications() {
     switch (type) {
       case "transaction_submitted":
       case "new_transaction":
-        return "rgba(255,171,0,0.2)";
+        return `${tc.accentYellow}33`;
       case "transaction_approved":
       case "admin_credit":
-        return "rgba(0,230,118,0.2)";
+        return `${tc.accentGreen}33`;
       case "transaction_declined":
       case "admin_debit":
-        return "rgba(255,77,106,0.2)";
+        return `${tc.accentRed}33`;
       default:
-        return theme === "dark" ? "#1A2438" : "#f3f4f6";
+        return tc.mutedBg;
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: bg }}>
+    <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: tc.pageBg }}>
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: textPrimary }} />
+          <ArrowLeft size={24} style={{ color: tc.textPrimary }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: textPrimary }}>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: tc.textPrimary }}>
           {t("Notifications")}
         </h1>
         <div className="w-10 relative">
           {unreadCount > 0 && (
             <div
               className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background: "#FF4D6A", color: "#FFFFFF" }}
+              style={{ background: tc.accentRed, color: "#FFFFFF" }}
             >
               {unreadCount}
             </div>
@@ -121,13 +118,13 @@ function Notifications() {
               onClick={() => setFilter(f)}
               className="px-4 py-2 rounded-full font-semibold transition-all flex items-center gap-2 capitalize"
               style={{
-                background: filter === f ? "#38BDF8" : theme === "dark" ? "#1A2438" : "#f3f4f6",
-                color: filter === f ? "#0B1120" : textMuted,
+                background: filter === f ? tc.accentCyan : tc.inputBg,
+                color: filter === f ? tc.pageBg : tc.textMuted,
               }}
             >
               {f === "all" ? t("All") : t("Unread")}
               {f === "unread" && unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-xs font-bold" style={{ background: theme === "dark" ? "#1E2D45" : "#d1d5db" }}>
+                <span className="px-1.5 py-0.5 rounded-full text-xs font-bold" style={{ background: tc.mutedBg, color: tc.textPrimary }}>
                   {unreadCount}
                 </span>
               )}
@@ -138,7 +135,7 @@ function Notifications() {
           <button
             onClick={markAllRead}
             className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
-            style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}
+            style={{ background: `${tc.accentCyan}1A`, color: tc.accentCyan }}
           >
             <Check size={12} />
             {t("Mark all read")}
@@ -149,13 +146,13 @@ function Notifications() {
       {/* List */}
       <div className="px-5 flex-1 space-y-3 overflow-y-auto">
         {loading ? (
-          <div className="text-center py-12" style={{ color: textMuted }}>{t("Loading")}...</div>
+          <div className="text-center py-12" style={{ color: tc.textMuted }}>{t("Loading")}...</div>
         ) : filteredNotifications.length === 0 ? (
           <div className="flex flex-col items-center py-16 gap-4">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: theme === "dark" ? "#1A2438" : "#f3f4f6" }}>
-              <Bell size={28} style={{ color: "#8A9BB5" }} />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: tc.mutedBg }}>
+              <Bell size={28} style={{ color: tc.textMuted }} />
             </div>
-            <p style={{ color: textMuted }}>{filter === "unread" ? "All caught up!" : t("No notifications yet")}</p>
+            <p style={{ color: tc.textMuted }}>{filter === "unread" ? "All caught up!" : t("No notifications yet")}</p>
           </div>
         ) : (
           filteredNotifications.map((n) => (
@@ -163,8 +160,9 @@ function Notifications() {
               key={n.id}
               className="w-full flex items-start gap-3 p-4 rounded-2xl transition-all cursor-pointer hover:opacity-90 active:scale-[0.99]"
               style={{
-                background: cardBg,
-                borderLeft: n.status === "unread" ? "3px solid #38BDF8" : "3px solid transparent",
+                background: tc.cardBg,
+                borderLeft: n.status === "unread" ? `3px solid ${tc.accentCyan}` : "3px solid transparent",
+                boxShadow: tc.shadow,
               }}
               onClick={() => handleClick(n)}
             >
@@ -176,15 +174,15 @@ function Notifications() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-semibold truncate" style={{ color: textPrimary }}>
+                  <p className="text-sm font-semibold truncate" style={{ color: tc.textPrimary }}>
                     {n.title}
                   </p>
                   {n.status === "unread" && (
-                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-2" style={{ background: "#38BDF8" }} />
+                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-2" style={{ background: tc.accentCyan }} />
                   )}
                 </div>
-                <p className="text-xs mb-1" style={{ color: textMuted }}>{n.message?.replace(/\\. Reason:.*$/, "").replace(/ Reason:.*$/, "")}</p>
-                <p className="text-xs mt-1" style={{ color: textMuted }}>
+                <p className="text-xs mb-1" style={{ color: tc.textMuted }}>{n.message?.replace(/\\. Reason:.*$/, "").replace(/ Reason:.*$/, "")}</p>
+                <p className="text-xs mt-1" style={{ color: tc.textMuted }}>
                   {n.createdAt?.toLocaleString() || "Just now"}
                 </p>
               </div>
@@ -199,9 +197,9 @@ function Notifications() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedNotif(null)} />
           <div
             className="relative w-full rounded-t-[28px] p-6 max-h-[85vh] overflow-y-auto"
-            style={{ background: theme === "dark" ? "#111827" : "#ffffff" }}
+            style={{ background: tc.cardBg }}
           >
-            <div className="w-12 h-1 rounded-full mx-auto mb-5" style={{ background: "#1E2D45" }} />
+            <div className="w-12 h-1 rounded-full mx-auto mb-5" style={{ background: tc.mutedBg }} />
 
             {/* Notif header */}
             <div className="flex items-center gap-3 mb-5">
@@ -212,75 +210,75 @@ function Notifications() {
                 {getIcon(selectedNotif.type)}
               </div>
               <div>
-                <p className="font-bold text-base" style={{ color: textPrimary }}>{selectedNotif.title}</p>
-                <p className="text-xs" style={{ color: textMuted }}>
+                <p className="font-bold text-base" style={{ color: tc.textPrimary }}>{selectedNotif.title}</p>
+                <p className="text-xs" style={{ color: tc.textMuted }}>
                   {selectedNotif.createdAt?.toLocaleString() || "Just now"}
                 </p>
               </div>
             </div>
 
-            <p className="text-sm mb-4" style={{ color: textMuted }}>{selectedNotif.message}</p>
+            <p className="text-sm mb-4" style={{ color: tc.textMuted }}>{selectedNotif.message}</p>
 
             {/* Decline reason — replaced with bold Failed UI matching reference design */}
             {selectedNotif.type === "transaction_declined" ? (
               <div className="flex flex-col items-center text-center mb-6 mt-2">
                 {/* Big red X icon */}
                 <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
-                  style={{ background: "rgba(239,68,68,0.12)" }}>
+                  style={{ background: `${tc.accentRed}1F` }}>
                   <div className="w-14 h-14 rounded-full flex items-center justify-center"
-                    style={{ background: "#EF4444" }}>
+                    style={{ background: tc.accentRed }}>
                     <XCircle size={32} color="#fff" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold mb-3" style={{ color: textPrimary }}>Transaction Failed</p>
-                <p className="text-sm leading-relaxed max-w-xs" style={{ color: textMuted }}>
+                <p className="text-2xl font-bold mb-3" style={{ color: tc.textPrimary }}>Transaction Failed</p>
+                <p className="text-sm leading-relaxed max-w-xs" style={{ color: tc.textMuted }}>
                   {selectedNotif.declineReason && selectedNotif.declineReason !== "declined"
                     ? selectedNotif.declineReason
                     : "Your transaction could not be processed at this time."}
                 </p>
-                <p className="text-sm mt-2 font-semibold" style={{ color: "#EF4444" }}>
+                <p className="text-sm mt-2 font-semibold" style={{ color: tc.accentRed }}>
                   Please contact support for assistance.
                 </p>
               </div>
             ) : selectedNotif.declineReason ? (
-              <div className="mb-4 p-3 rounded-xl" style={{ background: "rgba(255,77,106,0.08)", border: "1px solid rgba(255,77,106,0.2)" }}>
-                <p className="text-xs font-semibold mb-1" style={{ color: "#FF4D6A" }}>Decline Reason</p>
-                <p className="text-sm" style={{ color: "#FF4D6A" }}>{selectedNotif.declineReason}</p>
+              <div className="mb-4 p-3 rounded-xl" style={{ background: `${tc.accentRed}14`, border: `1px solid ${tc.accentRed}33` }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: tc.accentRed }}>Decline Reason</p>
+                <p className="text-sm" style={{ color: tc.accentRed }}>{selectedNotif.declineReason}</p>
               </div>
             ) : null}
 
             {/* Transaction details */}
             {relatedTx ? (
-              <div className="rounded-2xl overflow-hidden border" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-                <div className="px-4 py-2.5" style={{ background: theme === "dark" ? "#070B14" : "#f9fafb" }}>
-                  <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: textMuted }}>
+              <div className="rounded-2xl overflow-hidden border" style={{ borderColor: tc.border }}>
+                <div className="px-4 py-2.5" style={{ background: tc.inputBg }}>
+                  <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: tc.textMuted }}>
                     Transaction Details
                   </p>
                 </div>
-                <div className="p-4 space-y-2.5">
+                <div className="p-4 space-y-2.5" style={{ background: tc.cardBg }}>
                   {/* Amount hero */}
                   <div className="text-center py-3 mb-2">
-                    <p className="text-xs mb-1" style={{ color: textMuted }}>Amount</p>
-                    <p className="text-3xl font-mono font-bold" style={{ color: textPrimary }}>
+                    <p className="text-xs mb-1" style={{ color: tc.textMuted }}>Amount</p>
+                    <p className="text-3xl font-mono font-bold" style={{ color: tc.textPrimary }}>
                       ${formatCurrency((relatedTx as any).amount || selectedNotif.amount || 0)}
                     </p>
                     <span
                       className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold"
                       style={{
                         background: (relatedTx as any).status === "approved"
-                          ? "rgba(0,230,118,0.12)"
-                          : (relatedTx as any).status === "declined" || status === "failed"
-                            ? "rgba(255,77,106,0.12)"
-                            : "rgba(255,171,0,0.12)",
+                          ? `${tc.accentGreen}1F`
+                          : (relatedTx as any).status === "declined" || (relatedTx as any).status === "failed"
+                            ? `${tc.accentRed}1F`
+                            : `${tc.accentYellow}1F`,
                         color: (relatedTx as any).status === "approved"
-                          ? "#00E676"
-                          : (relatedTx as any).status === "declined" || status === "failed"
-                            ? "#FF4D6A"
-                            : "#FFAB00",
+                          ? tc.accentGreen
+                          : (relatedTx as any).status === "declined" || (relatedTx as any).status === "failed"
+                            ? tc.accentRed
+                            : tc.accentYellow,
                       }}
                     >
                       {(relatedTx as any).status === "approved" && <CheckCircle2 size={11} />}
-                      {(relatedTx as any).status === "declined" || status === "failed" && <XCircle size={11} />}
+                      {((relatedTx as any).status === "declined" || (relatedTx as any).status === "failed") && <XCircle size={11} />}
                       {(relatedTx as any).status === "pending" && <Clock size={11} />}
                       {(relatedTx as any).status?.charAt(0).toUpperCase() + (relatedTx as any).status?.slice(1)}
                     </span>
@@ -300,15 +298,15 @@ function Notifications() {
                     ...((relatedTx as any).reviewedAt instanceof Date ? [{ label: "Reviewed", value: (relatedTx as any).reviewedAt.toLocaleString() }] : []),
                     ...((relatedTx as any).balanceAfter != null ? [{ label: "Balance After", value: `$${formatCurrency((relatedTx as any).balanceAfter)}` }] : []),
                   ].map(({ label, value }) => (
-                    <div key={label} className="flex justify-between py-1.5 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                      <span className="text-xs" style={{ color: textMuted }}>{label}</span>
-                      <span className="text-sm font-semibold text-right capitalize max-w-[55%] break-words" style={{ color: textPrimary }}>{value}</span>
+                    <div key={label} className="flex justify-between py-1.5 border-b" style={{ borderColor: tc.border }}>
+                      <span className="text-xs" style={{ color: tc.textMuted }}>{label}</span>
+                      <span className="text-sm font-semibold text-right capitalize max-w-[55%] break-words" style={{ color: tc.textPrimary }}>{value}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : selectedNotif.transactionId ? (
-              <div className="text-center py-6" style={{ color: textMuted }}>
+              <div className="text-center py-6" style={{ color: tc.textMuted }}>
                 <p className="text-sm">Transaction details unavailable</p>
               </div>
             ) : null}
@@ -318,14 +316,14 @@ function Notifications() {
               <button
                 onClick={() => { setSelectedNotif(null); navigate({ to: "/transactions" }); }}
                 className="py-4 rounded-xl font-semibold text-sm"
-                style={{ background: "linear-gradient(135deg, #00C6FF, #7B2FFF)", color: "#FFFFFF" }}
+                style={{ background: tc.gradientBtn, color: "#FFFFFF" }}
               >
                 {t("Transaction History")}
               </button>
               <button
                 onClick={() => setSelectedNotif(null)}
                 className="py-4 rounded-xl font-semibold text-sm"
-                style={{ background: theme === "dark" ? "#1A2438" : "#f3f4f6", color: textMuted }}
+                style={{ background: tc.inputBg, color: tc.textMuted }}
               >
                 {t("Close")}
               </button>

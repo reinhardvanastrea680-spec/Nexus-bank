@@ -323,7 +323,7 @@ function LocalTransfer() {
             <div
               key={s}
               className="h-2 rounded-full transition-all"
-              style={{ width: s === step ? 24 : 8, background: s <= step ? "#38BDF8" : "#1A2438" }}
+              style={{ width: s === step ? 24 : 8, background: s <= step ? t.accentCyan : t.inputBg }}
             />
           ))}
         </div>
@@ -575,8 +575,8 @@ function LocalTransfer() {
                   onClick={() => setSourceAccount("Checking")}
                   className="flex-1 py-4 px-4 rounded-xl font-bold transition-all"
                   style={{
-                    background: sourceAccount === "Checking" ? "#38BDF8" : "#1A2438",
-                    color: sourceAccount === "Checking" ? t.pageBg : "#8A9BB5",
+                    background: sourceAccount === "Checking" ? t.accentCyan : t.inputBg,
+                    color: sourceAccount === "Checking" ? t.pageBg : t.textMuted,
                   }}
                 >
                   Checking
@@ -585,8 +585,8 @@ function LocalTransfer() {
                   onClick={() => setSourceAccount("Savings")}
                   className="flex-1 py-4 px-4 rounded-xl font-bold transition-all"
                   style={{
-                    background: sourceAccount === "Savings" ? "#38BDF8" : "#1A2438",
-                    color: sourceAccount === "Savings" ? t.pageBg : "#8A9BB5",
+                    background: sourceAccount === "Savings" ? t.accentCyan : t.inputBg,
+                    color: sourceAccount === "Savings" ? t.pageBg : t.textMuted,
                   }}
                 >
                   Savings

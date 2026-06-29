@@ -83,7 +83,7 @@ function InternalTransfer() {
           <div className="flex gap-3">
             {["Checking", "Savings"].map((acc) => (
               <button key={acc} onClick={() => setFromAccount(acc)} className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
-                style={{ background: fromAccount === acc ? t.accentCyan : t.inputBg, color: fromAccount === acc ? "#0B1120" : t.textMuted }}>
+              style={{ background: fromAccount === acc ? t.accentCyan : t.inputBg, color: fromAccount === acc ? t.pageBg : t.textMuted }}>
                 {acc}
               </button>
             ))}
@@ -98,7 +98,7 @@ function InternalTransfer() {
             {["Checking", "Savings"].map((acc) => (
               <button key={acc} onClick={() => setToAccount(acc)} disabled={acc === fromAccount}
                 className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
-                style={{ background: toAccount === acc ? t.accentCyan : t.inputBg, color: toAccount === acc ? "#0B1120" : t.textMuted, opacity: acc === fromAccount ? 0.3 : 1 }}>
+                style={{ background: toAccount === acc ? t.accentCyan : t.inputBg, color: toAccount === acc ? t.pageBg : t.textMuted, opacity: acc === fromAccount ? 0.3 : 1 }}>
                 {acc}
               </button>
             ))}

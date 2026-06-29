@@ -188,13 +188,13 @@ function Transactions() {
       {/* Transactions List */}
       <div className="px-5 flex-1 space-y-6 overflow-y-auto">
         {loading ? (
-          <div className="text-center py-12 text-[#8A9BB5]">{tl("Loading")}...</div>
+          <div className="text-center py-12" style={{ color: t.textMuted }}>{tl("Loading")}...</div>
         ) : filteredTransactions.length === 0 ? (
-          <div className="text-center py-12 text-[#8A9BB5]">{tl("No transactions found")}</div>
+          <div className="text-center py-12" style={{ color: t.textMuted }}>{tl("No transactions found")}</div>
         ) : (
           Object.keys(groupedTransactions).map((dateKey) => (
             <div key={dateKey} className="space-y-3">
-              <span className="text-xs font-semibold" style={{ color: "#8A9BB5" }}>
+              <span className="text-xs font-semibold" style={{ color: t.textMuted }}>
                 {dateKey}
               </span>
               {groupedTransactions[dateKey].map((tx: any) => {
@@ -270,7 +270,7 @@ function Transactions() {
                       {isCredit ? "+" : "-"}$
                       {formatCurrency(selectedTransaction.amount)}
                     </p>
-                    <p className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
+                    <p className="text-sm font-semibold" style={{ color: t.textPrimary }}>
                       {txDesc}
                     </p>
                     <div className="mt-4 space-y-4">

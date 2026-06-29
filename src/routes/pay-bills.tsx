@@ -184,7 +184,7 @@ function PayBills() {
           <div className="flex gap-3">
             {(["Checking", "Savings"] as const).map((acc) => (
               <button key={acc} onClick={() => setSelectedAccount(acc)} className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
-                style={{ background: selectedAccount === acc ? t.accentCyan : t.inputBg, color: selectedAccount === acc ? "#0B1120" : t.textMuted }}>
+              style={{ background: selectedAccount === acc ? t.accentCyan : t.inputBg, color: selectedAccount === acc ? t.pageBg : t.textMuted }}>
                 {acc}
               </button>
             ))}
@@ -255,13 +255,13 @@ function PayBills() {
         {/* Categories */}
         <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
           <button onClick={() => setSelectedCategory(null)} className="flex-shrink-0 px-4 py-2 rounded-full font-semibold"
-            style={{ background: !selectedCategory ? t.accentCyan : t.inputBg, color: !selectedCategory ? "#0B1120" : t.textMuted }}>
+            style={{ background: !selectedCategory ? t.accentCyan : t.inputBg, color: !selectedCategory ? t.pageBg : t.textMuted }}>
             All
           </button>
           {categories.map((cat) => (
             <button key={cat.id} onClick={() => setSelectedCategory(cat.id)}
               className="flex-shrink-0 px-4 py-2 rounded-full font-semibold flex items-center gap-2"
-              style={{ background: selectedCategory === cat.id ? t.accentCyan : t.inputBg, color: selectedCategory === cat.id ? "#0B1120" : t.textMuted }}>
+              style={{ background: selectedCategory === cat.id ? t.accentCyan : t.inputBg, color: selectedCategory === cat.id ? t.pageBg : t.textMuted }}>
               <span>{cat.icon}</span>{cat.name}
             </button>
           ))}
@@ -274,7 +274,7 @@ function PayBills() {
               className="p-6 rounded-2xl text-center transition-all"
               style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
               <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center font-bold text-lg"
-                style={{ background: t.accentCyan, color: "#0B1120" }}>
+                style={{ background: t.accentCyan, color: t.pageBg }}>
                 {biller.initials}
               </div>
               <div className="text-sm font-semibold" style={{ color: t.textPrimary }}>{biller.name}</div>

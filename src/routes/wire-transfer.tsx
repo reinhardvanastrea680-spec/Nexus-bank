@@ -261,7 +261,7 @@ function WireTransferWizard() {
               className="h-2 rounded-full transition-all"
               style={{
                 width: s === step ? 24 : 8,
-                background: s <= step ? "#38BDF8" : "#1A2438",
+                background: s <= step ? t.accentCyan : t.inputBg,
               }}
             />
           ))}
@@ -277,9 +277,9 @@ function WireTransferWizard() {
                 onClick={() => setUseSaved(true)}
                 className="flex-1 py-4 rounded-xl font-semibold transition-all"
                 style={{
-                  background: useSaved ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#111827",
-                  color: useSaved ? "#FFFFFF" : "#8A9BB5",
-                  border: useSaved ? "none" : "1px solid rgba(255,255,255,0.07)",
+                  background: useSaved ? t.gradientBtn : t.inputBg,
+                  color: useSaved ? "#FFFFFF" : t.textMuted,
+                  border: useSaved ? "none" : `1px solid ${t.border}`,
                 }}
               >
                 Saved Beneficiary
@@ -288,9 +288,9 @@ function WireTransferWizard() {
                 onClick={() => setUseSaved(false)}
                 className="flex-1 py-4 rounded-xl font-semibold transition-all"
                 style={{
-                  background: !useSaved ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#111827",
-                  color: !useSaved ? "#FFFFFF" : "#8A9BB5",
-                  border: !useSaved ? "none" : "1px solid rgba(255,255,255,0.07)",
+                  background: !useSaved ? t.gradientBtn : t.inputBg,
+                  color: !useSaved ? "#FFFFFF" : t.textMuted,
+                  border: !useSaved ? "none" : `1px solid ${t.border}`,
                 }}
               >
                 New Recipient

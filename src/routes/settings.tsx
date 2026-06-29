@@ -529,16 +529,16 @@ function Settings() {
           style={{ background: "rgba(0,0,0,0.6)" }}
           onClick={closeModal}>
           <div className="w-full max-w-sm rounded-3xl p-6"
-            style={{ background: theme === "dark" ? "#111827" : "#ffffff" }}
+            style={{ background: t.cardBg }}
             onClick={(e) => e.stopPropagation()}>
-            <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: "rgba(100,100,100,0.3)" }} />
+            <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: t.mutedBg }} />
 
             {/* Change Password */}
             {activeModal === "change-password" && (
               <div className="space-y-5">
                 <div className="flex flex-col items-center gap-3 text-center">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
-                    style={{ background: theme === "light" ? "#EEF2FF" : "rgba(99,102,241,0.15)" }}>
+                    style={{ background: t.mutedBg }}>
                     🔒
                   </div>
                   <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>{tl("Change Password")}</h3>
@@ -712,9 +712,9 @@ function Settings() {
               <button
                 onClick={handleLogout}
                 className="flex-1 py-3 rounded-2xl text-sm font-semibold"
-                style={{ background: "#FF4D6A", color: "#FFFFFF" }}
+                style={{ background: t.accentRed, color: "#FFFFFF" }}
               >
-                Sign Out
+                {tl("Sign Out")}
               </button>
             </div>
           </div>

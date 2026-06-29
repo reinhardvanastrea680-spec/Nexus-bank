@@ -193,8 +193,8 @@ function CheckDeposit() {
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
                   style={{
-                    background: s.id <= step ? "#38BDF8" : "#1A2438",
-                    color: s.id <= step ? t.pageBg : "#8A9BB5",
+                    background: s.id <= step ? t.accentCyan : t.inputBg,
+                    color: s.id <= step ? t.pageBg : t.textMuted,
                   }}
                 >
                   {s.id}
@@ -206,7 +206,7 @@ function CheckDeposit() {
               {s.id < steps.length && (
                 <div
                   className="flex-1 h-0.5 mx-2"
-                  style={{ background: s.id < step ? "#38BDF8" : "#1A2438" }}
+                  style={{ background: s.id < step ? t.accentCyan : t.inputBg }}
                 />
               )}
             </div>
@@ -450,8 +450,8 @@ function CheckDeposit() {
                   onClick={() => setSelectedAccount("Checking")}
                   className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
                   style={{
-                    background: selectedAccount === "Checking" ? "#38BDF8" : "#1A2438",
-                    color: selectedAccount === "Checking" ? t.pageBg : "#8A9BB5",
+                    background: selectedAccount === "Checking" ? t.accentCyan : t.inputBg,
+                    color: selectedAccount === "Checking" ? t.pageBg : t.textMuted,
                   }}
                 >
                   Checking
@@ -460,8 +460,8 @@ function CheckDeposit() {
                   onClick={() => setSelectedAccount("Savings")}
                   className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
                   style={{
-                    background: selectedAccount === "Savings" ? "#38BDF8" : "#1A2438",
-                    color: selectedAccount === "Savings" ? t.pageBg : "#8A9BB5",
+                    background: selectedAccount === "Savings" ? t.accentCyan : t.inputBg,
+                    color: selectedAccount === "Savings" ? t.pageBg : t.textMuted,
                   }}
                 >
                   Savings

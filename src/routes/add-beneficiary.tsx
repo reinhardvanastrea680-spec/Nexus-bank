@@ -419,12 +419,12 @@ function AddBeneficiary() {
           style={{ background: "rgba(0,0,0,0.65)" }}
           onClick={() => setShowBlockedPopup(false)}>
           <div className="w-full max-w-sm rounded-3xl p-7 space-y-5"
-            style={{ background: theme === "dark" ? "#111827" : "#ffffff" }}
+            style={{ background: t.cardBg }}
             onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="w-16 h-16 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(255,171,0,0.15)" }}>
-                <AlertCircle size={32} style={{ color: "#FFAB00" }} />
+                style={{ background: `${t.accentYellow}26` }}>
+                <AlertCircle size={32} style={{ color: t.accentYellow }} />
               </div>
               <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>
                 Couldn't Save Beneficiary
@@ -454,12 +454,12 @@ function AddBeneficiary() {
           style={{ background: "rgba(0,0,0,0.65)" }}
           onClick={() => setShowDeclinedPopup(false)}>
           <div className="w-full max-w-sm rounded-3xl p-7 space-y-5"
-            style={{ background: theme === "dark" ? "#111827" : "#ffffff" }}
+            style={{ background: t.cardBg }}
             onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="w-16 h-16 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(255,77,106,0.15)" }}>
-                <XCircle size={32} style={{ color: "#FF4D6A" }} />
+                style={{ background: `${t.accentRed}26` }}>
+                <XCircle size={32} style={{ color: t.accentRed }} />
               </div>
               <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>
                 Beneficiary Not Allowed

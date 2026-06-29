@@ -226,9 +226,8 @@ function CardDeposit() {
                 key={acc}
                 onClick={() => setDestinationAccount(acc)}
                 className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
-                style={{
-                  background: destinationAccount === acc ? "#38BDF8" : "#1A2438",
-                  color: destinationAccount === acc ? t.pageBg : "#8A9BB5",
+                style={{ background: destinationAccount === acc ? t.accentCyan : t.inputBg,
+                  color: destinationAccount === acc ? t.pageBg : t.textMuted,
                 }}
               >
                 {acc}
