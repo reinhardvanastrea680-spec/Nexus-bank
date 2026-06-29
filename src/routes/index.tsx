@@ -73,7 +73,7 @@ function HomePage() {
   const { user, loading: authLoading } = useUserAuth();
   const { account, loading: accountLoading } = useUserAccount();
   const { transactions, loading: txLoading } = useUserTransactions();
-  const { customAccounts } = useCustomAccounts(user?.uid || account?.id);
+  const { customAccounts, loading: customLoading } = useCustomAccounts(user?.uid || account?.id);
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
 
@@ -200,11 +200,8 @@ function HomePage() {
     })),
   ] : [];
 
-  // Total across ALL accounts (checking + savings + every custom account)
-  const totalAllAccounts =
-    (account?.checkingBalance || 0) +
-    (account?.savingsBalance  || 0) +
-    customAccounts.reduce((s, a) => s + (a.balance || 0), 0);
+  // Always derived from the accounts array — automatically includes any future accounts
+  const totalAllAccounts = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
 
   const accountData = accounts[currentAccount];
   const recentTx = transactions.slice(0, 3);
@@ -276,7 +273,9 @@ function HomePage() {
                 <p className="text-white font-bold font-mono leading-tight mt-0.5"
                   style={{ fontSize: "clamp(0.9rem, 4vw, 1.3rem)" }}>
                   {balanceVisible
-                    ? formatInCurrency(totalAllAccounts, currency)
+                    ? customLoading
+                      ? <span className="opacity-60 animate-pulse">{formatInCurrency(totalAllAccounts, currency)}</span>
+                      : formatInCurrency(totalAllAccounts, currency)
                     : `${currencySymbol}••••••••`}
                 </p>
               </div>
