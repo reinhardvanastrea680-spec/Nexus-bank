@@ -121,7 +121,7 @@ function Transactions() {
         className="min-h-screen flex items-center justify-center"
         style={{ background: t.pageBg }}
       >
-        <p style={{ color: t.textMuted }}>Please log in to view transactions.</p>
+        <p style={{ color: t.textOnBg }}>Please log in to view transactions.</p>
       </div>
     );
   }
@@ -131,13 +131,13 @@ function Transactions() {
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>
           {tl("Transaction History")}
         </h1>
         <button onClick={() => setShowFilters(!showFilters)} className="p-2">
-          <Filter size={24} style={{ color: t.accentCyan }} />
+          <Filter size={24} style={{ color: t.textOnBg }} />
         </button>
       </div>
 
@@ -194,7 +194,7 @@ function Transactions() {
         ) : (
           Object.keys(groupedTransactions).map((dateKey) => (
             <div key={dateKey} className="space-y-3">
-              <span className="text-xs font-semibold" style={{ color: t.textMuted }}>
+              <span className="text-xs font-semibold" style={{ color: t.textMutedOnBg }}>
                 {dateKey}
               </span>
               {groupedTransactions[dateKey].map((tx: any) => {

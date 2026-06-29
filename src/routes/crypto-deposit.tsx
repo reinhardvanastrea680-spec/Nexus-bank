@@ -290,9 +290,9 @@ function CryptoDeposit() {
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>Crypto Deposit</h1>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>Crypto Deposit</h1>
         <div className="w-10" />
       </div>
 
@@ -300,7 +300,7 @@ function CryptoDeposit() {
 
         {/* ── Step 1: Select Crypto ── */}
         <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: t.textMuted }}>Select Asset</label>
+          <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>Select Asset</label>
           <button
             onClick={() => setShowSelector(!showSelector)}
             className="w-full flex items-center justify-between p-4 rounded-2xl transition-all"

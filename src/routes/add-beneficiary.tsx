@@ -230,9 +230,9 @@ function AddBeneficiary() {
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>
           Beneficiaries
         </h1>
         <div className="w-10" />
@@ -242,12 +242,12 @@ function AddBeneficiary() {
 
         {/* ── Saved Beneficiaries ── */}
         <div>
-          <label className="block text-sm font-semibold mb-3" style={{ color: t.textMuted }}>
+          <label className="block text-sm font-semibold mb-3" style={{ color: t.textMutedOnBg }}>
             Saved Beneficiaries {beneficiaries.length > 0 && `(${beneficiaries.length})`}
           </label>
 
           {loading ? (
-            <p className="text-sm" style={{ color: t.textMuted }}>Loading...</p>
+            <p className="text-sm" style={{ color: t.textMutedOnBg }}>Loading...</p>
           ) : beneficiaries.length === 0 ? (
             <div className="p-5 rounded-2xl text-center"
               style={{ background: t.cardBg, border: `1px dashed ${t.accentCyan}40` }}>
@@ -272,7 +272,7 @@ function AddBeneficiary() {
                       {ben.initials}
                     </div>
                     <span className="text-xs font-medium text-center max-w-[60px] truncate"
-                      style={{ color: t.textMuted }}>
+                      style={{ color: t.textMutedOnBg }}>
                       {ben.nickname || ben.fullName}
                     </span>
                   </button>

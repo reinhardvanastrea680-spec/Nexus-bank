@@ -132,9 +132,9 @@ function PayBills() {
     <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: t.pageBg }}>
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => setSelectedBiller(null)} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>{selectedBiller.name}</h1>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>{selectedBiller.name}</h1>
         <div className="w-10" />
       </div>
 
@@ -237,9 +237,9 @@ function PayBills() {
     <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: t.pageBg }}>
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>Pay Bills</h1>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>Pay Bills</h1>
         <div className="w-10" />
       </div>
 

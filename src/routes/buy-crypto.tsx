@@ -192,9 +192,9 @@ function BuyCrypto() {
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>
           Buy Crypto
         </h1>
         <button onClick={fetchCryptoRates} disabled={fetchingRates} className="p-2">
@@ -208,7 +208,7 @@ function BuyCrypto() {
 
       {/* Last Updated */}
       <div className="px-5 pb-4">
-        <p className="text-xs text-center" style={{ color: t.textMuted }}>
+        <p className="text-xs text-center" style={{ color: t.textMutedOnBg }}>
           {lastUpdated
             ? `Rates last updated: ${lastUpdated.toLocaleTimeString()}`
             : "Fetching rates..."}
@@ -268,7 +268,7 @@ function BuyCrypto() {
 
         {/* Amount Input */}
         <div className="space-y-3">
-          <label className="block text-sm font-semibold" style={{ color: t.textMuted }}>
+          <label className="block text-sm font-semibold" style={{ color: t.textMutedOnBg }}>
             You Pay
           </label>
           <div className="relative">
@@ -289,7 +289,7 @@ function BuyCrypto() {
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: t.textMuted }}>
+            <span className="text-sm" style={{ color: t.textMutedOnBg }}>
               You Receive: {cryptoAmount} {selectedCrypto.symbol}
             </span>
             <span className="text-sm font-semibold" style={{ color: t.accentCyan }}>
@@ -363,7 +363,7 @@ function BuyCrypto() {
           className="w-full py-4 rounded-xl font-semibold transition-all"
           style={{
             background: "linear-gradient(135deg, #38BDF8, #6366F1)",
-            color: t.textPrimary,
+            color: "#FFFFFF",
             opacity: !amount || parseFloat(amount.replace(/,/g,"")) <= 0 || loading ? 0.5 : 1,
           }}
         >

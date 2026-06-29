@@ -118,9 +118,9 @@ function CardDeposit() {
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => navigate({ to: "/" })} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>
           Card Deposit
         </h1>
         <div className="w-10" />

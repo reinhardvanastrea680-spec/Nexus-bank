@@ -308,9 +308,9 @@ function LocalTransfer() {
       {/* Header */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
         <button onClick={() => (step > 1 ? setStep(1) : navigate({ to: "/" }))} className="p-2">
-          <ArrowLeft size={24} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
-        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textPrimary }}>
+        <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>
           Local Transfer
         </h1>
         <div className="w-10" />
@@ -337,7 +337,7 @@ function LocalTransfer() {
             {/* Saved beneficiaries quick-select */}
             {beneficiaries.length > 0 && (
               <div>
-                <label className="block text-sm font-semibold mb-3" style={{ color: t.textMuted }}>
+                <label className="block text-sm font-semibold mb-3" style={{ color: t.textMutedOnBg }}>
                   <Star size={13} className="inline mr-1" style={{ color: t.accentYellow }} />
                   Saved Beneficiaries
                 </label>
@@ -378,7 +378,7 @@ function LocalTransfer() {
             )}
             {/* Bank Search */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
+              <label className="text-sm font-semibold" style={{ color: t.textMutedOnBg }}>
                 Search & Select Bank
               </label>
               <div className="relative">

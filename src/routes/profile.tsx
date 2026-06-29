@@ -34,7 +34,7 @@ function SectionHeader({ title, actionLabel, onAction }: { title: string; action
   const t = themeColors(theme);
   return (
     <div className="flex items-center justify-between mb-2 mt-6">
-      <p className="text-base font-bold" style={{ color: t.textPrimary }}>{title}</p>
+      <p className="text-base font-bold" style={{ color: t.textOnBg }}>{title}</p>
       {actionLabel && (
         <button onClick={onAction} className="text-sm font-semibold" style={{ color: "#EF4444" }}>
           {actionLabel}
@@ -100,11 +100,11 @@ function ProfilePage() {
       {/* Header */}
       <div className="px-5 pt-10 pb-4 flex items-center gap-3">
         <button onClick={() => navigate({ to: "/settings" })} className="p-2 -ml-2">
-          <ArrowLeft size={22} style={{ color: t.textPrimary }} />
+          <ArrowLeft size={22} style={{ color: t.textOnBg }} />
         </button>
         <div>
-          <h1 className="text-lg font-bold" style={{ color: t.textPrimary }}>Profile</h1>
-          <p className="text-xs" style={{ color: t.textMuted }}>View or update account information</p>
+          <h1 className="text-lg font-bold" style={{ color: t.textOnBg }}>Profile</h1>
+          <p className="text-xs" style={{ color: t.textMutedOnBg }}>View or update account information</p>
         </div>
       </div>
 
