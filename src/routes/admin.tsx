@@ -84,6 +84,18 @@ function AdminLayout() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const prevPendingCountRef = useRef(pendingCount);
 
+  // Lock scroll when mobile sidebar is open
+  useEffect(() => {
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileSidebarOpen]);
+
   // Listen to pending beneficiary requests
   useEffect(() => {
     const unsub = onSnapshot(
@@ -346,10 +358,10 @@ function AdminLayout() {
               className="lg:hidden p-2 rounded-lg text-blue-300 hover:text-white hover:bg-white/10">
               <Menu size={20} aria-hidden="true" />
             </button>
-            {/* Desktop collapse/expand */}
+            {/* Desktop collapse/expand - Fixed position on PC */}
             <Button variant="ghost" size="icon" aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="hidden lg:flex text-blue-300 hover:text-white">
+              className="hidden lg:flex text-blue-300 hover:text-white fixed left-4 top-4 z-50 bg-[#0D1625]/95 backdrop-blur-sm border border-[rgba(255,255,255,0.1)] hover:bg-[#0D1625]">
               {sidebarCollapsed ? <Menu size={20} aria-hidden="true" /> : <X size={20} aria-hidden="true" />}
             </Button>
             <div className="min-w-0">
