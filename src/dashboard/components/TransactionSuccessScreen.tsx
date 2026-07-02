@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CheckCircle2, XCircle, FileText, Home } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { useLang } from "../../hooks/LanguageContext";
 
 interface TransactionSuccessScreenProps {
   amount: number;
@@ -31,6 +32,7 @@ export function TransactionSuccessScreen({
   recipientRegion,
 }: TransactionSuccessScreenProps) {
   const navigate = useNavigate();
+  const { t: tl } = useLang();
   const [showReceipt, setShowReceipt] = useState(false);
 
   const isFailed    = status === "declined" || status === "failed" || status === "failed";
@@ -52,7 +54,7 @@ export function TransactionSuccessScreen({
               style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5" }}>
               ←
             </button>
-            <h2 className="text-lg font-bold text-white">Transaction Receipt</h2>
+            <h2 className="text-lg font-bold text-white">{tl("Transaction Receipt")}</h2>
           </div>
 
           {/* Status hero */}
@@ -64,11 +66,11 @@ export function TransactionSuccessScreen({
                 : <CheckCircle2 size={36} style={{ color: "#00E676" }} />}
             </div>
             <p className="text-lg font-bold" style={{ color: isFailed ? "#EF4444" : "#00E676" }}>
-              {isFailed ? "Failed" : "Submitted"}
+              {isFailed ? tl("Failed") : tl("Submitted")}
             </p>
             {isFailed && (
               <p className="text-xs mt-1 text-center" style={{ color: "#8A9BB5" }}>
-                Please contact support for assistance.
+                {tl("Please contact support for assistance.")}
               </p>
             )}
           </div>
@@ -78,13 +80,13 @@ export function TransactionSuccessScreen({
             {/* Header band */}
             <div className="px-4 py-3" style={{ background: "#070B14" }}>
               <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A9BB5" }}>
-                Transaction Details
+                {tl("Transaction Details")}
               </p>
             </div>
 
             {/* Amount */}
             <div className="text-center py-5" style={{ background: "#111827", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-              <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>Amount</p>
+              <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>{tl("Amount")}</p>
               <p className="text-3xl font-mono font-bold text-white">{formatCurrency(amount)}</p>
               {/* Status badge */}
               <span
@@ -96,21 +98,21 @@ export function TransactionSuccessScreen({
                 }}
               >
                 {isFailed     ? <XCircle size={11} />     : <CheckCircle2 size={11} />}
-                {isFailed ? "Failed" : isCompleted ? "Approved" : "Pending"}
+                {isFailed ? tl("Failed") : isCompleted ? tl("Approved") : tl("Pending")}
               </span>
             </div>
 
             {/* Detail rows */}
             <div className="p-4 space-y-3" style={{ background: "#111827" }}>
               {[
-                { label: "Type",         value: transactionType?.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Transfer" },
-                { label: "From Account", value: fundingAccount.charAt(0).toUpperCase() + fundingAccount.slice(1) },
-                ...(recipientName ? [{ label: "Recipient", value: recipientName }] : []),
-                ...(recipientBank  ? [{ label: "Bank",     value: recipientBank }] : []),
+                { label: tl("Type"),         value: transactionType?.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Transfer" },
+                { label: tl("From Account"), value: fundingAccount.charAt(0).toUpperCase() + fundingAccount.slice(1) },
+                ...(recipientName ? [{ label: tl("Recipient"), value: recipientName }] : []),
+                ...(recipientBank  ? [{ label: tl("Recipient Bank"),     value: recipientBank }] : []),
                 // Region only for wire transfers
-                ...(isWire && recipientRegion ? [{ label: "Region", value: recipientRegion }] : []),
-                { label: "Reference", value: transactionRef },
-                { label: "Time",      value: timeNow },
+                ...(isWire && recipientRegion ? [{ label: tl("Region"), value: recipientRegion }] : []),
+                { label: tl("Reference"), value: transactionRef },
+                { label: tl("Time"),      value: timeNow },
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between items-center py-1 border-b"
                   style={{ borderColor: "rgba(255,255,255,0.05)" }}>
@@ -127,7 +129,7 @@ export function TransactionSuccessScreen({
             className="w-full mt-6 py-4 rounded-xl font-semibold"
             style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5" }}
           >
-            Back
+            {tl("Back")}
           </button>
         </div>
       </div>
@@ -150,13 +152,13 @@ export function TransactionSuccessScreen({
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold mb-3 text-white">Transaction Failed</h1>
+        <h1 className="text-2xl font-bold mb-3 text-white">{tl("Transaction Failed")}</h1>
 
         <p className="text-sm text-center max-w-xs mb-2" style={{ color: "#8A9BB5" }}>
-          Your transaction could not be processed at this time.
+          {tl("Your transaction could not be processed at this time.")}
         </p>
         <p className="text-sm font-semibold mb-8" style={{ color: "#EF4444" }}>
-          Please contact support for assistance.
+          {tl("Please contact support for assistance.")}
         </p>
 
         {/* Reference */}
@@ -169,7 +171,7 @@ export function TransactionSuccessScreen({
             className="w-full py-4 rounded-xl font-semibold text-white"
             style={{ background: "#EF4444" }}
           >
-            OK
+            {tl("OK")}
           </button>
           <button
             onClick={() => navigate({ to: "/support" })}
@@ -177,7 +179,7 @@ export function TransactionSuccessScreen({
             style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5", border: "1px solid rgba(255,255,255,0.1)" }}
           >
             <FileText size={16} />
-            Report This Issue
+            {tl("Report This Issue")}
           </button>
         </div>
 
@@ -212,12 +214,12 @@ export function TransactionSuccessScreen({
       </div>
 
       <h1 className="text-2xl font-bold mb-2" style={{ color: "#FFFFFF" }}>
-        {isCompleted ? "Transaction Approved" : "Transaction Submitted"}
+        {isCompleted ? tl("Transaction Approved") : tl("Transaction Submitted")}
       </h1>
       <p className="text-sm mb-8 text-center max-w-xs" style={{ color: "#7A8FA6" }}>
         {isCompleted
-          ? "Your transaction has been approved and processed successfully."
-          : "Your request has been received and is pending admin review."}
+          ? tl("Your transaction has been approved and processed successfully.")
+          : tl("Your request has been received and is pending admin review.")}
       </p>
 
       {/* Transaction summary */}
@@ -227,29 +229,29 @@ export function TransactionSuccessScreen({
       >
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm" style={{ color: "#7A8FA6" }}>Amount</span>
+            <span className="text-sm" style={{ color: "#7A8FA6" }}>{tl("Amount")}</span>
             <span className="text-xl font-mono font-semibold" style={{ color: "#FFFFFF" }}>
               {formatCurrency(amount)}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm" style={{ color: "#7A8FA6" }}>Reference</span>
+            <span className="text-sm" style={{ color: "#7A8FA6" }}>{tl("Reference")}</span>
             <span className="text-sm font-mono" style={{ color: "#00C6FF" }}>{transactionRef}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm" style={{ color: "#7A8FA6" }}>From Account</span>
+            <span className="text-sm" style={{ color: "#7A8FA6" }}>{tl("From Account")}</span>
             <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
               {fundingAccount.charAt(0).toUpperCase() + fundingAccount.slice(1)}
             </span>
           </div>
           {recipientName && (
             <div className="flex justify-between items-center">
-              <span className="text-sm" style={{ color: "#7A8FA6" }}>Recipient</span>
+              <span className="text-sm" style={{ color: "#7A8FA6" }}>{tl("Recipient")}</span>
               <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>{recipientName}</span>
             </div>
           )}
           <div className="flex justify-between items-center">
-            <span className="text-sm" style={{ color: "#7A8FA6" }}>Status</span>
+            <span className="text-sm" style={{ color: "#7A8FA6" }}>{tl("Status")}</span>
             <span
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border"
               style={isCompleted ? {
@@ -263,13 +265,13 @@ export function TransactionSuccessScreen({
               }}
             >
               {isCompleted
-                ? <><CheckCircle2 size={11} /> Approved</>
-                : <><div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: "#FFAB00" }} /> Pending</>}
+                ? <><CheckCircle2 size={11} /> {tl("Approved")}</>
+                : <><div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: "#FFAB00" }} /> {tl("Pending")}</>}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm" style={{ color: "#7A8FA6" }}>Submitted</span>
-            <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>Just now</span>
+            <span className="text-sm" style={{ color: "#7A8FA6" }}>{tl("Submitted")}</span>
+            <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>{tl("Just now")}</span>
           </div>
         </div>
       </div>
@@ -281,7 +283,7 @@ export function TransactionSuccessScreen({
           className="w-full py-4 rounded-xl font-semibold"
           style={{ background: "linear-gradient(135deg, #00C6FF, #7B2FFF)", color: "#FFFFFF" }}
         >
-          Back to Home
+          {tl("Back to Home")}
         </button>
         {isCompleted && (
           <button
@@ -290,7 +292,7 @@ export function TransactionSuccessScreen({
             style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5", border: "1px solid rgba(255,255,255,0.1)" }}
           >
             <FileText size={16} />
-            View Receipt
+            {tl("View Receipt")}
           </button>
         )}
       </div>

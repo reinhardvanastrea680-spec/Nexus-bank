@@ -173,7 +173,7 @@ function Notifications() {
             <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: tc.mutedBg }}>
               <Bell size={28} style={{ color: tc.textMuted }} />
             </div>
-            <p style={{ color: tc.textMuted }}>{filter === "unread" ? "All caught up!" : t("No notifications yet")}</p>
+            <p style={{ color: tc.textMuted }}>{filter === "unread" ? t("All caught up!") : t("No notifications yet")}</p>
           </div>
         ) : (
           filteredNotifications.map((n) => (
@@ -255,15 +255,15 @@ function Notifications() {
                 <p className="text-sm leading-relaxed max-w-xs" style={{ color: tc.textMuted }}>
                   {selectedNotif.declineReason && selectedNotif.declineReason !== "declined"
                     ? selectedNotif.declineReason
-                    : "Your transaction could not be processed at this time."}
+                    : t("Your transaction could not be processed at this time.")}
                 </p>
                 <p className="text-sm mt-2 font-semibold" style={{ color: tc.accentRed }}>
-                  Please contact support for assistance.
+                  {t("Please contact support for assistance.")}
                 </p>
               </div>
             ) : selectedNotif.declineReason ? (
               <div className="mb-4 p-3 rounded-xl" style={{ background: `${tc.accentRed}14`, border: `1px solid ${tc.accentRed}33` }}>
-                <p className="text-xs font-semibold mb-1" style={{ color: tc.accentRed }}>Decline Reason</p>
+                <p className="text-xs font-semibold mb-1" style={{ color: tc.accentRed }}>{t("Decline Reason")}</p>
                 <p className="text-sm" style={{ color: tc.accentRed }}>{selectedNotif.declineReason}</p>
               </div>
             ) : null}
@@ -273,13 +273,13 @@ function Notifications() {
               <div className="rounded-2xl overflow-hidden border" style={{ borderColor: tc.border }}>
                 <div className="px-4 py-2.5" style={{ background: tc.inputBg }}>
                   <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: tc.textMuted }}>
-                    Transaction Details
+                    {t("Transaction Details")}
                   </p>
                 </div>
                 <div className="p-4 space-y-2.5" style={{ background: tc.cardBg }}>
                   {/* Amount hero */}
                   <div className="text-center py-3 mb-2">
-                    <p className="text-xs mb-1" style={{ color: tc.textMuted }}>Amount</p>
+                    <p className="text-xs mb-1" style={{ color: tc.textMuted }}>{t("Amount")}</p>
                     <p className="text-3xl font-mono font-bold" style={{ color: tc.textPrimary }}>
                       ${formatCurrency((relatedTx as any).amount || selectedNotif.amount || 0)}
                     </p>
@@ -306,18 +306,18 @@ function Notifications() {
                   </div>
 
                   {[
-                    { label: "Type", value: (relatedTx as any).type?.replace(/_/g, " ") },
-                    { label: "From Account", value: (relatedTx as any).fundingAccount },
-                    ...((relatedTx as any).toAccount ? [{ label: "To Account", value: (relatedTx as any).toAccount }] : []),
-                    ...((relatedTx as any).recipientName ? [{ label: "Recipient", value: (relatedTx as any).recipientName }] : []),
-                    ...((relatedTx as any).toBank ? [{ label: "Bank", value: (relatedTx as any).toBank }] : []),
-                    ...((relatedTx as any).toCountry ? [{ label: "Country", value: (relatedTx as any).toCountry }] : []),
-                    ...((relatedTx as any).purpose ? [{ label: "Purpose", value: (relatedTx as any).purpose }] : []),
-                    ...((relatedTx as any).note ? [{ label: "Note", value: (relatedTx as any).note }] : []),
-                    { label: "Reference", value: (relatedTx as any).transactionRef || (relatedTx as any).id },
-                    { label: "Date", value: (relatedTx as any).createdAt instanceof Date ? (relatedTx as any).createdAt.toLocaleString() : "-" },
-                    ...((relatedTx as any).reviewedAt instanceof Date ? [{ label: "Reviewed", value: (relatedTx as any).reviewedAt.toLocaleString() }] : []),
-                    ...((relatedTx as any).balanceAfter != null ? [{ label: "Balance After", value: `$${formatCurrency((relatedTx as any).balanceAfter)}` }] : []),
+                    { label: t("Type"), value: (relatedTx as any).type?.replace(/_/g, " ") },
+                    { label: t("From Account"), value: (relatedTx as any).fundingAccount },
+                    ...((relatedTx as any).toAccount ? [{ label: t("To Account"), value: (relatedTx as any).toAccount }] : []),
+                    ...((relatedTx as any).recipientName ? [{ label: t("Recipient"), value: (relatedTx as any).recipientName }] : []),
+                    ...((relatedTx as any).toBank ? [{ label: t("Bank"), value: (relatedTx as any).toBank }] : []),
+                    ...((relatedTx as any).toCountry ? [{ label: t("Country"), value: (relatedTx as any).toCountry }] : []),
+                    ...((relatedTx as any).purpose ? [{ label: t("Purpose"), value: (relatedTx as any).purpose }] : []),
+                    ...((relatedTx as any).note ? [{ label: t("Note"), value: (relatedTx as any).note }] : []),
+                    { label: t("Reference"), value: (relatedTx as any).transactionRef || (relatedTx as any).id },
+                    { label: t("Date"), value: (relatedTx as any).createdAt instanceof Date ? (relatedTx as any).createdAt.toLocaleString() : "-" },
+                    ...((relatedTx as any).reviewedAt instanceof Date ? [{ label: t("Reviewed"), value: (relatedTx as any).reviewedAt.toLocaleString() }] : []),
+                    ...((relatedTx as any).balanceAfter != null ? [{ label: t("Balance After"), value: `$${formatCurrency((relatedTx as any).balanceAfter)}` }] : []),
                   ].map(({ label, value }) => (
                     <div key={label} className="flex justify-between py-1.5 border-b" style={{ borderColor: tc.border }}>
                       <span className="text-xs" style={{ color: tc.textMuted }}>{label}</span>
@@ -328,7 +328,7 @@ function Notifications() {
               </div>
             ) : selectedNotif.transactionId ? (
               <div className="text-center py-6" style={{ color: tc.textMuted }}>
-                <p className="text-sm">Transaction details unavailable</p>
+                <p className="text-sm">{t("Transaction details unavailable")}</p>
               </div>
             ) : null}
 

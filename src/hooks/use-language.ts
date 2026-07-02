@@ -101,7 +101,20 @@ export type TranslationKey =
   
   // Common UI
   "Show more"|"Show less"|"Copy"|"Copied"|"Download"|"Upload"|
-  "Next"|"Previous"|"Done"|"Skip"|"Accounts";
+  "Next"|"Previous"|"Done"|"Skip"|"Accounts"|
+  
+  // Notification specific
+  "All caught up!"|"Transaction details unavailable"|
+  "Your transaction could not be processed at this time."|
+  "Please contact support for assistance."|"Transaction Details"|
+  "Type"|"From Account"|"To Account"|"Bank"|"Country"|"Purpose"|"Date"|
+  "Reviewed"|"Balance After"|"New Account Created"|
+  
+  // Transaction Success/Receipt messages
+  "Transaction Receipt"|"Submitted"|"Time"|"OK"|
+  "Report This Issue"|"Your transaction has been approved and processed successfully."|
+  "Your request has been received and is pending admin review."|
+  "Back to Home"|"View Receipt"|"Recipient Bank";
 
 type Translations = Record<TranslationKey, string>;
 
@@ -207,6 +220,19 @@ const EN: Translations = {
   "Show more":"Show more","Show less":"Show less","Copy":"Copy","Copied":"Copied",
   "Download":"Download","Upload":"Upload","Next":"Next","Previous":"Previous",
   "Done":"Done","Skip":"Skip","Accounts":"Accounts",
+  
+  // Notification specific
+  "All caught up!":"All caught up!","Transaction details unavailable":"Transaction details unavailable",
+  "Your transaction could not be processed at this time.":"Your transaction could not be processed at this time.",
+  "Please contact support for assistance.":"Please contact support for assistance.","Transaction Details":"Transaction Details",
+  "Type":"Type","From Account":"From Account","To Account":"To Account","Bank":"Bank","Country":"Country","Purpose":"Purpose","Date":"Date",
+  "Reviewed":"Reviewed","Balance After":"Balance After","New Account Created":"New Account Created",
+  
+  // Transaction Success/Receipt messages
+  "Transaction Receipt":"Transaction Receipt","Submitted":"Submitted","Time":"Time","OK":"OK",
+  "Report This Issue":"Report This Issue","Your transaction has been approved and processed successfully.":"Your transaction has been approved and processed successfully.",
+  "Your request has been received and is pending admin review.":"Your request has been received and is pending admin review.",
+  "Back to Home":"Back to Home","View Receipt":"View Receipt","Recipient Bank":"Recipient Bank",
 };
 
 const FR: Translations = {
@@ -314,6 +340,19 @@ const FR: Translations = {
   "Show more":"Afficher plus","Show less":"Afficher moins","Copy":"Copier","Copied":"Copié",
   "Download":"Télécharger","Upload":"Uploader","Next":"Suivant","Previous":"Précédent",
   "Done":"Terminé","Skip":"Passer","Accounts":"Comptes",
+  
+  // Notification specific
+  "All caught up!":"Tout est à jour!","Transaction details unavailable":"Détails de transaction indisponibles",
+  "Your transaction could not be processed at this time.":"Votre transaction n'a pas pu être traitée pour le moment.",
+  "Please contact support for assistance.":"Veuillez contacter le support pour obtenir de l'aide.","Transaction Details":"Détails de la transaction",
+  "Type":"Type","From Account":"Depuis le compte","To Account":"Vers le compte","Bank":"Banque","Country":"Pays","Purpose":"Objectif","Date":"Date",
+  "Reviewed":"Examiné","Balance After":"Solde après","New Account Created":"Nouveau compte créé",
+  
+  // Transaction Success/Receipt messages
+  "Transaction Receipt":"Reçu de transaction","Submitted":"Soumis","Time":"Heure","OK":"OK",
+  "Report This Issue":"Signaler ce problème","Your transaction has been approved and processed successfully.":"Votre transaction a été approuvée et traitée avec succès.",
+  "Your request has been received and is pending admin review.":"Votre demande a été reçue et est en attente d'examen par l'administrateur.",
+  "Back to Home":"Retour à l'accueil","View Receipt":"Voir le reçu","Recipient Bank":"Banque du destinataire",
 };
 
 const ES: Translations = {
@@ -421,6 +460,19 @@ const ES: Translations = {
   "Show more":"Mostrar más","Show less":"Mostrar menos","Copy":"Copiar","Copied":"Copiado",
   "Download":"Descargar","Upload":"Subir","Next":"Siguiente","Previous":"Anterior",
   "Done":"Hecho","Skip":"Saltar","Accounts":"Cuentas",
+  
+  // Notification specific
+  "All caught up!":"¡Todo al día!","Transaction details unavailable":"Detalles de transacción no disponibles",
+  "Your transaction could not be processed at this time.":"Su transacción no pudo ser procesada en este momento.",
+  "Please contact support for assistance.":"Por favor contacte a soporte para asistencia.","Transaction Details":"Detalles de la transacción",
+  "Type":"Tipo","From Account":"Desde cuenta","To Account":"A cuenta","Bank":"Banco","Country":"País","Purpose":"Propósito","Date":"Fecha",
+  "Reviewed":"Revisado","Balance After":"Saldo después","New Account Created":"Nueva cuenta creada",
+  
+  // Transaction Success/Receipt messages
+  "Transaction Receipt":"Recibo de transacción","Submitted":"Enviado","Time":"Hora","OK":"OK",
+  "Report This Issue":"Reportar este problema","Your transaction has been approved and processed successfully.":"Su transacción ha sido aprobada y procesada exitosamente.",
+  "Your request has been received and is pending admin review.":"Su solicitud ha sido recibida y está pendiente de revisión del administrador.",
+  "Back to Home":"Volver al inicio","View Receipt":"Ver recibo","Recipient Bank":"Banco del destinatario",
 };
 
 const DE: Translations = {
@@ -528,6 +580,19 @@ const DE: Translations = {
   "Show more":"Mehr anzeigen","Show less":"Weniger anzeigen","Copy":"Kopieren","Copied":"Kopiert",
   "Download":"Herunterladen","Upload":"Hochladen","Next":"Weiter","Previous":"Zurück",
   "Done":"Fertig","Skip":"Überspringen","Accounts":"Konten",
+  
+  // Notification specific
+  "All caught up!":"Alles erledigt!","Transaction details unavailable":"Transaktionsdetails nicht verfügbar",
+  "Your transaction could not be processed at this time.":"Ihre Transaktion konnte derzeit nicht verarbeitet werden.",
+  "Please contact support for assistance.":"Bitte kontaktieren Sie den Support für Hilfe.","Transaction Details":"Transaktionsdetails",
+  "Type":"Typ","From Account":"Von Konto","To Account":"An Konto","Bank":"Bank","Country":"Land","Purpose":"Zweck","Date":"Datum",
+  "Reviewed":"Überprüft","Balance After":"Saldo danach","New Account Created":"Neues Konto erstellt",
+  
+  // Transaction Success/Receipt messages
+  "Transaction Receipt":"Transaktionsbeleg","Submitted":"Eingereicht","Time":"Zeit","OK":"OK",
+  "Report This Issue":"Dieses Problem melden","Your transaction has been approved and processed successfully.":"Ihre Transaktion wurde genehmigt und erfolgreich verarbeitet.",
+  "Your request has been received and is pending admin review.":"Ihre Anfrage wurde empfangen und wartet auf Admin-Überprüfung.",
+  "Back to Home":"Zurück zur Startseite","View Receipt":"Beleg ansehen","Recipient Bank":"Empfängerbank",
 };
 
 const PT: Translations = {
@@ -635,6 +700,19 @@ const PT: Translations = {
   "Show more":"Mostrar mais","Show less":"Mostrar menos","Copy":"Copiar","Copied":"Copiado",
   "Download":"Baixar","Upload":"Enviar","Next":"Próximo","Previous":"Anterior",
   "Done":"Concluído","Skip":"Pular","Accounts":"Contas",
+  
+  // Notification specific
+  "All caught up!":"Tudo em dia!","Transaction details unavailable":"Detalhes da transação indisponíveis",
+  "Your transaction could not be processed at this time.":"Sua transação não pôde ser processada neste momento.",
+  "Please contact support for assistance.":"Entre em contato com o suporte para assistência.","Transaction Details":"Detalhes da transação",
+  "Type":"Tipo","From Account":"Da conta","To Account":"Para conta","Bank":"Banco","Country":"País","Purpose":"Propósito","Date":"Data",
+  "Reviewed":"Revisado","Balance After":"Saldo após","New Account Created":"Nova conta criada",
+  
+  // Transaction Success/Receipt messages
+  "Transaction Receipt":"Recibo de transação","Submitted":"Enviado","Time":"Hora","OK":"OK",
+  "Report This Issue":"Relatar este problema","Your transaction has been approved and processed successfully.":"Sua transação foi aprovada e processada com sucesso.",
+  "Your request has been received and is pending admin review.":"Sua solicitação foi recebida e está aguardando revisão do administrador.",
+  "Back to Home":"Voltar ao início","View Receipt":"Ver recibo","Recipient Bank":"Banco do destinatário",
 };
 
 const IT: Translations = { ...EN,
