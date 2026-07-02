@@ -486,7 +486,7 @@ function LocalTransfer() {
 
                 {/* Account Number - Manual Entry */}
                 <div className="space-y-2 mb-4">
-                  <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
+                  <label className="text-sm font-semibold" style={{ color: t.textMutedOnBg }}>
                     Account Number *
                   </label>
                   <input
@@ -503,7 +503,7 @@ function LocalTransfer() {
                 {/* SWIFT/Routing Number - Optional Manual Entry */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
+                    <label className="text-sm font-semibold" style={{ color: t.textMutedOnBg }}>
                       SWIFT Code (Optional)
                     </label>
                     <input
@@ -516,7 +516,7 @@ function LocalTransfer() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
+                    <label className="text-sm font-semibold" style={{ color: t.textMutedOnBg }}>
                       Routing/Sort Code (Optional)
                     </label>
                     <input

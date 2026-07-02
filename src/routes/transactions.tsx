@@ -59,22 +59,22 @@ function formatDate(dateInput: any) {
   });
 }
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, tl: (key: string) => string) {
   switch (status) {
     case "pending":
-      return { text: "Pending",   color: "#FFAB00", icon: Clock         };
+      return { text: tl("Pending"),   color: "#FFAB00", icon: Clock         };
     case "approved":
     case "completed":
-      return { text: "Completed", color: "#00E676", icon: CheckCircle2  };
+      return { text: tl("Completed"), color: "#00E676", icon: CheckCircle2  };
     case "failed":
-      return { text: "Failed",    color: "#FF4D6A", icon: XCircle       };
+      return { text: tl("Failed"),    color: "#FF4D6A", icon: XCircle       };
     case "declined":
-      return { text: "Failed",    color: "#FF4D6A", icon: XCircle       };
+      return { text: tl("Failed"),    color: "#FF4D6A", icon: XCircle       };
     case "cancelled":
-      return { text: "Cancelled", color: "#8A9BB5", icon: XCircle       };
+      return { text: tl("Cancelled"), color: "#8A9BB5", icon: XCircle       };
     default:
       // Admin-posted transactions with no status field — show completed
-      return { text: "Completed", color: "#00E676", icon: CheckCircle2  };
+      return { text: tl("Completed"), color: "#00E676", icon: CheckCircle2  };
   }
 }
 
@@ -121,7 +121,7 @@ function Transactions() {
         className="min-h-screen flex items-center justify-center"
         style={{ background: t.pageBg }}
       >
-        <p style={{ color: t.textOnBg }}>Please log in to view transactions.</p>
+        <p style={{ color: t.textOnBg }}>{tl("Please log in to view transactions.")}</p>
       </div>
     );
   }
@@ -198,7 +198,7 @@ function Transactions() {
                 {dateKey}
               </span>
               {groupedTransactions[dateKey].map((tx: any) => {
-                const badge = getStatusBadge(tx.status || "approved");
+                const badge = getStatusBadge(tx.status || "approved", tl);
                 const IconComponent = badge.icon;
                 const isCredit = isTransactionCredit(tx);
                 const txAccount = tx.account || tx.fundingAccount || "account";
@@ -258,7 +258,7 @@ function Transactions() {
             <div className="text-center mb-6">
               {(() => {
                 const isCredit = isTransactionCredit(selectedTransaction);
-                const badge = getStatusBadge(selectedTransaction.status || "approved");
+                const badge = getStatusBadge(selectedTransaction.status || "approved", tl);
                 const txAccount = selectedTransaction.account || selectedTransaction.fundingAccount || "account";
                 const txDesc = selectedTransaction.description || selectedTransaction.type?.replace(/_/g, " ") || "Transaction";
                 const StatusIcon = badge.icon;
@@ -275,38 +275,38 @@ function Transactions() {
                     </p>
                     <div className="mt-4 space-y-4">
                       <div className="flex justify-between">
-                        <span className="text-sm" style={{ color: t.textMuted }}>Date & Time</span>
+                        <span className="text-sm" style={{ color: t.textMuted }}>{tl("Date & Time")}</span>
                         <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
                           {formatDate(selectedTransaction.date || selectedTransaction.createdAt)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm" style={{ color: t.textMuted }}>Status</span>
+                        <span className="text-sm" style={{ color: t.textMuted }}>{tl("Status")}</span>
                         <div className="flex items-center gap-2">
                           <StatusIcon size={12} style={{ color: badge.color }} />
                           <span className="text-sm font-semibold" style={{ color: badge.color }}>{badge.text}</span>
                         </div>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm" style={{ color: t.textMuted }}>Account</span>
+                        <span className="text-sm" style={{ color: t.textMuted }}>{tl("Account")}</span>
                         <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
                           {txAccount.charAt(0).toUpperCase() + txAccount.slice(1)}
                         </span>
                       </div>
                       {selectedTransaction.recipientName && (
                         <div className="flex justify-between">
-                          <span className="text-sm" style={{ color: t.textMuted }}>Recipient</span>
+                          <span className="text-sm" style={{ color: t.textMuted }}>{tl("Recipient")}</span>
                           <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{selectedTransaction.recipientName}</span>
                         </div>
                       )}
                       {selectedTransaction.declineReason && (
                         <div className="flex justify-between gap-4">
-                          <span className="text-sm" style={{ color: t.textMuted }}>Decline Reason</span>
+                          <span className="text-sm" style={{ color: t.textMuted }}>{tl("Decline Reason")}</span>
                           <span className="text-sm font-semibold text-right" style={{ color: t.accentRed }}>{selectedTransaction.declineReason}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-sm" style={{ color: t.textMuted }}>Reference</span>
+                        <span className="text-sm" style={{ color: t.textMuted }}>{tl("Reference")}</span>
                         <span className="text-sm font-mono font-semibold" style={{ color: t.textPrimary }}>
                           {selectedTransaction.transactionRef || selectedTransaction.id}
                         </span>

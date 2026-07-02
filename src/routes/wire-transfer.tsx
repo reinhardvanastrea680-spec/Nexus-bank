@@ -425,7 +425,7 @@ function WireTransferWizard() {
         {step === 2 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMuted }}>
+              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
                 Source Account
               </label>
               <select
@@ -440,13 +440,13 @@ function WireTransferWizard() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMuted }}>
+              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
                 Amount (USD)
               </label>
               <div className="relative">
                 <span
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-mono"
-                  style={{ color: t.textMuted }}
+                  style={{ color: t.textMutedOnBg }}
                 >
                   $
                 </span>
@@ -467,7 +467,7 @@ function WireTransferWizard() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMuted }}>
+              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
                 Destination Currency
               </label>
               <select
@@ -533,7 +533,7 @@ function WireTransferWizard() {
         {/* Step 3: Purpose */}
         {step === 3 && (
           <div className="space-y-3">
-            <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>
+            <h3 className="text-lg font-bold" style={{ color: t.textOnBg }}>
               Why are you sending?
             </h3>
             {[
@@ -711,7 +711,7 @@ function WireTransferWizard() {
         {/* Step 5: Confirm */}
         {step === 5 && (
           <div className="space-y-6">
-            <h3 className="text-2xl font-bold" style={{ color: t.textPrimary }}>
+            <h3 className="text-2xl font-bold" style={{ color: t.textOnBg }}>
               Confirm transfer
             </h3>
             {error && (
@@ -793,7 +793,7 @@ function WireTransferWizard() {
                 className="py-4 rounded-xl font-semibold"
                 style={{
                   background: "linear-gradient(135deg, #38BDF8, #6366F1)",
-                  color: t.textPrimary,
+                  color: "#FFFFFF",
                   opacity: loading ? 0.6 : 1,
                 }}
               >
@@ -807,7 +807,7 @@ function WireTransferWizard() {
               className="w-full py-4 rounded-xl font-semibold transition-all"
               style={{
                 background: "linear-gradient(135deg, #38BDF8, #6366F1)",
-                color: t.textPrimary,
+                color: "#FFFFFF",
                 opacity: (useSaved ? !selectedBeneficiary : !beneficiary.fullName) ? 0.5 : 1,
               }}
             >
@@ -993,7 +993,7 @@ function OtpStep({ amount, onVerified, onBack }: {
           className="py-4 rounded-xl font-semibold"
           style={{
             background: "linear-gradient(135deg, #38BDF8, #6366F1)",
-            color: t.textPrimary,
+            color: "#FFFFFF",
             opacity: otp.some((d) => d === "") || loading ? 0.5 : 1,
           }}
         >
