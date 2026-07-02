@@ -466,6 +466,17 @@ tbody tr {
 tbody tr:hover {
   background: rgba(0,198,255,0.04) !important;
 }
+/* Light mode table hover */
+.light tbody tr:hover {
+  background: rgba(56,189,248,0.08) !important;
+}
+/* Light mode table text */
+.light tbody tr td {
+  color: #1E293B !important;
+}
+.light tbody tr td.text-white {
+  color: #0A1628 !important;
+}
 
 /* ── Sidebar nav item transitions ─────────────────────────────────────── */
 aside nav a,
@@ -535,68 +546,150 @@ aside > * {
 
 /* ── LIGHT MODE admin sidebar & header ────────────────────────────────── */
 .light aside {
-  background: linear-gradient(180deg, #0D1F54 0%, #071235 100%) !important;
-  border-right: 1px solid rgba(255,255,255,0.12) !important;
+  background: linear-gradient(180deg, #0B1A42 0%, #050D24 100%) !important;
+  border-right: 1px solid rgba(255,255,255,0.15) !important;
+  box-shadow: 4px 0 24px rgba(11, 26, 66, 0.15) !important;
 }
 .light aside nav a,
 .light aside nav button {
-  color: rgba(255,255,255,0.85) !important;
+  color: rgba(255,255,255,0.90) !important;
+  font-weight: 500;
 }
 .light aside nav a[aria-current="page"] {
-  background: rgba(56,189,248,0.18) !important;
+  background: linear-gradient(90deg, rgba(56,189,248,0.22) 0%, rgba(56,189,248,0.12) 100%) !important;
   color: #FFFFFF !important;
   border-left-color: #38BDF8 !important;
+  box-shadow: 0 2px 8px rgba(56,189,248,0.15) !important;
 }
 .light aside nav a:hover,
 .light aside nav button:hover {
-  background: rgba(255,255,255,0.12) !important;
+  background: rgba(255,255,255,0.14) !important;
   color: #FFFFFF !important;
 }
 /* Light admin sidebar user info text */
 .light aside p,
 .light aside span {
-  color: rgba(255,255,255,0.85) !important;
+  color: rgba(255,255,255,0.90) !important;
+}
+/* Light admin sidebar logo section */
+.light aside .w-10.h-10.rounded-xl {
+  box-shadow: 0 4px 16px rgba(56,189,248,0.35) !important;
 }
 .light header {
-  background: rgba(255,255,255,0.98) !important;
-  backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid rgba(22,72,176,0.15) !important;
-  box-shadow: 0 2px 16px rgba(22,72,176,0.08) !important;
+  background: rgba(255,255,255,0.96) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(22,72,176,0.12) !important;
+  box-shadow: 0 2px 20px rgba(22,72,176,0.06), 0 1px 4px rgba(0,0,0,0.03) !important;
 }
-.light header h1,
+.light header h1 {
+  color: #0A1628 !important;
+  font-weight: 700;
+}
 .light header p {
+  color: #475569 !important;
+}
+/* Light mode search bar */
+.light header input {
+  background: rgba(240,244,255,0.8) !important;
+  border: 1px solid rgba(22,72,176,0.12) !important;
   color: #0D1B2A !important;
 }
-.light .glass-card {
+.light header input::placeholder {
+  color: rgba(71,85,105,0.6) !important;
+}
+.light header input:focus {
   background: #FFFFFF !important;
-  border: 1px solid rgba(22,72,176,0.12) !important;
-  box-shadow: 0 2px 16px rgba(22,72,176,0.10), 0 1px 4px rgba(0,0,0,0.06) !important;
+  border-color: #38BDF8 !important;
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.15) !important;
+}
+.light .glass-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, rgba(240,244,255,0.5) 100%) !important;
+  border: 1px solid rgba(22,72,176,0.10) !important;
+  box-shadow: 0 4px 20px rgba(22,72,176,0.08), 0 2px 8px rgba(0,0,0,0.04) !important;
+  backdrop-filter: blur(10px);
+}
+.light .glass-card:hover {
+  box-shadow: 0 8px 28px rgba(22,72,176,0.12), 0 4px 12px rgba(0,0,0,0.06) !important;
+  border-color: rgba(56,189,248,0.25) !important;
 }
 /* Light admin main content area */
 .light main {
-  background: #EEF3FC !important;
+  background: linear-gradient(135deg, #F0F4FF 0%, #E8EFFF 100%) !important;
 }
 /* Light mode card text colors - ensure proper contrast */
 .light .glass-card h1,
 .light .glass-card h2,
-.light .glass-card h3,
+.light .glass-card h3 {
+  color: #0A1628 !important;
+  font-weight: 700;
+}
 .light .glass-card p,
 .light .glass-card span {
-  color: #0D1B2A !important;
+  color: #1E293B !important;
 }
 /* Light mode muted text in cards */
-.light .glass-card .text-blue-300\/70,
-.light .glass-card .text-blue-300\/60,
-.light .glass-card .text-blue-300\/50,
+.light .glass-card .text-blue-300\/70 {
+  color: #64748B !important;
+}
+.light .glass-card .text-blue-300\/60 {
+  color: #64748B !important;
+}
+.light .glass-card .text-blue-300\/50 {
+  color: #94A3B8 !important;
+}
 .light .glass-card .text-blue-300\/40 {
-  color: #475569 !important;
+  color: #CBD5E1 !important;
 }
 /* Light mode white text should be dark */
 .light .text-white {
-  color: #0D1B2A !important;
+  color: #0A1628 !important;
 }
 .light .glass-card .text-white {
-  color: #0D1B2A !important;
+  color: #0A1628 !important;
+}
+/* Light mode card titles with small font */
+.light .glass-card .text-sm {
+  color: #475569 !important;
+}
+/* Light mode font-mono text (numbers, currency) */
+.light .glass-card .font-mono {
+  color: #0A1628 !important;
+  font-weight: 700;
+}
+/* Light mode icon backgrounds in cards */
+.light .glass-card .bg-cyan-500\/20 {
+  background: rgba(56,189,248,0.12) !important;
+}
+.light .glass-card .bg-violet-500\/20 {
+  background: rgba(99,102,241,0.12) !important;
+}
+.light .glass-card .bg-yellow-500\/20 {
+  background: rgba(245,158,11,0.12) !important;
+}
+.light .glass-card .bg-green-500\/20 {
+  background: rgba(16,185,129,0.12) !important;
+}
+/* Light mode icon colors */
+.light .glass-card .text-cyan-400 {
+  color: #0891B2 !important;
+}
+.light .glass-card .text-violet-400 {
+  color: #7C3AED !important;
+}
+.light .glass-card .text-yellow-400 {
+  color: #D97706 !important;
+}
+.light .glass-card .text-green-400 {
+  color: #059669 !important;
+}
+/* Light mode notification bell */
+.light header .bg-white\/5 {
+  background: rgba(240,244,255,0.7) !important;
+  border: 1px solid rgba(22,72,176,0.08) !important;
+}
+.light header .bg-white\/5:hover {
+  background: rgba(240,244,255,1) !important;
+  border-color: rgba(56,189,248,0.25) !important;
 }
 
 /* ── Admin badge — animated dot ──────────────────────────────────────── */
@@ -641,12 +734,67 @@ aside > * {
   .light header button[aria-label*="sidebar"] {
     background: rgba(255, 255, 255, 0.98) !important;
     border: 1px solid rgba(22, 72, 176, 0.15) !important;
-    box-shadow: 0 2px 12px rgba(22, 72, 176, 0.12) !important;
+    box-shadow: 0 4px 16px rgba(22, 72, 176, 0.12) !important;
     color: #1648B0 !important;
   }
   .light header button[aria-label*="sidebar"]:hover {
     background: rgba(255, 255, 255, 1) !important;
-    border-color: rgba(22, 72, 176, 0.25) !important;
-    color: #0D1B2A !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    color: #0891B2 !important;
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.18) !important;
   }
+}
+
+/* ── Light mode button improvements ──────────────────────────────────────── */
+.light button {
+  font-weight: 600;
+}
+.light .glass-card button {
+  background: rgba(56,189,248,0.08) !important;
+  color: #0891B2 !important;
+  border: 1px solid rgba(56,189,248,0.2) !important;
+}
+.light .glass-card button:hover {
+  background: rgba(56,189,248,0.15) !important;
+  color: #0369A1 !important;
+  border-color: rgba(56,189,248,0.35) !important;
+}
+
+/* ── Light mode links ───────────────────────────────────────────────────── */
+.light a {
+  transition: all 0.2s ease;
+}
+.light .glass-card a:hover {
+  background: rgba(56,189,248,0.06) !important;
+}
+
+/* ── Light mode status badges ────────────────────────────────────────────── */
+.light .glass-card .bg-green-500\/10 {
+  background: rgba(16,185,129,0.12) !important;
+}
+.light .glass-card .bg-red-500\/10 {
+  background: rgba(239,68,68,0.12) !important;
+}
+.light .glass-card .text-green-400 {
+  color: #059669 !important;
+  font-weight: 600;
+}
+.light .glass-card .text-red-400 {
+  color: #DC2626 !important;
+  font-weight: 600;
+}
+
+/* ── Light mode dropdown menu ────────────────────────────────────────────── */
+.light [role="menu"] {
+  background: rgba(255,255,255,0.98) !important;
+  border: 1px solid rgba(22,72,176,0.12) !important;
+  box-shadow: 0 8px 32px rgba(22,72,176,0.15) !important;
+  backdrop-filter: blur(12px);
+}
+.light [role="menuitem"] {
+  color: #1E293B !important;
+}
+.light [role="menuitem"]:hover {
+  background: rgba(56,189,248,0.08) !important;
+  color: #0A1628 !important;
 }
