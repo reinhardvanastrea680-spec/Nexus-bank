@@ -555,8 +555,8 @@ function WireTransferWizard() {
                 style={{
                   background: t.cardBg,
                   border:
-                    purpose === p.id ? "2px solid #38BDF8" : "1px solid rgba(255,255,255,0.07)",
-                  color: purpose === p.id ? "#38BDF8" : "#FFFFFF",
+                    purpose === p.id ? "2px solid #38BDF8" : `1px solid ${t.border}`,
+                  color: purpose === p.id ? "#38BDF8" : t.textPrimary,
                   boxShadow: purpose === p.id ? "0 0 0 3px rgba(56,189,248,0.15)" : "none",
                 }}
               >
