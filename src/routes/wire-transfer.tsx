@@ -42,15 +42,28 @@ const countries = [
   { code: "MX", name: "Mexico" },
 ];
 
-// Generate currency list from CURRENCIES constant
+// Generate currency list from CURRENCIES constant - moved outside component to prevent re-creation
 const currencies = Object.entries(CURRENCIES).map(([code, data]) => ({
   code: code as CurrencyCode,
   name: data.name,
   symbol: data.symbol,
 }));
 
+// Transfer purpose options - moved outside to prevent re-creation
+const transferPurposes = [
+  { id: "family", label: "Family Support / Personal" },
+  { id: "business", label: "Business Payment" },
+  { id: "education", label: "Education Fees" },
+  { id: "medical", label: "Medical Expenses" },
+  { id: "investment", label: "Investment / Securities" },
+  { id: "property", label: "Property Purchase" },
+  { id: "loan", label: "Loan Repayment" },
+  { id: "gift", label: "Gift / Donation" },
+  { id: "travel", label: "Travel / Living Expenses" },
+  { id: "other", label: "Other" },
+];
+
 function WireTransferWizard() {
-  
   const { theme } = useTheme();
   const t = themeColors(theme);
   const navigate = useNavigate();
@@ -574,18 +587,7 @@ function WireTransferWizard() {
             <h3 className="text-lg font-bold" style={{ color: t.textOnBg }}>
               Why are you sending?
             </h3>
-            {[
-              { id: "family", label: "Family Support / Personal" },
-              { id: "business", label: "Business Payment" },
-              { id: "education", label: "Education Fees" },
-              { id: "medical", label: "Medical Expenses" },
-              { id: "investment", label: "Investment / Securities" },
-              { id: "property", label: "Property Purchase" },
-              { id: "loan", label: "Loan Repayment" },
-              { id: "gift", label: "Gift / Donation" },
-              { id: "travel", label: "Travel / Living Expenses" },
-              { id: "other", label: "Other" },
-            ].map((p) => (
+            {transferPurposes.map((p) => (
               <button
                 key={p.id}
                 onClick={() => setPurpose(p.id)}
