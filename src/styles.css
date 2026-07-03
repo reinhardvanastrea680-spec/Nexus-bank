@@ -692,6 +692,139 @@ aside > * {
   border-color: rgba(56,189,248,0.25) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE ADMIN PAGES - Dark Cards & Elements
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Light mode - Fix dark backgrounds in admin pages (chat, users, account control) */
+.light main [style*="background: #0D1625"],
+.light main [style*="background: #152035"],
+.light main [style*="background: #1A2840"],
+.light main [style*="background: rgb(13, 22, 37)"],
+.light main [style*="background: rgb(21, 32, 53)"] {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(22,72,176,0.12) !important;
+  box-shadow: 0 2px 12px rgba(22,72,176,0.08) !important;
+}
+
+/* Light mode - Search bars in admin pages */
+.light main input[type="text"],
+.light main input[type="search"] {
+  background: rgba(240,244,255,0.8) !important;
+  border: 1px solid rgba(22,72,176,0.15) !important;
+  color: #0A1628 !important;
+}
+.light main input::placeholder {
+  color: rgba(71,85,105,0.6) !important;
+}
+.light main input:focus {
+  background: #FFFFFF !important;
+  border-color: #38BDF8 !important;
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.12) !important;
+}
+
+/* Light mode - Select dropdowns */
+.light main select {
+  background: rgba(240,244,255,0.8) !important;
+  border: 1px solid rgba(22,72,176,0.15) !important;
+  color: #0A1628 !important;
+}
+
+/* Light mode - Chat user cards */
+.light main .rounded-xl[style*="background"] {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(22,72,176,0.10) !important;
+}
+
+/* Light mode - User list items */
+.light main .flex.items-center.gap-3 {
+  color: #1E293B !important;
+}
+
+/* Light mode - Email and text elements */
+.light main .text-blue-300\/60,
+.light main .text-blue-300\/50 {
+  color: #64748B !important;
+}
+
+/* Light mode - Tab buttons */
+.light main button[class*="rounded"] {
+  background: rgba(240,244,255,0.6) !important;
+  color: #475569 !important;
+  border: 1px solid rgba(22,72,176,0.08) !important;
+}
+.light main button[class*="rounded"][style*="cyan"] {
+  background: rgba(56,189,248,0.12) !important;
+  color: #0891B2 !important;
+  border-color: rgba(56,189,248,0.25) !important;
+  font-weight: 600;
+}
+
+/* Light mode - Stat cards (Total, Active, Frozen) */
+.light main .text-xl,
+.light main .text-2xl,
+.light main .text-3xl {
+  color: #0A1628 !important;
+  font-weight: 700;
+}
+
+/* Light mode - Action buttons (View, Freeze, Approve, Decline) */
+.light main button:not(.gradient-btn) {
+  background: rgba(240,244,255,0.8) !important;
+  color: #0891B2 !important;
+  border: 1px solid rgba(56,189,248,0.2) !important;
+}
+.light main button:not(.gradient-btn):hover {
+  background: rgba(56,189,248,0.15) !important;
+  border-color: rgba(56,189,248,0.35) !important;
+}
+
+/* Light mode - Red decline/delete buttons */
+.light main button[style*="#EF4444"],
+.light main button[style*="rgb(239, 68, 68)"] {
+  background: rgba(239,68,68,0.12) !important;
+  color: #DC2626 !important;
+  border: 1px solid rgba(239,68,68,0.25) !important;
+}
+
+/* Light mode - Status badges and online indicators */
+.light main .bg-green-500\/10 {
+  background: rgba(16,185,129,0.12) !important;
+}
+.light main .bg-red-500\/10 {
+  background: rgba(239,68,68,0.12) !important;
+}
+
+/* Light mode - Chat message bubbles */
+.light main [class*="chat"] [style*="background"] {
+  background: rgba(240,244,255,0.8) !important;
+  color: #1E293B !important;
+  border: 1px solid rgba(22,72,176,0.08) !important;
+}
+
+/* Light mode - Empty state text */
+.light main .text-center p {
+  color: #64748B !important;
+}
+
+/* Light mode - Ensure all admin page headings are dark */
+.light main h1,
+.light main h2,
+.light main h3,
+.light main h4 {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Ensure all admin page body text is dark */
+.light main p:not([style*="color"]) {
+  color: #475569 !important;
+}
+
+/* Light mode - Loading states */
+.light main .animate-pulse {
+  background: rgba(226,232,240,0.8) !important;
+}
+
 /* ── Admin badge — animated dot ──────────────────────────────────────── */
 .admin-badge {
   animation: nx-pulse-slow 2s ease-in-out infinite;
