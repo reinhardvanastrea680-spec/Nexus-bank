@@ -17,6 +17,7 @@ import { BottomNav } from "../dashboard/components/BottomNav";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { CURRENCIES, type CurrencyCode, getCurrencySymbol } from "../utils/currency";
 
 export const Route = createFileRoute("/wire-transfer")({
   head: () => ({ meta: [{ title: "Wire Transfer - Nexus Bank" }] }),
@@ -31,17 +32,22 @@ const countries = [
   { code: "AU", name: "Australia" },
   { code: "JP", name: "Japan" },
   { code: "CH", name: "Switzerland" },
+  { code: "SG", name: "Singapore" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "NG", name: "Nigeria" },
+  { code: "IN", name: "India" },
+  { code: "CN", name: "China" },
+  { code: "BR", name: "Brazil" },
+  { code: "ZA", name: "South Africa" },
+  { code: "MX", name: "Mexico" },
 ];
 
-const currencies = [
-  { code: "USD", name: "US Dollar" },
-  { code: "EUR", name: "Euro" },
-  { code: "GBP", name: "British Pound" },
-  { code: "CAD", name: "Canadian Dollar" },
-  { code: "AUD", name: "Australian Dollar" },
-  { code: "JPY", name: "Japanese Yen" },
-  { code: "CHF", name: "Swiss Franc" },
-];
+// Generate currency list from CURRENCIES constant
+const currencies = Object.entries(CURRENCIES).map(([code, data]) => ({
+  code: code as CurrencyCode,
+  name: data.name,
+  symbol: data.symbol,
+}));
 
 function WireTransferWizard() {
   
@@ -65,7 +71,8 @@ function WireTransferWizard() {
   const [transfer, setTransfer] = useState({
     src: "Checking",
     amount: "",
-    toCurrency: "EUR",
+    fromCurrency: "USD" as CurrencyCode,
+    toCurrency: "EUR" as CurrencyCode,
   });
   const [purpose, setPurpose] = useState("");
   const [otherPurposeText, setOtherPurposeText] = useState("");
@@ -441,14 +448,32 @@ function WireTransferWizard() {
 
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
-                Amount (USD)
+                Source Currency
+              </label>
+              <select
+                value={transfer.fromCurrency}
+                className="w-full px-4 py-4 rounded-xl outline-none appearance-none"
+                style={{ background: t.inputBg, color: t.textPrimary }}
+                onChange={(e) => setTransfer({ ...transfer, fromCurrency: e.target.value as CurrencyCode })}
+              >
+                {currencies.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} - {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
+                Amount ({transfer.fromCurrency})
               </label>
               <div className="relative">
                 <span
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-mono"
                   style={{ color: t.textMutedOnBg }}
                 >
-                  $
+                  {getCurrencySymbol(transfer.fromCurrency)}
                 </span>
                 <input
                   type="text"
@@ -474,7 +499,7 @@ function WireTransferWizard() {
                 value={transfer.toCurrency}
                 className="w-full px-4 py-4 rounded-xl outline-none appearance-none"
                 style={{ background: t.inputBg, color: t.textPrimary }}
-                onChange={(e) => setTransfer({ ...transfer, toCurrency: e.target.value })}
+                onChange={(e) => setTransfer({ ...transfer, toCurrency: e.target.value as CurrencyCode })}
               >
                 {currencies.map((c) => (
                   <option key={c.code} value={c.code}>
@@ -492,40 +517,53 @@ function WireTransferWizard() {
                 border: "1px solid rgba(56,189,248,0.15)",
               }}
             >
-              <div className="flex justify-between mb-2">
-                <span className="text-sm" style={{ color: t.textMuted }}>
-                  You send
-                </span>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
-                  ${formatCurrency(parseFloat(transfer.amount || "0"))} USD
-                </span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm" style={{ color: t.textMuted }}>
-                  Exchange rate
-                </span>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
-                  1 USD = 0.92 {transfer.toCurrency}
-                </span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm" style={{ color: t.textMuted }}>
-                  Transfer fee
-                </span>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
-                  $25.00
-                </span>
-              </div>
-              <hr style={{ borderColor: "rgba(255,255,255,0.07)" }} className="my-3" />
-              <div className="flex justify-between">
-                <span className="font-bold" style={{ color: t.textPrimary }}>
-                  Recipient gets
-                </span>
-                <span className="font-bold text-lg" style={{ color: t.accentCyan }}>
-                  {((parseFloat(transfer.amount || "0") - 25) * 0.92).toFixed(2)}{" "}
-                  {transfer.toCurrency}
-                </span>
-              </div>
+              {(() => {
+                const amount = parseFloat(transfer.amount || "0");
+                const fromRate = CURRENCIES[transfer.fromCurrency].rateFromUSD;
+                const toRate = CURRENCIES[transfer.toCurrency].rateFromUSD;
+                const exchangeRate = toRate / fromRate;
+                const convertedAmount = amount * exchangeRate;
+                const fee = 25.00;
+                
+                return (
+                  <>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm" style={{ color: t.textMuted }}>
+                        You send
+                      </span>
+                      <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
+                        {getCurrencySymbol(transfer.fromCurrency)}{formatCurrency(amount)} {transfer.fromCurrency}
+                      </span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm" style={{ color: t.textMuted }}>
+                        Exchange rate
+                      </span>
+                      <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
+                        1 {transfer.fromCurrency} = {exchangeRate.toFixed(4)} {transfer.toCurrency}
+                      </span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm" style={{ color: t.textMuted }}>
+                        Transfer fee
+                      </span>
+                      <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
+                        {getCurrencySymbol(transfer.fromCurrency)}{fee.toFixed(2)}
+                      </span>
+                    </div>
+                    <hr style={{ borderColor: "rgba(255,255,255,0.07)" }} className="my-3" />
+                    <div className="flex justify-between">
+                      <span className="font-bold" style={{ color: t.textPrimary }}>
+                        Recipient gets
+                      </span>
+                      <span className="font-bold text-lg" style={{ color: t.accentCyan }}>
+                        {getCurrencySymbol(transfer.toCurrency)}{((amount - fee) * exchangeRate).toFixed(2)}{" "}
+                        {transfer.toCurrency}
+                      </span>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
         )}
