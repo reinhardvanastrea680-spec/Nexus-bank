@@ -41,8 +41,18 @@ function AdminUsersPage() {
   const handleViewUser = (userId: string, e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     console.log("🔵 Navigating to user detail:", userId);
-    console.log("🔵 Target URL:", `/admin/users/${userId}`);
-    navigate({ to: "/admin/users/$userId", params: { userId } });
+    
+    // Use setTimeout to ensure navigation happens after current execution
+    setTimeout(() => {
+      try {
+        navigate({ to: "/admin/users/$userId", params: { userId } });
+        console.log("✅ Navigate called");
+      } catch (error) {
+        console.error("❌ Navigation error:", error);
+        // Fallback
+        window.location.href = `/admin/users/${userId}`;
+      }
+    }, 0);
   };
 
   const handleToggleFreeze = async (user: any, e: React.MouseEvent) => {
