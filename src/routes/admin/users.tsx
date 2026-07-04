@@ -144,7 +144,10 @@ function AdminUsersPage() {
                 <tbody>
                   {pagedUsers.map((user, i) => (
                     <tr key={user.id} className="border-t border-[rgba(255,255,255,0.05)] hover:bg-white/5 cursor-pointer"
-                      onClick={() => navigate({ to: `/admin/users/${user.id}` })}>
+                      onClick={() => {
+                        console.log("Table row: Navigating to user:", user.id);
+                        navigate({ to: `/admin/users/${user.id}` });
+                      }}>
                       <td className="py-3 px-4 text-blue-300/60 font-mono text-sm">{i + 1}</td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
@@ -204,7 +207,11 @@ function AdminUsersPage() {
                         <div className="flex items-center gap-1">
                           <Button variant="ghost" size="icon" aria-label={`View ${user.fullName}`}
                             className="w-8 h-8 text-blue-300 hover:text-white hover:bg-blue-500/10"
-                            onClick={() => navigate({ to: `/admin/users/${user.id}` })}>
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log("Navigating to user:", user.id);
+                              navigate({ to: `/admin/users/${user.id}` });
+                            }}>
                             <Eye size={14} aria-hidden="true" />
                           </Button>
                           <Button variant="ghost" size="icon" aria-label={`${user.status === "active" ? "Freeze" : "Unfreeze"} ${user.fullName}`}
@@ -236,9 +243,17 @@ function AdminUsersPage() {
                 {/* Main row — tap to go to detail page */}
                 <div
                   className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-white/5"
-                  onClick={() => navigate({ to: `/admin/users/${user.id}` })}
+                  onClick={() => {
+                    console.log("Mobile: Navigating to user:", user.id);
+                    navigate({ to: `/admin/users/${user.id}` });
+                  }}
                   role="button" tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && navigate({ to: `/admin/users/${user.id}` })}>
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      console.log("Mobile keyboard: Navigating to user:", user.id);
+                      navigate({ to: `/admin/users/${user.id}` });
+                    }
+                  }}>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {user.fullName.charAt(0).toUpperCase()}
                   </div>
@@ -254,7 +269,11 @@ function AdminUsersPage() {
                 <div className="flex items-center gap-1 px-3 pb-3 pt-0 flex-wrap"
                   onClick={(e) => e.stopPropagation()}>
                   {/* View detail */}
-                  <button onClick={() => navigate({ to: `/admin/users/${user.id}` })}
+                  <button onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Mobile button: Navigating to user:", user.id);
+                    navigate({ to: `/admin/users/${user.id}` });
+                  }}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
                     style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}>
                     <Eye size={12} /> View
