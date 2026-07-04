@@ -66,13 +66,13 @@ function InternalTransfer() {
 
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN matches the one from admin
-    if (!account?.pin) {
+    if (!account?.transactionPin) {
       setPinError("No PIN set for this account. Please contact support.");
       setLoading(false);
       return;
     }
 
-    if (enteredPin !== account.pin) {
+    if (enteredPin !== account.transactionPin) {
       setPinError("Incorrect PIN. Please try again.");
       setLoading(false);
       return;

@@ -1,4 +1,4 @@
-﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Search, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,16 +18,16 @@ export const Route = createFileRoute("/pay-bills")({
 });
 
 const categories = [
-  { id: "electricity", name: "Electricity",          icon: "⚡" },
-  { id: "internet",    name: "Internet",             icon: "🌐" },
-  { id: "mobile",      name: "Mobile Recharge",      icon: "📱" },
-  { id: "cable",       name: "Cable TV",             icon: "📺" },
-  { id: "insurance",   name: "Insurance",            icon: "🛡️" },
-  { id: "credit-card", name: "Credit Card",          icon: "💳" },
-  { id: "tax",         name: "Tax Payments",         icon: "📋" },
-  { id: "subscription",name: "Subscriptions",        icon: "🔄" },
-  { id: "government",  name: "Government Services",  icon: "🏛️" },
-  { id: "education",   name: "Education",            icon: "🎓" },
+  { id: "electricity", name: "Electricity",          icon: "?" },
+  { id: "internet",    name: "Internet",             icon: "??" },
+  { id: "mobile",      name: "Mobile Recharge",      icon: "??" },
+  { id: "cable",       name: "Cable TV",             icon: "??" },
+  { id: "insurance",   name: "Insurance",            icon: "???" },
+  { id: "credit-card", name: "Credit Card",          icon: "??" },
+  { id: "tax",         name: "Tax Payments",         icon: "??" },
+  { id: "subscription",name: "Subscriptions",        icon: "??" },
+  { id: "government",  name: "Government Services",  icon: "???" },
+  { id: "education",   name: "Education",            icon: "??" },
 ];
 
 const billers = [
@@ -122,13 +122,13 @@ function PayBills() {
 
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN
-    if (!account?.pin) {
+    if (!account?.transactionPin) {
       setPinError("No PIN set for this account. Please contact support.");
       setLoading(false);
       return;
     }
 
-    if (enteredPin !== account.pin) {
+    if (enteredPin !== account.transactionPin) {
       setPinError("Incorrect PIN. Please try again.");
       setLoading(false);
       return;
@@ -163,7 +163,7 @@ function PayBills() {
 
   if (successData) return <TransactionSuccessScreen {...successData} transactionType="bill_payment" />;
 
-  /* ── Biller detail / payment page ── */
+  /* -- Biller detail / payment page -- */
   if (selectedBiller) return (
     <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: t.pageBg }}>
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
@@ -197,7 +197,7 @@ function PayBills() {
               <div className="p-4 rounded-xl flex items-center gap-3"
                 style={{ background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.3)" }}>
                 <CheckCircle2 size={20} style={{ color: t.accentGreen }} />
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Customer Verified — {customerName.trim()}</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Customer Verified � {customerName.trim()}</span>
               </div>
             )}
           </div>
@@ -259,7 +259,7 @@ function PayBills() {
                 style={{ background: t.inputBg, color: t.textMuted }}>Cancel</button>
               <button onClick={handleConfirm} disabled={loading} className="py-4 rounded-xl font-semibold text-white"
                 style={{ background: t.gradientBtn, opacity: loading ? 0.6 : 1 }}>
-                {loading ? "Submitting…" : "Confirm"}
+                {loading ? "Submitting�" : "Confirm"}
               </button>
             </div>
           </div>
@@ -282,7 +282,7 @@ function PayBills() {
     </div>
   );
 
-  /* ── Biller list page ── */
+  /* -- Biller list page -- */
   return (
     <div className="min-h-screen w-full flex flex-col pb-24" style={{ background: t.pageBg }}>
       <div className="px-5 pt-10 pb-6 flex items-center gap-4">
@@ -329,7 +329,7 @@ function PayBills() {
               </div>
               <div className="text-sm font-semibold" style={{ color: t.textPrimary }}>{biller.name}</div>
               <div className="text-xs mt-1" style={{ color: t.textMuted }}>
-                {categories.find((c) => c.id === biller.category)?.name} • {biller.country}
+                {categories.find((c) => c.id === biller.category)?.name} � {biller.country}
               </div>
             </button>
           ))}
