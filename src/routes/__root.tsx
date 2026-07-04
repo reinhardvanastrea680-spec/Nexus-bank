@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { InstallPrompt } from "../dashboard/components/InstallPrompt";
 import { LanguagePicker } from "../dashboard/components/LanguagePicker";
 import { LanguageProvider } from "../hooks/LanguageContext";
 
@@ -153,7 +152,6 @@ function RootComponent() {
     <LanguageProvider>
       <QueryClientProvider client={queryClient}>
         <Outlet />
-        <InstallPrompt />
         {!isAdmin && <LanguagePicker />}
       </QueryClientProvider>
     </LanguageProvider>
