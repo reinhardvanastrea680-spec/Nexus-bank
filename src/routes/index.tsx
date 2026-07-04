@@ -14,7 +14,6 @@ import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { useTheme } from "../hooks/use-theme";
 import { useLanguage } from "../hooks/use-language";
-import { LanguagePicker } from "../dashboard/components/LanguagePicker";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { ADMIN_UID } from "../config/adminConfig";
@@ -255,8 +254,6 @@ function HomePage() {
               style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
               {dark ? <Sun size={17} style={{ color: "white" }} /> : <Moon size={17} style={{ color: "white" }} />}
             </button>
-            {/* Language Picker */}
-            <LanguagePicker variant="header" />
             {/* Notifications */}
             <Link to="/notifications">
               <div className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
