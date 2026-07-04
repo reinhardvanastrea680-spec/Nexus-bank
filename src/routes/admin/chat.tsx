@@ -124,10 +124,10 @@ function AdminChatPage() {
   // ── Chat list panel ──────────────────────────────────────────────────────
   const ChatList = () => (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-[rgba(255,255,255,0.05)]">
+      <div className="p-3 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-white font-semibold text-sm">
-            <Users size={16} className="text-cyan-400" aria-hidden="true" />
+          <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+            <Users size={16} className="text-cyan-600" aria-hidden="true" />
             Chats
           </div>
           {totalUnread > 0 && (
@@ -140,7 +140,7 @@ function AdminChatPage() {
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {chats.length === 0 ? (
-          <div className="text-center py-12 text-blue-300/50 text-sm">
+          <div className="text-center py-12 text-gray-400 text-sm">
             <MessageSquare size={32} className="mx-auto mb-3 opacity-30" aria-hidden="true" />
             No active chats
           </div>
@@ -148,8 +148,8 @@ function AdminChatPage() {
           <button key={chat.id} onClick={() => openChat(chat.id)}
             className={`w-full p-2.5 rounded-xl cursor-pointer transition-all text-left ${
               selectedUserId === chat.id
-                ? "bg-gradient-to-r from-cyan-500/10 to-violet-600/10 border border-cyan-500/30"
-                : "hover:bg-white/5 border border-transparent"
+                ? "bg-gradient-to-r from-cyan-50 to-violet-50 border border-cyan-300"
+                : "hover:bg-gray-50 border border-transparent"
             }`}
             aria-label={`Chat with ${chat.userFullName}${chat.unreadByAdmin > 0 ? `, ${chat.unreadByAdmin} unread` : ""}`}>
             <div className="flex items-center gap-2.5">
@@ -158,15 +158,15 @@ function AdminChatPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1">
-                  <p className="text-white font-medium truncate text-sm">{chat.userFullName}</p>
+                  <p className="text-gray-900 font-medium truncate text-sm">{chat.userFullName}</p>
                   {chat.unreadByAdmin > 0 && (
                     <span className="min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                      style={{ background: "#38BDF8", color: "#0B1120" }} aria-hidden="true">
+                      style={{ background: "#38BDF8", color: "#FFFFFF" }} aria-hidden="true">
                       {chat.unreadByAdmin}
                     </span>
                   )}
                 </div>
-                <p className="text-blue-300/50 text-xs truncate">{chat.lastMessage || chat.userEmail}</p>
+                <p className="text-gray-500 text-xs truncate">{chat.lastMessage || chat.userEmail}</p>
               </div>
             </div>
           </button>
@@ -179,21 +179,21 @@ function AdminChatPage() {
   const ChatWindow = () => (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-[rgba(255,255,255,0.05)] flex items-center gap-3">
+      <div className="p-4 border-b border-gray-200 flex items-center gap-3">
         {/* Back button on mobile */}
         <button onClick={() => setShowMobileChat(false)} aria-label="Back to chat list"
-          className="lg:hidden p-2 -ml-1 rounded-lg text-blue-300 hover:text-white hover:bg-white/10 mr-1">
+          className="lg:hidden p-2 -ml-1 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 mr-1">
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white flex-shrink-0" aria-hidden="true">
           {selectedUser ? selectedUser.fullName.charAt(0).toUpperCase() : <User size={20} />}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white font-semibold truncate">
+          <p className="text-gray-900 font-semibold truncate">
             {selectedUser ? selectedUser.fullName : "Select a chat"}
           </p>
           {selectedUser && (
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: "#8A9BB5" }}>
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <Circle size={6} className="fill-green-400 text-green-400" aria-hidden="true" />
               {selectedUser.email}
             </div>
@@ -202,14 +202,14 @@ function AdminChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ background: "#07101E" }} aria-label="Chat messages" aria-live="polite">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" aria-label="Chat messages" aria-live="polite">
         {!selectedUserId ? (
-          <div className="flex flex-col items-center justify-center h-full text-blue-300/50 py-12">
+          <div className="flex flex-col items-center justify-center h-full text-gray-400 py-12">
             <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
             <p>Select a chat to start replying</p>
           </div>
         ) : chatMessages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-blue-300/50 py-12">
+          <div className="flex flex-col items-center justify-center h-full text-gray-400 py-12">
             <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
             <p>No messages yet</p>
           </div>
@@ -218,8 +218,7 @@ function AdminChatPage() {
           if ((msg as any).sender === "system" || (msg as any).isPresence) {
             return (
               <div key={msg.id} className="flex justify-center my-1">
-                <span className="text-xs px-3 py-1 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.05)", color: "#8A9BB5" }}>
+                <span className="text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600">
                   {msg.text}
                 </span>
               </div>
@@ -241,8 +240,9 @@ function AdminChatPage() {
             )}
             <div className="max-w-[80%] p-3 rounded-2xl"
               style={{
-                background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#1A2438",
+                background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#FFFFFF",
                 borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                border: msg.sender === "user" ? "1px solid #E5E7EB" : "none",
               }}>
               {/* Render image if mediaUrl is an image */}
               {msg.mediaUrl && (
@@ -259,10 +259,10 @@ function AdminChatPage() {
               )}
               {/* Only show text if it's not just an emoji label */}
               {(!msg.mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text)) ? (
-                <p className="text-sm leading-relaxed text-white">{msg.text}</p>
+                <p className={`text-sm leading-relaxed ${msg.sender === "admin" ? "text-white" : "text-gray-900"}`}>{msg.text}</p>
               ) : null}
               <div className="flex items-center justify-end gap-1 mt-1">
-                <p className="text-xs opacity-60 text-white">{msg.time}</p>
+                <p className={`text-xs ${msg.sender === "admin" ? "text-white/60" : "text-gray-500"}`}>{msg.time}</p>
                 {msg.sender === "admin" && (
                   msg.readByUser
                     ? <CheckCheck size={12} style={{ color: "rgba(255,255,255,0.8)" }} aria-label="Read" />
@@ -288,12 +288,12 @@ function AdminChatPage() {
       </div>
 
       {/* Input */}
-      <div className="p-3 md:p-4 border-t border-[rgba(255,255,255,0.05)]">
+      <div className="p-3 md:p-4 border-t border-gray-200">
         <form onSubmit={sendAdminMessage} className="flex gap-2 md:gap-3">
           <Input type="text" placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
             value={chatInput} onChange={handleInputChange} disabled={!selectedUserId}
             aria-label="Reply message"
-            className="flex-1 h-11 md:h-12 bg-[#111827] border-[rgba(255,255,255,0.1)] text-white placeholder:text-blue-300/50" />
+            className="flex-1 h-11 md:h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
           <Button type="submit" disabled={!chatInput.trim() || !selectedUserId}
             aria-label="Send reply"
             className="h-11 md:h-12 px-4 md:px-6 bg-gradient-to-r from-cyan-500 to-violet-600 text-white">
@@ -307,8 +307,8 @@ function AdminChatPage() {
   return (
     <div className="flex flex-col h-full">
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <MessageSquare className="text-cyan-400" aria-hidden="true" />
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <MessageSquare className="text-cyan-600" aria-hidden="true" />
           Live Chat Center
           {totalUnread > 0 && (
             <span className="ml-2 px-2.5 py-0.5 rounded-full text-sm font-bold"
@@ -317,19 +317,19 @@ function AdminChatPage() {
             </span>
           )}
         </h1>
-        <p className="text-blue-300/70 mt-1 text-sm">Manage customer conversations in real-time</p>
+        <p className="text-gray-600 mt-1 text-sm">Manage customer conversations in real-time</p>
       </div>
 
       {/* Desktop: side by side | Mobile: conditional panels */}
-      <div className="flex-1 flex min-h-0 rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.05)]" style={{ minHeight: "calc(100vh - 200px)" }}>
+      <div className="flex-1 flex min-h-0 rounded-2xl overflow-hidden border border-gray-200" style={{ minHeight: "calc(100vh - 200px)" }}>
 
         {/* Chat list — narrow sidebar, always visible on desktop */}
-        <div className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 border-r border-[rgba(255,255,255,0.05)] bg-[#0A1020]`}>
+        <div className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 border-r border-gray-200 bg-white`}>
           <ChatList />
         </div>
 
         {/* Chat window — takes all remaining space */}
-        <div className={`${showMobileChat ? "flex" : "hidden"} lg:flex flex-col flex-1 min-w-0 bg-[#0A1020]`}>
+        <div className={`${showMobileChat ? "flex" : "hidden"} lg:flex flex-col flex-1 min-w-0 bg-white`}>
           <ChatWindow />
         </div>
       </div>
