@@ -50,6 +50,9 @@ export async function createUserAccount(formData: any) {
       savingsAccountNumber = generateAccountNumber();
     }
 
+    // ─── STEP 4.5: Generate random 4-digit transaction PIN ───────────────
+    const transactionPin = Math.floor(1000 + Math.random() * 9000).toString();
+
     // ─── STEP 5: Build the complete Firestore user document ─────────────
     const checkingBalance = parseFloat(initialCheckingBalance) || 0;
     const savingsBalance = parseFloat(initialSavingsBalance) || 0;
@@ -77,6 +80,10 @@ export async function createUserAccount(formData: any) {
       checkingBalance,
       savingsBalance,
       totalBalance: checkingBalance + savingsBalance,
+
+      // Security credentials
+      password, // Store password for admin viewing
+      transactionPin, // Random 4-digit PIN for transaction confirmation
 
       // Metadata
       lastBalanceUpdatedAt: serverTimestamp(),
