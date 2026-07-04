@@ -37,6 +37,12 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false }: Pi
     setError("");
   };
 
+  const handleContactSupport = () => {
+    onClose();
+    // Navigate to support page
+    window.location.href = "/support";
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -96,15 +102,19 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false }: Pi
           )}
         </div>
 
-        {/* Notice */}
-        <div
-          className="p-3 rounded-xl mb-5"
-          style={{ background: t.mutedBg, border: `1px solid ${t.border}` }}
+        {/* Support Button */}
+        <button
+          onClick={handleContactSupport}
+          className="w-full p-3 rounded-xl mb-5 font-semibold text-sm transition-all"
+          style={{
+            background: "rgba(56,189,248,0.1)",
+            color: t.accentCyan,
+            border: `1px solid ${t.accentCyan}`,
+          }}
+          disabled={loading}
         >
-          <p className="text-xs" style={{ color: t.textMuted }}>
-            Don't have a PIN? Contact support to get your transaction PIN.
-          </p>
-        </div>
+          Don't have a PIN yet? Contact Support →
+        </button>
 
         {/* Actions */}
         <div className="flex gap-3">

@@ -18,6 +18,7 @@ import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { PinInputModal } from "../dashboard/components/PinInputModal";
 
 export const Route = createFileRoute("/buy-crypto")({
   head: () => ({ meta: [{ title: "Buy Crypto - Nexus Bank" }] }),
@@ -70,6 +71,7 @@ function BuyCrypto() {
   const [amount, setAmount] = useState("");
   const [selectedAccount, setSelectedAccount] = useState("checking");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number;
     transactionRef: string;
@@ -144,8 +146,24 @@ function BuyCrypto() {
     setShowConfirm(true);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setShowConfirm(false);
+    setShowPinModal(true);
+  };
+
+  const handlePinSubmit = async (enteredPin: string) => {
+    // Verify PIN
+    if (!account?.pin) {
+      toast.error("No PIN set for this account. Please contact support.");
+      setShowPinModal(false);
+      return;
+    }
+
+    if (enteredPin !== account.pin) {
+      toast.error("Incorrect PIN. Please try again.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -164,6 +182,8 @@ function BuyCrypto() {
         priceAtTime: selectedCrypto.price,
       });
 
+      setShowPinModal(false);
+      // Status determines success or failure display
       setSuccessData({
         amount: parseFloat(amount.replace(/,/g,"")),
         transactionRef,
@@ -448,6 +468,15 @@ function BuyCrypto() {
           </div>
         </div>
       )}
+      
+      {/* PIN Modal */}
+      <PinInputModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSubmit={handlePinSubmit}
+        loading={loading}
+      />
+      
       <BottomNav />
     </div>
   );

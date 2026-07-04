@@ -270,8 +270,8 @@ function HomePage() {
               style={{ background: "rgba(255,255,255,0.10)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.18)" }}>
               <div>
                 <p className="text-white/55 text-xs tracking-wide uppercase">Total Balance</p>
-                <p className="text-white font-bold font-mono leading-tight mt-0.5"
-                  style={{ fontSize: "clamp(0.9rem, 4vw, 1.3rem)" }}>
+                <p className="font-bold font-mono leading-tight mt-0.5"
+                  style={{ fontSize: "clamp(0.9rem, 4vw, 1.3rem)", color: "#FFFFFF", textShadow: "0 2px 12px rgba(56,189,248,0.4), 0 1px 3px rgba(0,0,0,0.3)" }}>
                   {balanceVisible
                     ? customLoading
                       ? <span className="opacity-60 animate-pulse">{formatInCurrency(totalAllAccounts, currency)}</span>
@@ -305,7 +305,7 @@ function HomePage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <p className="text-white/60 text-xs tracking-widest uppercase">FIAT BALANCE</p>
-                    <p className="text-white text-sm font-bold mt-0.5">{accountData?.label || "Account"}</p>
+                    <p className="text-sm font-bold mt-0.5" style={{ color: "#FFFFFF", textShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>{accountData?.label || "Account"}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-white/50 text-xs">**** {accountData?.number?.slice(-4) || "----"}</p>
@@ -313,7 +313,7 @@ function HomePage() {
                 </div>
                 <p className="text-white/50 text-xs mb-1">Available Funds</p>
                 <div className="flex items-center gap-3 mb-5">
-                  <span className="text-white font-bold font-mono balance-figure" style={{ textShadow: "0 2px 12px rgba(56,189,248,0.25)", fontSize: "clamp(1rem, 5vw, 1.9rem)", wordBreak: "break-all", overflowWrap: "anywhere", maxWidth: "calc(100% - 40px)", display: "block" }}>
+                  <span className="font-bold font-mono balance-figure" style={{ color: "#FFFFFF", textShadow: "0 2px 16px rgba(56,189,248,0.4), 0 1px 3px rgba(0,0,0,0.3)", fontSize: "clamp(1rem, 5vw, 1.9rem)", wordBreak: "break-all", overflowWrap: "anywhere", maxWidth: "calc(100% - 40px)", display: "block" }}>
                     {balanceVisible ? formatInCurrency(accountData?.balance || 0, currency) : `${currencySymbol}��������`}
                   </span>
                   <button onClick={() => setBalanceVisible(!balanceVisible)} className="p-1.5 rounded-full transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)" }}>
@@ -322,7 +322,7 @@ function HomePage() {
                 </div>
                 <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
                   <span className="text-white/50 text-xs">Account Status</span>
-                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>� {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
+                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>● {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
                 </div>
               </div>
             </div>

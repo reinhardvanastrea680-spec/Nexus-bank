@@ -19,6 +19,7 @@ import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { PinInputModal } from "../dashboard/components/PinInputModal";
 
 export const Route = createFileRoute("/check-deposit")({
   head: () => ({ meta: [{ title: "Cheque Deposit - Nexus Bank" }] }),
@@ -32,12 +33,21 @@ function formatAmountDisplay(val: string): string {
   return dec !== undefined ? `${formatted}.${dec}` : formatted;
 }
 
+function formatCurrency(value: number) {
+  return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function CheckDeposit() {
   
   const { theme } = useTheme();
   const navigate = useNavigate();
   const t = themeColors(theme);
   const { account } = useUserAccount();
+  const { customAccounts } = useCustomAccounts(account?.id);
+
+  // Get all available accounts dynamically
+  const allAccountOptions = getAllAccountOptions(account, customAccounts);
+
   const [step, setStep] = useState(1);
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [backImage, setBackImage] = useState<string | null>(null);
@@ -47,8 +57,9 @@ function CheckDeposit() {
   const [checkNumber, setCheckNumber] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
+  const [selectedAccount, setSelectedAccount] = useState("checking");
   const [memo, setMemo] = useState("");
+  const [showPinModal, setShowPinModal] = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number;
     transactionRef: string;
@@ -130,6 +141,26 @@ function CheckDeposit() {
   };
 
   const handleSubmit = async () => {
+    if (step === 3) {
+      setShowPinModal(true);
+    } else {
+      handleNext();
+    }
+  };
+
+  const handlePinSubmit = async (enteredPin: string) => {
+    // Verify PIN
+    if (!account?.pin) {
+      toast.error("No PIN set for this account. Please contact support.");
+      setShowPinModal(false);
+      return;
+    }
+
+    if (enteredPin !== account.pin) {
+      toast.error("Incorrect PIN. Please try again.");
+      return;
+    }
+
     setLoading(true);
     try {
       const depositAmount = parseFloat((amount || "0").replace(/,/g, ""));
@@ -147,6 +178,8 @@ function CheckDeposit() {
         memo,
       });
 
+      setShowPinModal(false);
+      // Status determines success or failure display
       setSuccessData({
         amount: depositAmount,
         transactionRef,
@@ -553,7 +586,7 @@ function CheckDeposit() {
               Back
             </button>
             <button
-              onClick={step === 3 ? handleSubmit : handleNext}
+              onClick={handleSubmit}
               disabled={loading}
               className="py-4 rounded-xl font-semibold transition-all"
               style={{
@@ -581,6 +614,15 @@ function CheckDeposit() {
           </button>
         )}
       </div>
+      
+      {/* PIN Modal */}
+      <PinInputModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSubmit={handlePinSubmit}
+        loading={loading}
+      />
+      
       <BottomNav />
     </div>
   );

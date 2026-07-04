@@ -179,13 +179,11 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="off"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm placeholder-slate-400"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm placeholder-slate-400 admin-input-black"
                   style={{
-                    background: "#FFFFFF",
+                    background: "#FFFFFF !important",
                     border: "1px solid #E2E8F0",
                     opacity: locked ? 0.5 : 1,
-                    color: "#000000",
-                    WebkitTextFillColor: "#000000",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
                   onBlur={(e)  => { e.target.style.borderColor = "#E2E8F0"; e.target.style.boxShadow = "none"; }}
@@ -206,13 +204,11 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="new-password"
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm placeholder-slate-400"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm placeholder-slate-400 admin-input-black"
                   style={{
-                    background: "#FFFFFF",
+                    background: "#FFFFFF !important",
                     border: "1px solid #E2E8F0",
                     opacity: locked ? 0.5 : 1,
-                    color: "#000000",
-                    WebkitTextFillColor: "#000000",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
                   onBlur={(e)  => { e.target.style.borderColor = "#E2E8F0"; e.target.style.boxShadow = "none"; }}

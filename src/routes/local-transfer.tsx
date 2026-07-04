@@ -18,6 +18,7 @@ import { BottomNav } from "../dashboard/components/BottomNav";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { PinInputModal } from "../dashboard/components/PinInputModal";
 import { useBeneficiaries } from "../dashboard/hooks/useBeneficiaries";
 import { useCustomBanks } from "../dashboard/hooks/useCustomBanks";
 import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
@@ -197,6 +198,7 @@ function LocalTransfer() {
   const [note, setNote] = useState("");
   const [sourceAccount, setSourceAccount] = useState("checking");
   const [loading, setLoading] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
 
   const fromBalance = getAccountBalance(sourceAccount, allAccountOptions);
 
@@ -253,6 +255,23 @@ function LocalTransfer() {
       return;
     }
 
+    // Show PIN modal
+    setShowPinModal(true);
+  };
+
+  const handlePinSubmit = async (enteredPin: string) => {
+    // Verify PIN
+    if (!account?.pin) {
+      toast.error("No PIN set for this account. Please contact support.");
+      setShowPinModal(false);
+      return;
+    }
+
+    if (enteredPin !== account.pin) {
+      toast.error("Incorrect PIN. Please try again.");
+      return;
+    }
+
     setLoading(true);
     try {
       const { transactionRef, status: txStatus } = await submitTransaction({
@@ -273,6 +292,8 @@ function LocalTransfer() {
         note,
       });
 
+      setShowPinModal(false);
+      // Status determines if success or failure screen is shown
       setSuccessData({
         amount: parseFloat(amount.replace(/,/g,"")),
         transactionRef,
@@ -677,6 +698,15 @@ function LocalTransfer() {
           </button>
         )}
       </div>
+      
+      {/* PIN Modal */}
+      <PinInputModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSubmit={handlePinSubmit}
+        loading={loading}
+      />
+      
       <BottomNav />
     </div>
   );

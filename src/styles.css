@@ -981,3 +981,25 @@ aside a[aria-label="Add new user"]:active {
   background: rgba(56,189,248,0.08) !important;
   color: #0A1628 !important;
 }
+
+/* ── Admin Login Input Black Text (Always) ───────────────────────────────── */
+.admin-input-black,
+.admin-input-black:focus,
+.admin-input-black:active,
+.admin-input-black:-webkit-autofill {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.admin-input-black::placeholder {
+  color: #94A3B8 !important;
+  -webkit-text-fill-color: #94A3B8 !important;
+}
+/* Override autofill styles for admin login */
+.admin-input-black:-webkit-autofill,
+.admin-input-black:-webkit-autofill:hover,
+.admin-input-black:-webkit-autofill:focus,
+.admin-input-black:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+}

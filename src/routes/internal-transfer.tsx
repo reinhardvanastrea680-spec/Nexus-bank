@@ -7,6 +7,7 @@ import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { PinInputModal } from "../dashboard/components/PinInputModal";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
@@ -15,6 +16,13 @@ export const Route = createFileRoute("/internal-transfer")({
   head: () => ({ meta: [{ title: "Internal Transfer - Nexus Bank" }] }),
   component: InternalTransfer,
 });
+
+function formatAmountDisplay(val: string): string {
+  const clean = val.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const [int, dec] = clean.split(".");
+  const formatted = (int || "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+}
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -35,6 +43,7 @@ function InternalTransfer() {
   const [amount, setAmount]           = useState("");
   const [note, setNote]               = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
   const [loading, setLoading]         = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string;
@@ -44,22 +53,45 @@ function InternalTransfer() {
   const toBalance   = getAccountBalance(toAccount, allAccountOptions);
 
   const handleConfirm = async () => {
-    if (!amount || parseFloat(amount) <= 0)    { toast.error("Please enter a valid amount"); return; }
-    if (parseFloat(amount) > fromBalance)       { toast.error("Insufficient funds");          return; }
+    const rawAmount = parseFloat(amount.replace(/,/g, "") || "0");
+    if (!amount || rawAmount <= 0)    { toast.error("Please enter a valid amount"); return; }
+    if (rawAmount > fromBalance)       { toast.error("Insufficient funds");          return; }
     if (fromAccount === toAccount)              { toast.error("Cannot transfer to same account"); return; }
+    
+    // Show PIN modal instead of directly submitting
+    setShowConfirm(false);
+    setShowPinModal(true);
+  };
+
+  const handlePinSubmit = async (enteredPin: string) => {
+    // Verify PIN
+    if (!account?.pin) {
+      toast.error("No PIN set for this account. Please contact support.");
+      setShowPinModal(false);
+      return;
+    }
+
+    if (enteredPin !== account.pin) {
+      toast.error("Incorrect PIN. Please try again.");
+      return;
+    }
+
     setLoading(true);
+    const rawAmount = parseFloat(amount.replace(/,/g, "") || "0");
     try {
       const { transactionRef, status: txStatus } = await submitTransaction({
         type: "internal_transfer", subType: "between_accounts",
         description: `Internal Transfer from ${fromAccount} to ${toAccount}`,
-        category: "Transfer", amount: parseFloat(amount),
+        category: "Transfer", amount: rawAmount,
         fundingAccount: fromAccount as "checking" | "savings",
         recipientName: `Your ${allAccountOptions.find(a => a.value === toAccount)?.label || toAccount} Account`,
         recipientAccount: toAccount.toLowerCase(),
         toAccount: toAccount.toLowerCase(), note,
       });
-      setShowConfirm(false);
-      setSuccessData({ amount: parseFloat(amount), transactionRef, status: txStatus, fundingAccount: fromAccount, recipientName: `Your ${toAccount} Account` });
+      setShowPinModal(false);
+      
+      // Show success or failure based on admin's decision
+      setSuccessData({ amount: rawAmount, transactionRef, status: txStatus, fundingAccount: fromAccount, recipientName: `Your ${toAccount} Account` });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to submit transfer request");
     } finally { setLoading(false); }
@@ -118,9 +150,23 @@ function InternalTransfer() {
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <span className="text-2xl font-mono" style={{ color: t.textMuted }}>$</span>
-            <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00" className="text-4xl font-mono font-bold bg-transparent outline-none text-center w-48"
-              style={{ color: t.textPrimary }} />
+            <input
+              type="text"
+              inputMode="decimal"
+              value={amount ? formatAmountDisplay(amount) : ""}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "").replace(/[^0-9.]/g, "");
+                setAmount(raw);
+              }}
+              placeholder="0.00"
+              className="text-4xl font-mono font-bold bg-transparent outline-none text-center"
+              style={{
+                color: t.textPrimary,
+                width: "auto",
+                minWidth: "120px",
+                maxWidth: "90%",
+              }}
+            />
           </div>
           <button onClick={() => setAmount(fromBalance.toString())} className="text-sm font-semibold" style={{ color: t.accentCyan }}>MAX</button>
         </div>
@@ -131,7 +177,7 @@ function InternalTransfer() {
           style={{ background: t.inputBg, color: t.textPrimary, border: `1px solid ${t.border}` }} />
 
         {/* Summary */}
-        {amount && parseFloat(amount) > 0 && fromAccount !== toAccount && (
+        {amount && parseFloat(amount.replace(/,/g, "") || "0") > 0 && fromAccount !== toAccount && (
           <div className="p-5 rounded-2xl" style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: t.textMuted }}>{fromAccount}</span>
@@ -145,9 +191,9 @@ function InternalTransfer() {
       {/* Button */}
       <div className="px-5 pb-8">
         <button onClick={() => setShowConfirm(true)}
-          disabled={!amount || parseFloat(amount) <= 0 || fromAccount === toAccount || loading}
+          disabled={!amount || parseFloat(amount.replace(/,/g, "") || "0") <= 0 || fromAccount === toAccount || loading}
           className="w-full py-4 rounded-xl font-semibold transition-all text-white"
-          style={{ background: t.gradientBtn, opacity: !amount || parseFloat(amount) <= 0 || fromAccount === toAccount || loading ? 0.5 : 1 }}>
+          style={{ background: t.gradientBtn, opacity: !amount || parseFloat(amount.replace(/,/g, "") || "0") <= 0 || fromAccount === toAccount || loading ? 0.5 : 1 }}>
           {loading ? "Submitting…" : "Request Transfer"}
         </button>
       </div>
@@ -168,7 +214,7 @@ function InternalTransfer() {
               ))}
               <div className="flex justify-between">
                 <span className="text-sm" style={{ color: t.textMuted }}>Amount</span>
-                <span className="text-2xl font-mono font-bold" style={{ color: t.textPrimary }}>${formatCurrency(parseFloat(amount))}</span>
+                <span className="text-2xl font-mono font-bold" style={{ color: t.textPrimary }}>${formatCurrency(parseFloat(amount.replace(/,/g, "") || "0"))}</span>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -183,6 +229,14 @@ function InternalTransfer() {
           </div>
         </div>
       )}
+
+      {/* PIN Modal */}
+      <PinInputModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSubmit={handlePinSubmit}
+        loading={loading}
+      />
 
       <BottomNav />
     </div>

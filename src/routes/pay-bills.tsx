@@ -10,6 +10,7 @@ import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { PinInputModal } from "../dashboard/components/PinInputModal";
 
 export const Route = createFileRoute("/pay-bills")({
   head: () => ({ meta: [{ title: "Pay Bills - Nexus Bank" }] }),
@@ -87,6 +88,10 @@ function PayBills() {
   const { theme } = useTheme();
   const t = themeColors(theme);
   const { account } = useUserAccount();
+  const { customAccounts } = useCustomAccounts(account?.id);
+
+  // Get all available accounts dynamically
+  const allAccountOptions = getAllAccountOptions(account, customAccounts);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBiller, setSelectedBiller] = useState<(typeof billers)[0] | null>(null);
@@ -95,15 +100,13 @@ function PayBills() {
   const [customerVerified, setCustomerVerified] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [amount, setAmount]             = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
+  const [selectedAccount, setSelectedAccount] = useState("checking");
   const [showConfirm, setShowConfirm]   = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
   const [loading, setLoading]           = useState(false);
   const [successData, setSuccessData]   = useState<{ amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string } | null>(null);
 
-  const fromBalance = 
-    selectedAccount === "Checking" ? account?.checkingBalance || 0 :
-    selectedAccount === "Savings" ? account?.savingsBalance || 0 :
-    account?.investmentBalance || 0;
+  const fromBalance = getAccountBalance(selectedAccount, allAccountOptions);
 
   const filteredBillers = billers.filter((b) => {
     const matchesCat    = !selectedCategory || b.category === selectedCategory;
@@ -111,8 +114,24 @@ function PayBills() {
     return matchesCat && matchesSearch;
   });
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setShowConfirm(false);
+    setShowPinModal(true);
+  };
+
+  const handlePinSubmit = async (enteredPin: string) => {
+    // Verify PIN
+    if (!account?.pin) {
+      toast.error("No PIN set for this account. Please contact support.");
+      setShowPinModal(false);
+      return;
+    }
+
+    if (enteredPin !== account.pin) {
+      toast.error("Incorrect PIN. Please try again.");
+      return;
+    }
+
     setLoading(true);
     try {
       const { transactionRef, status: txStatus } = await submitTransaction({
@@ -124,6 +143,8 @@ function PayBills() {
         recipientName: selectedBiller?.name || "Biller",
         note: `Customer Ref: ${customerNumber}`,
       });
+      setShowPinModal(false);
+      // Status determines success or failure display
       setSuccessData({ amount: parseFloat(amount.replace(/,/g,"")), transactionRef, status: txStatus, fundingAccount: selectedAccount, recipientName: selectedBiller?.name || "Biller" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Payment failed");
@@ -234,6 +255,15 @@ function PayBills() {
           </div>
         </div>
       )}
+      
+      {/* PIN Modal */}
+      <PinInputModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSubmit={handlePinSubmit}
+        loading={loading}
+      />
+      
       <BottomNav />
     </div>
   );

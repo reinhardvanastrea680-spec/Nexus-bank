@@ -66,6 +66,11 @@ const transferPurposes = [
   { id: "other", label: "Other" },
 ];
 
+function formatInCurrency(amount: number, currencyCode: CurrencyCode): string {
+  const currencyData = CURRENCIES[currencyCode];
+  return `${currencyData.symbol}${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 function WireTransferWizard() {
   const { theme } = useTheme();
   const t = themeColors(theme);
