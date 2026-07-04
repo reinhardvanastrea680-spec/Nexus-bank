@@ -14,6 +14,7 @@ import { useUserTransactions } from "../dashboard/hooks/useUserTransactions";
 import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { useTheme } from "../hooks/use-theme";
 import { useLanguage } from "../hooks/use-language";
+import { LanguagePicker } from "../dashboard/components/LanguagePicker";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { ADMIN_UID } from "../config/adminConfig";
@@ -90,7 +91,7 @@ function HomePage() {
     { label: t("Add Beneficiary"),   icon: UserPlus,       to: "/add-beneficiary",   color: "#EC4899" },
     { label: t("Transactions"),      icon: Activity,       to: "/transactions",      color: "#38BDF8" },
     { label: t("Crypto Deposit"),    icon: Bitcoin,        to: "/crypto-deposit",    color: "#F97316" },
-    { label: t("Check Deposit"),     icon: FileCheck,      to: "/check-deposit",     color: "#14B8A6" },
+    { label: t("Cheque Deposit"),    icon: FileCheck,      to: "/check-deposit",     color: "#14B8A6" },
   ];
 
   const [balanceVisible, setBalanceVisible] = useState(true);
@@ -248,6 +249,8 @@ function HomePage() {
             </div>
           </div>
           <div className="flex items-center gap-2" style={mounted ? { animation: "nx-fadeIn 0.4s 0.15s both", opacity: 0 } : { opacity: 0 }}>
+            {/* Language Picker */}
+            <LanguagePicker variant="header" />
             {/* Theme toggle */}
             <button onClick={toggleTheme}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90"
@@ -277,12 +280,11 @@ function HomePage() {
                     ? customLoading
                       ? <span className="opacity-60 animate-pulse">{formatInCurrency(totalAllAccounts, currency)}</span>
                       : formatInCurrency(totalAllAccounts, currency)
-                    : `${currencySymbol}••••••••`}
+                    : `${currencySymbol}........`}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-white/45 text-xs">{accounts.length} Account{accounts.length !== 1 ? "s" : ""}</p>
-                <p className="text-xs font-semibold mt-0.5" style={{ color: "#00E676" }}>● All Active</p>
               </div>
             </div>
           </div>

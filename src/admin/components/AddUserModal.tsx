@@ -527,7 +527,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
               style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.08)" }}>
               <div>
                 <p className="text-sm font-semibold text-white">Hide Phone Number</p>
-                <p className="text-xs text-[#7A8FA6] mt-0.5">User sees ••••••••• instead of their number</p>
+                <p className="text-xs text-[#7A8FA6] mt-0.5">User sees ......... instead of their number</p>
               </div>
               <button
                 type="button"

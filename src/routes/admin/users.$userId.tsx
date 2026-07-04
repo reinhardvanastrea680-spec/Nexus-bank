@@ -479,7 +479,7 @@ function AdminUserDetailPage() {
               <p className="text-2xl font-mono font-bold text-cyan-400">
                 {showBalances
                   ? formatInCurrency(user.checkingBalance || 0, (user.dashboardCurrency as CurrencyCode) || "USD")
-                  : "••••••"}
+                  : "......"}
               </p>
               <p className="text-xs text-blue-300/50 mt-1">#{user.checkingAccountNumber || "---"}</p>
             </div>
@@ -488,7 +488,7 @@ function AdminUserDetailPage() {
               <p className="text-2xl font-mono font-bold text-violet-400">
                 {showBalances
                   ? formatInCurrency(user.savingsBalance || 0, (user.dashboardCurrency as CurrencyCode) || "USD")
-                  : "••••••"}
+                  : "......"}
               </p>
               <p className="text-xs text-blue-300/50 mt-1">#{user.savingsAccountNumber || "---"}</p>
             </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronUp, Check, Languages } from "lucide-react";
+import { ChevronDown, Check, Languages } from "lucide-react";
 import { SUPPORTED_LANGUAGES } from "../../hooks/use-language";
 import { useLang } from "../../hooks/LanguageContext";
 
@@ -10,7 +10,7 @@ const FLAGS: Record<string, string> = {
   ar: "🇸🇦", zh: "🇨🇳", ja: "🇯🇵", ko: "🇰🇷", sw: "🇰🇪",
 };
 
-export function LanguagePicker() {
+export function LanguagePicker({ variant = "floating" }: { variant?: "floating" | "header" }) {
   const { language, setLanguage } = useLang();
   const [open, setOpen] = useState(false);
 
@@ -59,6 +59,94 @@ export function LanguagePicker() {
   }, [setLanguage]);
 
   const flag = FLAGS[language] || "🌐";
+
+  if (variant === "header") {
+    return (
+      <>
+        {/* ── Scroll-locking backdrop ── */}
+        {open && (
+          <div
+            className="fixed inset-0 z-[98]"
+            style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* ── Language menu (positioned below button) ── */}
+        {open && (
+          <div
+            role="listbox"
+            aria-label="Select language"
+            className="fixed right-4 z-[99] rounded-2xl shadow-2xl overflow-hidden"
+            style={{
+              top: "68px",
+              background: "rgba(8,14,28,0.97)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              backdropFilter: "blur(24px)",
+              minWidth: "220px",
+              maxHeight: "60vh",
+              overflowY: "auto",
+              animation: "nx-fadeDown 0.2s cubic-bezier(0.22,1,0.36,1) both",
+            }}
+          >
+            {/* Header */}
+            <div className="sticky top-0 px-4 py-3 flex items-center gap-2"
+              style={{ background: "rgba(8,14,28,0.98)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              <Languages size={14} className="text-cyan-400" />
+              <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
+                Language
+              </p>
+            </div>
+
+            {/* Language options */}
+            {SUPPORTED_LANGUAGES.map((lang) => {
+              const isActive = language === lang.code;
+              return (
+                <button
+                  key={lang.code}
+                  role="option"
+                  aria-selected={isActive}
+                  onClick={() => handleSelect(lang.code)}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 transition-all text-left"
+                  style={{
+                    background: isActive ? "rgba(56,189,248,0.14)" : "transparent",
+                    borderLeft: isActive ? "3px solid #38BDF8" : "3px solid transparent",
+                  }}
+                >
+                  <span className="text-2xl leading-none flex-shrink-0" role="img" aria-label={lang.nameEn}>
+                    {FLAGS[lang.code] || "🌐"}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold leading-tight"
+                      style={{ color: isActive ? "#38BDF8" : "#FFFFFF" }}>
+                      {lang.nameEn}
+                    </p>
+                    <p className="text-xs leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+                      {lang.nameNative}
+                    </p>
+                  </div>
+                  {isActive && <Check size={14} className="text-cyan-400 flex-shrink-0" />}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── Header button ── */}
+        <button
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-haspopup="listbox"
+          aria-label={`Language: ${SUPPORTED_LANGUAGES.find(l => l.code === language)?.nameEn || "English"}. Click to change.`}
+          className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90"
+          style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}
+        >
+          <span className="text-lg leading-none" role="img" aria-hidden="true">{flag}</span>
+        </button>
+      </>
+    );
+  }
 
   return (
     <>
@@ -153,11 +241,11 @@ export function LanguagePicker() {
         <span className="text-sm font-bold text-white uppercase tracking-wide">
           {language.toUpperCase()}
         </span>
-        <ChevronUp
+        <ChevronDown
           size={13}
           style={{
             color: "rgba(255,255,255,0.55)",
-            transform: open ? "rotate(0deg)" : "rotate(180deg)",
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
             transition: "transform 0.2s ease",
           }}
         />

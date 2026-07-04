@@ -3,6 +3,8 @@ import { CheckCircle2, XCircle, FileText, Home } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { useLang } from "../../hooks/LanguageContext";
+import { useTheme } from "../../hooks/use-theme";
+import { themeColors } from "../../utils/theme";
 
 interface TransactionSuccessScreenProps {
   amount: number;
@@ -33,6 +35,8 @@ export function TransactionSuccessScreen({
 }: TransactionSuccessScreenProps) {
   const navigate = useNavigate();
   const { t: tl } = useLang();
+  const { theme } = useTheme();
+  const t = themeColors(theme);
   const [showReceipt, setShowReceipt] = useState(false);
 
   const isFailed    = status === "declined" || status === "failed" || status === "failed";
@@ -141,7 +145,7 @@ export function TransactionSuccessScreen({
     return (
       <div
         className="min-h-screen w-full flex flex-col items-center justify-center px-6 pb-24"
-        style={{ background: "#0B1120" }}
+        style={{ background: theme === "light" ? "#FFFFFF" : "#0B1120" }}
       >
         {/* Red X icon */}
         <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4"
@@ -152,9 +156,9 @@ export function TransactionSuccessScreen({
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold mb-3 text-white">{tl("Transaction Failed")}</h1>
+        <h1 className="text-2xl font-bold mb-3" style={{ color: "#EF4444" }}>{tl("Transaction Failed")}</h1>
 
-        <p className="text-sm text-center max-w-xs mb-2" style={{ color: "#8A9BB5" }}>
+        <p className="text-sm text-center max-w-xs mb-2" style={{ color: theme === "light" ? "#64748B" : "#8A9BB5" }}>
           {tl("Your transaction could not be processed at this time.")}
         </p>
         <p className="text-sm font-semibold mb-8" style={{ color: "#EF4444" }}>
@@ -162,7 +166,7 @@ export function TransactionSuccessScreen({
         </p>
 
         {/* Reference */}
-        <p className="text-xs font-mono mb-8" style={{ color: "#8A9BB5" }}>{transactionRef}</p>
+        <p className="text-xs font-mono mb-8" style={{ color: theme === "light" ? "#64748B" : "#8A9BB5" }}>{transactionRef}</p>
 
         {/* Buttons */}
         <div className="w-full max-w-xs space-y-3">
@@ -176,7 +180,11 @@ export function TransactionSuccessScreen({
           <button
             onClick={() => navigate({ to: "/support" })}
             className="w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2"
-            style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5", border: "1px solid rgba(255,255,255,0.1)" }}
+            style={{ 
+              background: theme === "light" ? "#F1F5F9" : "rgba(255,255,255,0.06)", 
+              color: theme === "light" ? "#475569" : "#8A9BB5", 
+              border: theme === "light" ? "1px solid #E2E8F0" : "1px solid rgba(255,255,255,0.1)" 
+            }}
           >
             <FileText size={16} />
             {tl("Report This Issue")}

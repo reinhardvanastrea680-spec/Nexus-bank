@@ -26,7 +26,7 @@ export const Route = createFileRoute("/admin/transactions")({
 
 const TRANSACTION_TYPES = [
   "Wire Transfer", "Local Transfer", "Internal Transfer",
-  "Crypto", "Card Deposit", "Check Deposit", "Bill Payment",
+  "Crypto", "Card Deposit", "Cheque Deposit", "Bill Payment",
 ];
 
 function formatCurrency(v: number) {

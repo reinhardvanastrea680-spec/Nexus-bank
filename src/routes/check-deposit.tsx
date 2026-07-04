@@ -20,7 +20,7 @@ import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 
 export const Route = createFileRoute("/check-deposit")({
-  head: () => ({ meta: [{ title: "Check Deposit - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Cheque Deposit - Nexus Bank" }] }),
   component: CheckDeposit,
 });
 
@@ -135,7 +135,7 @@ function CheckDeposit() {
       const { transactionRef, status: txStatus } = await submitTransaction({
         type: "check_deposit",
         subType: "incoming",
-        description: `Check Deposit #${checkNumber}`,
+        description: `Cheque Deposit #${checkNumber}`,
         category: "Deposit",
         amount: depositAmount,
         fundingAccount: selectedAccount as "checking" | "savings",
@@ -154,7 +154,7 @@ function CheckDeposit() {
       });
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Failed to submit check deposit");
+      toast.error(err instanceof Error ? err.message : "Failed to submit cheque deposit");
     } finally {
       setLoading(false);
     }
@@ -180,7 +180,7 @@ function CheckDeposit() {
           <ArrowLeft size={24} style={{ color: t.textOnBg }} />
         </button>
         <h1 className="text-xl font-bold flex-1 text-center" style={{ color: t.textOnBg }}>
-          Check Deposit
+          Cheque Deposit
         </h1>
         <div className="w-10" /> {/* Spacer for centering */}
       </div>
@@ -533,7 +533,7 @@ function CheckDeposit() {
             {/* Disclaimer */}
             <div className="p-4 rounded-2xl" style={{ background: t.inputBg }}>
               <p className="text-xs" style={{ color: t.textMuted }}>
-                Check deposits are subject to review. Funds may be held for 1-3 business days.
+                Cheque deposits are subject to review. Funds may be held for 1-3 business days.
               </p>
             </div>
           </div>

@@ -23,7 +23,7 @@ function InfoRow({ label, value, masked }: { label: string; value: string; maske
       style={{ borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)"}` }}>
       <span className="text-sm" style={{ color: t.textMuted }}>{label}</span>
       <span className="text-sm font-medium" style={{ color: t.textPrimary }}>
-        {masked ? "••••••••" : value || "—"}
+        {masked ? "........" : value || "—"}
       </span>
     </div>
   );
@@ -168,7 +168,7 @@ function ProfilePage() {
         <div className="rounded-2xl px-4" style={{ background: t.cardBg }}>
           <InfoRow
             label="Mobile Number"
-            value={phoneHidden ? "••••••••••" : (account?.phone || account?.phoneNumber || "—")}
+            value={phoneHidden ? ".........." : (account?.phone || account?.phoneNumber || "—")}
           />
           <InfoRow label="Email Address" value={user?.email || account?.email || "—"} />
         </div>

@@ -517,24 +517,6 @@ function WireTransferWizard() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
-                Destination Currency
-              </label>
-              <select
-                value={transfer.toCurrency}
-                className="w-full px-4 py-4 rounded-xl outline-none appearance-none"
-                style={{ background: t.inputBg, color: t.textPrimary }}
-                onChange={(e) => setTransfer({ ...transfer, toCurrency: e.target.value as CurrencyCode })}
-              >
-                {currencies.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.code} - {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Summary Card */}
             <div
               className="p-5 rounded-2xl"

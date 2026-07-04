@@ -408,7 +408,11 @@ function Settings() {
                 <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("External Bank Accounts")}</span>
               </div>
             </button>
-            <Link to="/cards" className="w-full flex items-center justify-between p-4 rounded-2xl" style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
+            <button
+              onClick={() => setActiveModal("connected-cards")}
+              className="w-full flex items-center justify-between p-4 rounded-2xl"
+              style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: t.inputBg }}>
                   <Link2 size={16} style={{ color: t.accentCyan }} />
@@ -416,7 +420,7 @@ function Settings() {
                 <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("Connected Cards")}</span>
               </div>
               <span className="text-xs" style={{ color: t.textMuted }}>›</span>
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -628,10 +632,15 @@ function Settings() {
                 <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Connected Cards")}</h3>
                 <div className="flex flex-col items-center py-6">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>💳</div>
-                  <p className="text-sm font-semibold text-center" style={{ color: t.textPrimary }}>No cards connected yet</p>
-                  <p className="text-xs text-center mt-2 max-w-xs" style={{ color: t.textMuted }}>To add a card, please contact support. We accept Visa, Mastercard, and American Express.</p>
+                  <p className="text-sm font-semibold text-center" style={{ color: t.textPrimary }}>Contact Support to Add Card</p>
+                  <p className="text-xs text-center mt-2 max-w-xs" style={{ color: t.textMuted }}>To request a physical card or link an existing card, please reach out to our support team.</p>
                 </div>
-                <button onClick={closeModal} className="w-full py-3 rounded-2xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>{tl("Contact Support")}</button>
+                <button
+                  onClick={() => { closeModal(); navigate({ to: "/support" }); }}
+                  className="w-full py-3 rounded-2xl font-semibold text-white"
+                  style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>
+                  {tl("Contact Support")}
+                </button>
                 <button onClick={closeModal} className="w-full py-3 rounded-2xl text-sm font-semibold" style={{ color: t.textMuted }}>{tl("Close")}</button>
               </div>
             )}

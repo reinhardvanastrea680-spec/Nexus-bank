@@ -91,20 +91,6 @@ function Login() {
     return name.split(" ").slice(0, 2).map(n => n[0]?.toUpperCase()).join("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      await userLogin(email, password);
-      navigate({ to: "/" });
-    } catch (err: any) {
-      setError(err.message || "Invalid credentials");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 relative"
