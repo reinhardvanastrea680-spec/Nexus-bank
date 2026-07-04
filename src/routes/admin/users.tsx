@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Plus, Search, Eye, Snowflake, Trash2, Users, ChevronRight, Zap, Ban } from "lucide-react";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -37,6 +37,11 @@ function AdminUsersPage() {
   // Paginate to reduce DOM nodes and improve TBT
   const pagedUsers = filteredUsers.slice(0, page * ITEMS_PER_PAGE);
   const hasMore    = pagedUsers.length < filteredUsers.length;
+
+  const handleViewUser = (userId: string) => {
+    console.log("🔵 Navigating to user detail:", userId);
+    navigate({ to: "/admin/users/$userId", params: { userId } });
+  };
 
   const handleToggleFreeze = async (user: any, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -147,7 +152,9 @@ function AdminUsersPage() {
                       >
                       <td className="py-3 px-4 text-blue-300/60 font-mono text-sm">{i + 1}</td>
                       <td className="py-3 px-4">
-                        <Link to="/admin/users/$userId" params={{ userId: user.id }} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                        <button 
+                          onClick={() => handleViewUser(user.id)}
+                          className="flex items-center gap-3 hover:opacity-80 transition-opacity text-left w-full">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0" aria-hidden="true">
                             {user.fullName.charAt(0).toUpperCase()}
                           </div>
@@ -155,7 +162,7 @@ function AdminUsersPage() {
                             <p className="text-white font-medium text-sm truncate">{user.fullName}</p>
                             <p className="text-blue-300/60 text-xs truncate">{user.email}</p>
                           </div>
-                        </Link>
+                        </button>
                       </td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.status === "active" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
@@ -202,13 +209,12 @@ function AdminUsersPage() {
                       </td>
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-1">
-                          <Link 
-                            to="/admin/users/$userId"
-                            params={{ userId: user.id }}
+                          <button
+                            onClick={() => handleViewUser(user.id)}
                             aria-label={`View ${user.fullName}`}
                             className="w-8 h-8 text-blue-300 hover:text-white hover:bg-blue-500/10 flex items-center justify-center rounded-md transition-colors">
                             <Eye size={14} aria-hidden="true" />
-                          </Link>
+                          </button>
                           <Button variant="ghost" size="icon" aria-label={`${user.status === "active" ? "Freeze" : "Unfreeze"} ${user.fullName}`}
                             className="w-8 h-8 text-blue-300 hover:text-white hover:bg-blue-500/10"
                             onClick={(e) => handleToggleFreeze(user, e)}>
@@ -236,10 +242,9 @@ function AdminUsersPage() {
                 style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.06)" }}>
 
                 {/* Main row — tap to go to detail page */}
-                <Link 
-                  to="/admin/users/$userId"
-                  params={{ userId: user.id }}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors">
+                <button 
+                  onClick={() => handleViewUser(user.id)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors w-full text-left">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {user.fullName.charAt(0).toUpperCase()}
                   </div>
@@ -249,20 +254,18 @@ function AdminUsersPage() {
                   </div>
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${user.status === "active" ? "bg-green-400" : "bg-red-400"}`} />
                   <ChevronRight size={16} className="text-blue-300/40 flex-shrink-0" aria-hidden="true" />
-                </Link>
+                </button>
 
                 {/* Action buttons row */}
                 <div className="flex items-center gap-1 px-3 pb-3 pt-0 flex-wrap"
                   onClick={(e) => e.stopPropagation()}>
                   {/* View detail */}
-                  <Link 
-                    to="/admin/users/$userId"
-                    params={{ userId: user.id }}
-                    onClick={(e) => e.stopPropagation()}
+                  <button 
+                    onClick={() => handleViewUser(user.id)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:opacity-80 transition-opacity"
                     style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}>
                     <Eye size={12} /> View
-                  </Link>
+                  </button>
                   {/* Freeze/Unfreeze */}
                   <button onClick={(e) => handleToggleFreeze(user, e)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
