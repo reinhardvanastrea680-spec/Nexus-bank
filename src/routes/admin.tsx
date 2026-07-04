@@ -273,6 +273,24 @@ function AdminLayout() {
           })}
         </nav>
 
+        {/* Add New User Button */}
+        <div className="px-3 py-2">
+          <Link
+            to="/admin/users"
+            onClick={() => setMobileSidebarOpen(false)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all"
+            style={{
+              background: "linear-gradient(135deg, #38BDF8, #6366F1)",
+              color: "#FFFFFF",
+              boxShadow: "0 4px 12px rgba(56,189,248,0.25)",
+            }}
+            aria-label="Add new user"
+          >
+            <UserPlus size={18} aria-hidden="true" />
+            {!sidebarCollapsed && <span>Add New User</span>}
+          </Link>
+        </div>
+
         <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-[rgba(255,255,255,0.05)]">
           <div className="flex items-center gap-3 px-3 py-2">
             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center flex-shrink-0" aria-hidden="true">
@@ -337,6 +355,25 @@ function AdminLayout() {
                 );
               })}
             </nav>
+            
+            {/* Add New User Button - Mobile */}
+            <div className="px-3 py-2">
+              <Link
+                to="/admin/users"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all"
+                style={{
+                  background: "linear-gradient(135deg, #38BDF8, #6366F1)",
+                  color: "#FFFFFF",
+                  boxShadow: "0 4px 12px rgba(56,189,248,0.25)",
+                }}
+                aria-label="Add new user"
+              >
+                <UserPlus size={18} aria-hidden="true" />
+                <span>Add New User</span>
+              </Link>
+            </div>
+
             <div className="p-3 border-t border-[rgba(255,255,255,0.05)]">
               <button onClick={handleLogout} aria-label="Sign out"
                 className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg">

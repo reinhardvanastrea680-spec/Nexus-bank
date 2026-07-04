@@ -850,6 +850,17 @@ aside > * {
   transform: scale(0.97) !important;
 }
 
+/* ── Add New User button hover effects ────────────────────────────────── */
+aside a[aria-label="Add new user"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56,189,248,0.35) !important;
+  filter: brightness(1.05);
+}
+aside a[aria-label="Add new user"]:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(56,189,248,0.25) !important;
+}
+
 /* ── Fixed sidebar toggle button (desktop only) ─────────────────────────── */
 @media (min-width: 1024px) {
   /* Dark mode fixed toggle */
