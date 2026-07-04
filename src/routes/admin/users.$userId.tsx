@@ -22,9 +22,12 @@ export const Route = createFileRoute("/admin/users/$userId")({
 });
 
 function AdminUserDetailPage() {
+  console.log("🔴 AdminUserDetailPage: Component mounted/rendered");
   const { userId } = useParams({ from: "/admin/users/$userId" });
+  console.log("🔴 AdminUserDetailPage: userId from params:", userId);
   const navigate = useNavigate();
   const { admin, loading: authLoading } = useAdminAuth();
+  console.log("🔴 AdminUserDetailPage: admin:", admin?.email, "authLoading:", authLoading);
   const [user, setUser] = useState<any>(null);
   const [userLoading, setUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
