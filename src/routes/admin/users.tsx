@@ -40,7 +40,9 @@ function AdminUsersPage() {
 
   const handleViewUser = (userId: string, e?: React.MouseEvent) => {
     if (e) e.preventDefault();
-    console.log("🔵 Navigating to user detail:", userId);
+    console.log("🔵🔵🔵 NAVIGATING TO USER DETAIL:", userId);
+    console.log("🔵🔵🔵 USER ID:", userId);
+    alert(`Navigating to user: ${userId}`); // Visual confirmation
     // Direct navigation - most reliable method
     window.location.href = `/admin/users/${userId}`;
   };
