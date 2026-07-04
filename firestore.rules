@@ -13,8 +13,12 @@ service cloud.firestore {
 
     // ── Users ────────────────────────────────────────────────────────────────
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin() || request.auth.uid == userId;
+      // Allow admin to read/write all user data
+      allow read, write: if isAdmin();
+      // Allow users to read their own data
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // Allow users to write their own data
+      allow write: if isAuthenticated() && request.auth.uid == userId;
 
       match /transactions/{txId} {
         allow read, write: if isAdmin() || request.auth.uid == userId;
@@ -28,27 +32,26 @@ service cloud.firestore {
 
     // ── Transactions ─────────────────────────────────────────────────────────
     match /transactions/{txId} {
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated();
-      allow update, delete: if isAdmin() ||
-        (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     // ── Notifications ────────────────────────────────────────────────────────
     match /notifications/{notifId} {
-      allow read: if isAdmin() ||
-        (isAuthenticated() && resource.data.recipientId == request.auth.uid);
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated() && resource.data.recipientId == request.auth.uid;
       allow create: if isAuthenticated();
-      allow update, delete: if isAdmin() ||
-        (isAuthenticated() && resource.data.recipientId == request.auth.uid);
+      allow update, delete: if isAuthenticated() && resource.data.recipientId == request.auth.uid;
     }
 
     // ── Beneficiaries — any authenticated user can write (admin approves) ────
     match /beneficiaries/{benId} {
+      allow read, write: if isAdmin();
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
-      allow update, delete: if isAdmin() ||
-        (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     // ── Beneficiary Requests ─────────────────────────────────────────────────
