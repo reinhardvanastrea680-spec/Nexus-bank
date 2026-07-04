@@ -25,6 +25,11 @@ function UserDetailPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
   
+  // Password editing state
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+  
   // PIN editing state
   const [isEditingPin, setIsEditingPin] = useState(false);
   const [newPin, setNewPin] = useState("");
@@ -63,6 +68,30 @@ function UserDetailPage() {
 
     return unsubscribe;
   }, [userId]);
+
+  // Handle password update
+  const handleUpdatePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setSavingPassword(true);
+    try {
+      await updateDoc(doc(db, "users", userId), {
+        password: newPassword,
+      });
+      toast.success("Password updated successfully!");
+      setIsEditingPassword(false);
+      setNewPassword("");
+      setShowPassword(true); // Auto-show the new password
+    } catch (err) {
+      console.error("Error updating password:", err);
+      toast.error("Failed to update password");
+    } finally {
+      setSavingPassword(false);
+    }
+  };
 
   // Handle PIN update
   const handleUpdatePin = async () => {
@@ -206,22 +235,65 @@ function UserDetailPage() {
             <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 block">
               Login Password
             </label>
-            <div className="flex items-center gap-2">
-              <div
-                className="flex-1 px-4 py-3 rounded-xl font-mono text-sm bg-gray-800/50 border border-gray-700"
-                style={{ color: showPassword ? "#fff" : "#6B7280" }}
-              >
-                {showPassword ? user.password || "Not set" : "••••••••••••"}
+            
+            {isEditingPassword ? (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min 6 characters)"
+                  className="w-full px-4 py-3 rounded-xl font-mono text-sm bg-gray-800/50 border-2 border-cyan-500 text-white outline-none"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleUpdatePassword}
+                    disabled={!newPassword || newPassword.length < 6 || savingPassword}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-600 hover:to-violet-700"
+                  >
+                    <Save size={14} className="inline mr-2" />
+                    {savingPassword ? "Saving..." : "Save Password"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditingPassword(false);
+                      setNewPassword("");
+                    }}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-all"
+                  >
+                    <X size={14} className="inline mr-2" />
+                    Cancel
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => setShowPassword(!showPassword)}
-                className="p-3 rounded-xl bg-gray-800/50 border border-gray-700 hover:bg-gray-700/50 transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} className="text-gray-400" /> : <Eye size={18} className="text-gray-400" />}
-              </button>
-            </div>
-            {!user.password && (
-              <p className="text-amber-400 text-xs mt-2">⚠️ No password stored for this user</p>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-3">
+                  <div
+                    className="flex-1 px-4 py-3 rounded-xl font-mono text-sm bg-gray-800/50 border border-gray-700"
+                    style={{ color: showPassword ? "#fff" : "#6B7280" }}
+                  >
+                    {showPassword ? (user.password || "Not set") : "••••••••••••"}
+                  </div>
+                  <button
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="p-3 rounded-xl bg-gray-800/50 border border-gray-700 hover:bg-gray-700/50 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} className="text-gray-400" /> : <Eye size={18} className="text-gray-400" />}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setIsEditingPassword(true)}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-all"
+                >
+                  <Edit2 size={14} className="inline mr-2" />
+                  {user.password ? "Edit Password" : "Set Password"}
+                </button>
+                {!user.password && (
+                  <p className="text-amber-400 text-xs mt-2">⚠️ No password stored in database. Click "Set Password" to add one for admin viewing.</p>
+                )}
+              </>
             )}
           </div>
 
