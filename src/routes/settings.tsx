@@ -21,6 +21,7 @@ import {
   Globe,
   Check,
   X,
+  ChevronRight,
 } from "lucide-react";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
@@ -434,27 +435,51 @@ function Settings() {
           </p>
           <div className="space-y-3">
             <button
-              className="w-full flex items-center justify-between p-4 rounded-2xl"
-              style={{ background: t.cardBg }}
+              className="w-full flex items-center justify-between p-4 rounded-2xl transition-all active:scale-[0.98]"
+              style={{ background: t.cardBg, border: `1px solid ${t.border}` }}
               onClick={() => setShowLanguageModal(true)}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: t.inputBg }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: "rgba(56,189,248,0.12)" }}
                 >
-                  <Languages size={16} style={{ color: "#38BDF8" }} />
+                  <span className="text-2xl" role="img" aria-label="flag">
+                    {currentLanguage.code === "en" ? "🇺🇸" :
+                     currentLanguage.code === "fr" ? "🇫🇷" :
+                     currentLanguage.code === "es" ? "🇪🇸" :
+                     currentLanguage.code === "de" ? "🇩🇪" :
+                     currentLanguage.code === "pt" ? "🇧🇷" :
+                     currentLanguage.code === "it" ? "🇮🇹" :
+                     currentLanguage.code === "nl" ? "🇳🇱" :
+                     currentLanguage.code === "ru" ? "🇷🇺" :
+                     currentLanguage.code === "tr" ? "🇹🇷" :
+                     currentLanguage.code === "hi" ? "🇮🇳" :
+                     currentLanguage.code === "ar" ? "🇸🇦" :
+                     currentLanguage.code === "zh" ? "🇨🇳" :
+                     currentLanguage.code === "ja" ? "🇯🇵" :
+                     currentLanguage.code === "ko" ? "🇰🇷" :
+                     currentLanguage.code === "sw" ? "🇰🇪" : "🌐"}
+                  </span>
                 </div>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: t.textPrimary }}
-                >
-                  {tl("Language")}
-                </span>
+                <div className="flex flex-col items-start">
+                  <span
+                    className="text-sm font-semibold"
+                    style={{ color: t.textPrimary }}
+                  >
+                    {tl("Language")}
+                  </span>
+                  <span className="text-xs" style={{ color: t.textMuted }}>
+                    {currentLanguage.nameNative}
+                  </span>
+                </div>
               </div>
-              <span className="text-sm" style={{ color: t.textMuted }}>
-                {currentLanguage.nameEn}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium" style={{ color: "#38BDF8" }}>
+                  {currentLanguage.nameEn}
+                </span>
+                <ChevronRight size={16} style={{ color: t.textMuted }} />
+              </div>
             </button>
             <button
               className="w-full flex items-center justify-between p-4 rounded-2xl"
@@ -734,55 +759,87 @@ function Settings() {
       {/* Language Modal */}
       {showLanguageModal && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center px-0 pb-0"
-          style={{ background: "rgba(0,0,0,0.6)" }}
+          className="fixed inset-0 z-[9998] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
           onClick={() => setShowLanguageModal(false)}
         >
           <div
-            className="w-full max-w-md rounded-t-[28px] p-6 space-y-3"
-            style={{ background: t.cardBg }}
+            className="w-full max-w-md rounded-3xl p-6 space-y-3"
+            style={{ 
+              background: t.cardBg, 
+              border: `1px solid ${t.border}`,
+              maxHeight: "80vh",
+              overflowY: "auto",
+              animation: "nx-scaleIn 0.25s cubic-bezier(0.22,1,0.36,1) both",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Handle */}
-            <div className="w-12 h-1 rounded-full mx-auto mb-4" style={{ background: t.mutedBg }} />
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold" style={{ color: t.textPrimary }}>
-                Select Language
-              </h2>
-              <button onClick={() => setShowLanguageModal(false)} className="p-1">
+            <div className="flex items-center justify-between mb-4 sticky top-0 pb-4" style={{ background: t.cardBg }}>
+              <div className="flex items-center gap-2">
+                <Languages size={20} style={{ color: "#38BDF8" }} />
+                <h2 className="text-xl font-bold" style={{ color: t.textPrimary }}>
+                  Select Language
+                </h2>
+              </div>
+              <button 
+                onClick={() => setShowLanguageModal(false)} 
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/5 active:scale-90"
+                style={{ background: t.inputBg }}
+              >
                 <X size={20} style={{ color: t.textMuted }} />
               </button>
             </div>
 
-            {SUPPORTED_LANGUAGES.map((lang) => {
-              const isSelected = lang.code === language;
-              return (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    setLanguage(lang.code);
-                    setShowLanguageModal(false);
-                  }}
-                  className="w-full flex items-center justify-between p-4 rounded-2xl transition-all"
-                  style={{
-                    background: isSelected ? "rgba(56,189,248,0.12)" : t.inputBg,
-                    border: isSelected ? "1.5px solid #38BDF8" : `1.5px solid transparent`,
-                  }}
-                >
-                  <div className="flex flex-col items-start">
-                    <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
-                      {lang.nameEn}
+            {/* Language Options */}
+            <div className="space-y-2">
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isSelected = lang.code === language;
+                const flags: Record<string, string> = {
+                  en: "🇺🇸", fr: "🇫🇷", es: "🇪🇸", de: "🇩🇪", pt: "🇧🇷",
+                  it: "🇮🇹", nl: "🇳🇱", ru: "🇷🇺", tr: "🇹🇷", hi: "🇮🇳",
+                  ar: "🇸🇦", zh: "🇨🇳", ja: "🇯🇵", ko: "🇰🇷", sw: "🇰🇪",
+                };
+                
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setLanguage(lang.code);
+                      setShowLanguageModal(false);
+                    }}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{
+                      background: isSelected ? "rgba(56,189,248,0.15)" : t.inputBg,
+                      border: isSelected ? "2px solid #38BDF8" : `2px solid transparent`,
+                    }}
+                  >
+                    <span className="text-3xl leading-none flex-shrink-0" role="img" aria-label={lang.nameEn}>
+                      {flags[lang.code] || "🌐"}
                     </span>
-                    <span className="text-xs mt-0.5" style={{ color: t.textMuted }}>
-                      {lang.nameNative}
-                    </span>
-                  </div>
-                  {isSelected && <Check size={18} style={{ color: "#38BDF8" }} />}
-                </button>
-              );
-            })}
-            <div className="pb-4" />
+                    <div className="flex-1 flex flex-col items-start">
+                      <span 
+                        className="text-base font-semibold leading-tight" 
+                        style={{ color: isSelected ? "#38BDF8" : t.textPrimary }}
+                      >
+                        {lang.nameEn}
+                      </span>
+                      <span 
+                        className="text-sm mt-1 leading-tight" 
+                        style={{ color: t.textMuted }}
+                      >
+                        {lang.nameNative}
+                      </span>
+                    </div>
+                    {isSelected && (
+                      <div className="flex-shrink-0">
+                        <Check size={22} style={{ color: "#38BDF8" }} strokeWidth={3} />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
