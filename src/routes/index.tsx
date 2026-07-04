@@ -249,14 +249,14 @@ function HomePage() {
             </div>
           </div>
           <div className="flex items-center gap-2" style={mounted ? { animation: "nx-fadeIn 0.4s 0.15s both", opacity: 0 } : { opacity: 0 }}>
-            {/* Language Picker */}
-            <LanguagePicker variant="header" />
             {/* Theme toggle */}
             <button onClick={toggleTheme}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90"
               style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
               {dark ? <Sun size={17} style={{ color: "white" }} /> : <Moon size={17} style={{ color: "white" }} />}
             </button>
+            {/* Language Picker */}
+            <LanguagePicker variant="header" />
             {/* Notifications */}
             <Link to="/notifications">
               <div className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
