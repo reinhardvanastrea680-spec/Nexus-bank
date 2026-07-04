@@ -205,8 +205,8 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
       onClose();
       resetForm();
       toast.success(`Account created for ${newUser.fullName}`, {
-        description: `${newUser.email} · Checking: ${formatCurrency(newUser.checkingBalance)}`,
-        duration: 5000,
+        description: `${newUser.email} | Transaction PIN: ${newUser.transactionPin} | Checking: ${formatCurrency(newUser.checkingBalance)}`,
+        duration: 10000,
       });
     } catch (error: any) {
       const errorMessages: Record<string, string> = {
