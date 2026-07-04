@@ -20,6 +20,8 @@ import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 import { useBeneficiaries } from "../dashboard/hooks/useBeneficiaries";
 import { useCustomBanks } from "../dashboard/hooks/useCustomBanks";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
+import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 
 export const Route = createFileRoute("/local-transfer")({
   head: () => ({ meta: [{ title: "Local Transfer - Nexus Bank" }] }),
@@ -166,6 +168,10 @@ function LocalTransfer() {
   const { account } = useUserAccount();
   const { beneficiaries } = useBeneficiaries();
   const { customBanks } = useCustomBanks();
+  const { customAccounts } = useCustomAccounts(account?.id);
+
+  // Get all available accounts dynamically
+  const allAccountOptions = getAllAccountOptions(account, customAccounts);
 
   // Merge static globalBanks with custom banks from Firestore
   const allBanks = [
@@ -189,13 +195,10 @@ function LocalTransfer() {
   const [recipientRouting, setRecipientRouting] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
-  const [sourceAccount, setSourceAccount] = useState("Checking");
+  const [sourceAccount, setSourceAccount] = useState("checking");
   const [loading, setLoading] = useState(false);
 
-  const fromBalance = 
-    sourceAccount === "Checking" ? account?.checkingBalance || 0 :
-    sourceAccount === "Savings" ? account?.savingsBalance || 0 :
-    account?.investmentBalance || 0;
+  const fromBalance = getAccountBalance(sourceAccount, allAccountOptions);
 
   const [successData, setSuccessData] = useState<{
     amount: number;
@@ -258,7 +261,7 @@ function LocalTransfer() {
         description: `Local Transfer to ${recipientName} (${selectedBank.name})`,
         category: "Transfer",
         amount: parseFloat(amount.replace(/,/g,"")),
-        fundingAccount: sourceAccount.toLowerCase() as "checking" | "savings",
+        fundingAccount: sourceAccount as "checking" | "savings",
         recipientName,
         recipientAccount: accountNumber,
         recipientBank: selectedBank.name,
@@ -572,37 +575,21 @@ function LocalTransfer() {
               <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
                 Source Account
               </label>
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  onClick={() => setSourceAccount("Checking")}
-                  className="py-4 px-2 rounded-xl font-bold transition-all text-sm"
-                  style={{
-                    background: sourceAccount === "Checking" ? t.accentCyan : t.inputBg,
-                    color: sourceAccount === "Checking" ? t.pageBg : t.textMuted,
-                  }}
-                >
-                  Checking
-                </button>
-                <button
-                  onClick={() => setSourceAccount("Savings")}
-                  className="py-4 px-2 rounded-xl font-bold transition-all text-sm"
-                  style={{
-                    background: sourceAccount === "Savings" ? t.accentCyan : t.inputBg,
-                    color: sourceAccount === "Savings" ? t.pageBg : t.textMuted,
-                  }}
-                >
-                  Savings
-                </button>
-                <button
-                  onClick={() => setSourceAccount("Investment")}
-                  className="py-4 px-2 rounded-xl font-bold transition-all text-sm"
-                  style={{
-                    background: sourceAccount === "Investment" ? t.accentCyan : t.inputBg,
-                    color: sourceAccount === "Investment" ? t.pageBg : t.textMuted,
-                  }}
-                >
-                  Investment
-                </button>
+              <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                {allAccountOptions.map((acc) => (
+                  <button
+                    key={acc.value}
+                    onClick={() => setSourceAccount(acc.value)}
+                    className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
+                    style={{
+                      background: sourceAccount === acc.value ? t.accentCyan : t.inputBg,
+                      color: sourceAccount === acc.value ? t.pageBg : t.textMuted,
+                    }}
+                    title={`${acc.label} - $${formatCurrency(acc.balance)}`}
+                  >
+                    {acc.label}
+                  </button>
+                ))}
               </div>
             </div>
 
