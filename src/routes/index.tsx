@@ -258,11 +258,10 @@ function HomePage() {
               {dark ? <Sun size={17} style={{ color: "white" }} /> : <Moon size={17} style={{ color: "white" }} />}
             </button>
             {/* Notifications */}
-            <Link to="/notifications" className="relative">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
+            <Link to="/notifications">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
                 <Bell size={18} style={{ color: "white" }} />
               </div>
-              <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style={{ background: "#FFAB00" }} />
             </Link>
           </div>
         </div>

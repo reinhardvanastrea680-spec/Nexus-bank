@@ -63,73 +63,85 @@ export function LanguagePicker({ variant = "floating" }: { variant?: "floating" 
   if (variant === "header") {
     return (
       <>
-        {/* ── Scroll-locking backdrop ── */}
+        {/* ── Full-screen backdrop overlay ── */}
         {open && (
           <div
-            className="fixed inset-0 z-[98]"
-            style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}
+            className="fixed inset-0 z-[98] flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
         )}
 
-        {/* ── Language menu (positioned below button) ── */}
+        {/* ── Language menu (centered modal) ── */}
         {open && (
           <div
             role="listbox"
             aria-label="Select language"
-            className="fixed right-4 z-[99] rounded-2xl shadow-2xl overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[99] rounded-3xl shadow-2xl overflow-hidden"
             style={{
-              top: "68px",
-              background: "rgba(8,14,28,0.97)",
-              border: "1px solid rgba(255,255,255,0.14)",
+              background: "rgba(8,14,28,0.98)",
+              border: "1px solid rgba(255,255,255,0.18)",
               backdropFilter: "blur(24px)",
-              minWidth: "220px",
-              maxHeight: "60vh",
+              width: "min(90vw, 360px)",
+              maxHeight: "70vh",
               overflowY: "auto",
-              animation: "nx-fadeDown 0.2s cubic-bezier(0.22,1,0.36,1) both",
+              animation: "nx-scaleIn 0.25s cubic-bezier(0.22,1,0.36,1) both",
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 px-4 py-3 flex items-center gap-2"
-              style={{ background: "rgba(8,14,28,0.98)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <Languages size={14} className="text-cyan-400" />
-              <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
-                Language
-              </p>
+            <div className="sticky top-0 px-5 py-4 flex items-center justify-between"
+              style={{ background: "rgba(8,14,28,0.98)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="flex items-center gap-2">
+                <Languages size={16} className="text-cyan-400" />
+                <p className="text-sm font-bold text-white uppercase tracking-widest">
+                  Language
+                </p>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                style={{ background: "rgba(255,255,255,0.08)" }}
+                aria-label="Close"
+              >
+                <span className="text-white/60 text-xl leading-none">×</span>
+              </button>
             </div>
 
             {/* Language options */}
-            {SUPPORTED_LANGUAGES.map((lang) => {
-              const isActive = language === lang.code;
-              return (
-                <button
-                  key={lang.code}
-                  role="option"
-                  aria-selected={isActive}
-                  onClick={() => handleSelect(lang.code)}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 transition-all text-left"
-                  style={{
-                    background: isActive ? "rgba(56,189,248,0.14)" : "transparent",
-                    borderLeft: isActive ? "3px solid #38BDF8" : "3px solid transparent",
-                  }}
-                >
-                  <span className="text-2xl leading-none flex-shrink-0" role="img" aria-label={lang.nameEn}>
-                    {FLAGS[lang.code] || "🌐"}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold leading-tight"
-                      style={{ color: isActive ? "#38BDF8" : "#FFFFFF" }}>
-                      {lang.nameEn}
-                    </p>
-                    <p className="text-xs leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-                      {lang.nameNative}
-                    </p>
-                  </div>
-                  {isActive && <Check size={14} className="text-cyan-400 flex-shrink-0" />}
-                </button>
-              );
-            })}
+            <div className="p-2">
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isActive = language === lang.code;
+                return (
+                  <button
+                    key={lang.code}
+                    role="option"
+                    aria-selected={isActive}
+                    onClick={() => handleSelect(lang.code)}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left mb-1"
+                    style={{
+                      background: isActive ? "rgba(56,189,248,0.18)" : "transparent",
+                      border: isActive ? "1px solid rgba(56,189,248,0.4)" : "1px solid transparent",
+                    }}
+                  >
+                    <span className="text-3xl leading-none flex-shrink-0" role="img" aria-label={lang.nameEn}>
+                      {FLAGS[lang.code] || "🌐"}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-semibold leading-tight"
+                        style={{ color: isActive ? "#38BDF8" : "#FFFFFF" }}>
+                        {lang.nameEn}
+                      </p>
+                      <p className="text-sm leading-tight mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        {lang.nameNative}
+                      </p>
+                    </div>
+                    {isActive && <Check size={18} className="text-cyan-400 flex-shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 
