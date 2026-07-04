@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
-import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
+import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 
@@ -118,7 +119,7 @@ function PayBills() {
         description: `Bill Payment - ${selectedBiller?.name}`,
         category: categories.find((c) => c.id === selectedBiller?.category)?.name || "Bills",
         amount: parseFloat(amount.replace(/,/g,"")),
-        fundingAccount: selectedAccount.toLowerCase() as "checking" | "savings",
+        fundingAccount: selectedAccount as "checking" | "savings",
         recipientName: selectedBiller?.name || "Biller",
         note: `Customer Ref: ${customerNumber}`,
       });
@@ -184,11 +185,12 @@ function PayBills() {
         {/* Pay From */}
         <div className="p-5 rounded-2xl" style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>Pay From</label>
-          <div className="grid grid-cols-3 gap-3">
-            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
-              <button key={acc} onClick={() => setSelectedAccount(acc)} className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
-              style={{ background: selectedAccount === acc ? t.accentCyan : t.inputBg, color: selectedAccount === acc ? t.pageBg : t.textMuted }}>
-                {acc}
+          <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+            {allAccountOptions.map((acc) => (
+              <button key={acc.value} onClick={() => setSelectedAccount(acc.value)} className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
+              style={{ background: selectedAccount === acc.value ? t.accentCyan : t.inputBg, color: selectedAccount === acc.value ? t.pageBg : t.textMuted }}
+              title={`${acc.label} - $${formatCurrency(acc.balance)}`}>
+                {acc.label}
               </button>
             ))}
           </div>

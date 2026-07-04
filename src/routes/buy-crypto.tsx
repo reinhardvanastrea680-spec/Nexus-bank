@@ -13,7 +13,8 @@ import { toast } from "sonner";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
-import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
+import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 
@@ -58,11 +59,15 @@ function BuyCrypto() {
   const navigate = useNavigate();
   const t = themeColors(theme);
   const { account } = useUserAccount();
+  const { customAccounts } = useCustomAccounts(account?.id);
+
+  // Get all available accounts dynamically
+  const allAccountOptions = getAllAccountOptions(account, customAccounts);
 
   const [cryptos, setCryptos] = useState<CryptoData[]>(initialCryptos);
   const [selectedCrypto, setSelectedCrypto] = useState<CryptoData>(initialCryptos[0]);
   const [amount, setAmount] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
+  const [selectedAccount, setSelectedAccount] = useState("checking");
   const [showConfirm, setShowConfirm] = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number;
@@ -75,10 +80,7 @@ function BuyCrypto() {
   const [fetchingRates, setFetchingRates] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fromBalance =
-    selectedAccount === "Checking" ? account?.checkingBalance || 0 :
-    selectedAccount === "Savings" ? account?.savingsBalance || 0 :
-    account?.investmentBalance || 0;
+  const fromBalance = getAccountBalance(selectedAccount, allAccountOptions);
   const cryptoAmount =
     amount && selectedCrypto.price ? (parseFloat(amount.replace(/,/g, "") || "0") / selectedCrypto.price).toFixed(6) : "0";
 
@@ -153,7 +155,7 @@ function BuyCrypto() {
         description: `Bought ${cryptoQty.toFixed(6)} ${selectedCrypto.symbol} for $${formatCurrency(parseFloat(amount.replace(/,/g,"")))}`,
         category: "Crypto",
         amount: parseFloat(amount.replace(/,/g,"")),
-        fundingAccount: selectedAccount.toLowerCase() as "checking" | "savings",
+        fundingAccount: selectedAccount as "checking" | "savings",
         cryptoId: selectedCrypto.id,
         cryptoSymbol: selectedCrypto.symbol,
         cryptoAmount: cryptoQty,
@@ -305,18 +307,19 @@ function BuyCrypto() {
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>
             Pay From
           </label>
-          <div className="grid grid-cols-3 gap-3">
-            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
+          <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+            {allAccountOptions.map((acc) => (
               <button
-                key={acc}
-                onClick={() => setSelectedAccount(acc)}
-                className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
+                key={acc.value}
+                onClick={() => setSelectedAccount(acc.value)}
+                className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
                 style={{
-                  background: selectedAccount === acc ? t.accentCyan : t.inputBg,
-                  color: selectedAccount === acc ? t.pageBg : t.textMuted,
+                  background: selectedAccount === acc.value ? t.accentCyan : t.inputBg,
+                  color: selectedAccount === acc.value ? t.pageBg : t.textMuted,
                 }}
+                title={`${acc.label} - $${formatCurrency(acc.balance)}`}
               >
-                {acc}
+                {acc.label}
               </button>
             ))}
           </div>

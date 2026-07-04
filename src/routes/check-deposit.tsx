@@ -14,7 +14,8 @@ import { toast } from "sonner";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
-import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
+import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 
@@ -137,7 +138,7 @@ function CheckDeposit() {
         description: `Check Deposit #${checkNumber}`,
         category: "Deposit",
         amount: depositAmount,
-        fundingAccount: selectedAccount.toLowerCase() as "checking" | "savings",
+        fundingAccount: selectedAccount as "checking" | "savings",
         toAccount: selectedAccount,
         checkNumber,
         routingNumber,
@@ -445,37 +446,21 @@ function CheckDeposit() {
               <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
                 Deposit To
               </label>
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  onClick={() => setSelectedAccount("Checking")}
-                  className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
-                  style={{
-                    background: selectedAccount === "Checking" ? t.accentCyan : t.inputBg,
-                    color: selectedAccount === "Checking" ? t.pageBg : t.textMuted,
-                  }}
-                >
-                  Checking
-                </button>
-                <button
-                  onClick={() => setSelectedAccount("Savings")}
-                  className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
-                  style={{
-                    background: selectedAccount === "Savings" ? t.accentCyan : t.inputBg,
-                    color: selectedAccount === "Savings" ? t.pageBg : t.textMuted,
-                  }}
-                >
-                  Savings
-                </button>
-                <button
-                  onClick={() => setSelectedAccount("Investment")}
-                  className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
-                  style={{
-                    background: selectedAccount === "Investment" ? t.accentCyan : t.inputBg,
-                    color: selectedAccount === "Investment" ? t.pageBg : t.textMuted,
-                  }}
-                >
-                  Investment
-                </button>
+              <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                {allAccountOptions.map((acc) => (
+                  <button
+                    key={acc.value}
+                    onClick={() => setSelectedAccount(acc.value)}
+                    className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
+                    style={{
+                      background: selectedAccount === acc.value ? t.accentCyan : t.inputBg,
+                      color: selectedAccount === acc.value ? t.pageBg : t.textMuted,
+                    }}
+                    title={`${acc.label} - $${formatCurrency(acc.balance)}`}
+                  >
+                    {acc.label}
+                  </button>
+                ))}
               </div>
             </div>
 

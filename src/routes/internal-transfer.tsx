@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
+import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 import { BottomNav } from "../dashboard/components/BottomNav";
@@ -23,9 +24,13 @@ function InternalTransfer() {
   const { account } = useUserAccount();
   const { theme } = useTheme();
   const t = themeColors(theme);
+  const { customAccounts } = useCustomAccounts(account?.id);
 
-  const [fromAccount, setFromAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
-  const [toAccount, setToAccount]     = useState<"Checking" | "Savings" | "Investment">("Savings");
+  // Get all available accounts dynamically
+  const allAccountOptions = getAllAccountOptions(account, customAccounts);
+
+  const [fromAccount, setFromAccount] = useState("checking");
+  const [toAccount, setToAccount]     = useState("savings");
   const [amount, setAmount]           = useState("");
   const [note, setNote]               = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -34,14 +39,8 @@ function InternalTransfer() {
     amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string;
   } | null>(null);
 
-  const fromBalance = 
-    fromAccount === "Checking" ? account?.checkingBalance || 0 :
-    fromAccount === "Savings" ? account?.savingsBalance || 0 :
-    account?.investmentBalance || 0;
-  const toBalance = 
-    toAccount === "Checking" ? account?.checkingBalance || 0 :
-    toAccount === "Savings" ? account?.savingsBalance || 0 :
-    account?.investmentBalance || 0;
+  const fromBalance = getAccountBalance(fromAccount, allAccountOptions);
+  const toBalance   = getAccountBalance(toAccount, allAccountOptions);
 
   const handleConfirm = async () => {
     if (!amount || parseFloat(amount) <= 0)    { toast.error("Please enter a valid amount"); return; }
@@ -53,8 +52,8 @@ function InternalTransfer() {
         type: "internal_transfer", subType: "between_accounts",
         description: `Internal Transfer from ${fromAccount} to ${toAccount}`,
         category: "Transfer", amount: parseFloat(amount),
-        fundingAccount: fromAccount.toLowerCase() as "checking" | "savings",
-        recipientName: `Your ${toAccount} Account`,
+        fundingAccount: fromAccount as "checking" | "savings",
+        recipientName: `Your ${allAccountOptions.find(a => a.value === toAccount)?.label || toAccount} Account`,
         recipientAccount: toAccount.toLowerCase(),
         toAccount: toAccount.toLowerCase(), note,
       });
@@ -86,11 +85,12 @@ function InternalTransfer() {
         {/* From */}
         <div className="p-5 rounded-2xl" style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>From</label>
-          <div className="grid grid-cols-3 gap-3">
-            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
-              <button key={acc} onClick={() => setFromAccount(acc)} className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
-              style={{ background: fromAccount === acc ? t.accentCyan : t.inputBg, color: fromAccount === acc ? t.pageBg : t.textMuted }}>
-                {acc}
+          <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+            {allAccountOptions.map((acc) => (
+              <button key={acc.value} onClick={() => setFromAccount(acc.value)} className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
+              style={{ background: fromAccount === acc.value ? t.accentCyan : t.inputBg, color: fromAccount === acc.value ? t.pageBg : t.textMuted }}
+              title={`${acc.label} - $${formatCurrency(acc.balance)}`}>
+                {acc.label}
               </button>
             ))}
           </div>
@@ -100,12 +100,13 @@ function InternalTransfer() {
         {/* To */}
         <div className="p-5 rounded-2xl" style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>To</label>
-          <div className="grid grid-cols-3 gap-3">
-            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
-              <button key={acc} onClick={() => setToAccount(acc)} disabled={acc === fromAccount}
-                className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
-                style={{ background: toAccount === acc ? t.accentCyan : t.inputBg, color: toAccount === acc ? t.pageBg : t.textMuted, opacity: acc === fromAccount ? 0.3 : 1 }}>
-                {acc}
+          <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+            {allAccountOptions.map((acc) => (
+              <button key={acc.value} onClick={() => setToAccount(acc.value)} disabled={acc.value === fromAccount}
+                className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
+                style={{ background: toAccount === acc.value ? t.accentCyan : t.inputBg, color: toAccount === acc.value ? t.pageBg : t.textMuted, opacity: acc.value === fromAccount ? 0.3 : 1 }}
+                title={`${acc.label} - $${formatCurrency(acc.balance)}`}>
+                {acc.label}
               </button>
             ))}
           </div>
