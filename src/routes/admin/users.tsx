@@ -146,12 +146,7 @@ function AdminUsersPage() {
                     <tr key={user.id} className="border-t border-[rgba(255,255,255,0.05)] hover:bg-white/5 cursor-pointer"
                       onClick={() => {
                         console.log("Table row: Navigating to user:", user.id);
-                        try {
-                          navigate({ to: `/admin/users/${user.id}` });
-                        } catch (err) {
-                          console.error("Navigation error:", err);
-                          window.location.href = `/admin/users/${user.id}`;
-                        }
+                        window.location.href = `/admin/users/${user.id}`;
                       }}>
                       <td className="py-3 px-4 text-blue-300/60 font-mono text-sm">{i + 1}</td>
                       <td className="py-3 px-4">
@@ -215,12 +210,7 @@ function AdminUsersPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               console.log("Navigating to user:", user.id);
-                              try {
-                                navigate({ to: `/admin/users/${user.id}` });
-                              } catch (err) {
-                                console.error("Navigation error:", err);
-                                window.location.href = `/admin/users/${user.id}`;
-                              }
+                              window.location.href = `/admin/users/${user.id}`;
                             }}>
                             <Eye size={14} aria-hidden="true" />
                           </Button>
@@ -255,23 +245,13 @@ function AdminUsersPage() {
                   className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-white/5"
                   onClick={() => {
                     console.log("Mobile: Navigating to user:", user.id);
-                    try {
-                      navigate({ to: `/admin/users/${user.id}` });
-                    } catch (err) {
-                      console.error("Navigation error:", err);
-                      window.location.href = `/admin/users/${user.id}`;
-                    }
+                    window.location.href = `/admin/users/${user.id}`;
                   }}
                   role="button" tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       console.log("Mobile keyboard: Navigating to user:", user.id);
-                      try {
-                        navigate({ to: `/admin/users/${user.id}` });
-                      } catch (err) {
-                        console.error("Navigation error:", err);
-                        window.location.href = `/admin/users/${user.id}`;
-                      }
+                      window.location.href = `/admin/users/${user.id}`;
                     }
                   }}>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
@@ -292,12 +272,7 @@ function AdminUsersPage() {
                   <button onClick={(e) => {
                     e.stopPropagation();
                     console.log("Mobile button: Navigating to user:", user.id);
-                    try {
-                      navigate({ to: `/admin/users/${user.id}` });
-                    } catch (err) {
-                      console.error("Navigation error:", err);
-                      window.location.href = `/admin/users/${user.id}`;
-                    }
+                    window.location.href = `/admin/users/${user.id}`;
                   }}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
                     style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}>
