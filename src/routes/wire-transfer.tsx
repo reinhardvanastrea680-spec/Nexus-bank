@@ -15,6 +15,8 @@ import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
 import { useUserAccount } from "../dashboard/hooks/useUserAccount";
+import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
+import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 import { CURRENCIES, type CurrencyCode, getCurrencySymbol } from "../utils/currency";
@@ -68,6 +70,11 @@ function WireTransferWizard() {
   const t = themeColors(theme);
   const navigate = useNavigate();
   const { account } = useUserAccount();
+  const { customAccounts } = useCustomAccounts(account?.id);
+
+  // Get all available accounts dynamically
+  const allAccountOptions = getAllAccountOptions(account, customAccounts);
+
   const [step, setStep] = useState(1);
 
   // Form data
@@ -82,7 +89,7 @@ function WireTransferWizard() {
     routingNumber: "",
   });
   const [transfer, setTransfer] = useState({
-    src: "Checking",
+    src: "checking",
     amount: "",
     fromCurrency: "USD" as CurrencyCode,
     toCurrency: "EUR" as CurrencyCode,
@@ -176,8 +183,7 @@ function WireTransferWizard() {
       return;
     }
 
-    const fromBalance =
-      transfer.src === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
+    const fromBalance = getAccountBalance(transfer.src, allAccountOptions);
     const totalAmount = parseFloat(transfer.amount) + 25; // Add fee
     if (totalAmount > fromBalance) {
       toast.error("Insufficient funds");
@@ -200,7 +206,7 @@ function WireTransferWizard() {
         description: `Wire Transfer to ${recipientFullName} (${bankName}, ${bankCountry})`,
         category: "Transfer",
         amount: parseFloat(transfer.amount),
-        fundingAccount: transfer.src.toLowerCase() as "checking" | "savings",
+        fundingAccount: transfer.src as "checking" | "savings",
         recipientName: recipientFullName,
         recipientBank: bankName,
         toBank: bankName,
@@ -448,16 +454,22 @@ function WireTransferWizard() {
               <label className="block text-sm font-semibold mb-2" style={{ color: t.textMutedOnBg }}>
                 Source Account
               </label>
-              <select
-                value={transfer.src}
-                className="w-full px-4 py-4 rounded-xl outline-none appearance-none"
-                style={{ background: t.inputBg, color: t.textPrimary }}
-                onChange={(e) => setTransfer({ ...transfer, src: e.target.value })}
-              >
-                <option value="Checking">Checking Account</option>
-                <option value="Savings">Savings Account</option>
-                <option value="Investment">Investment Account</option>
-              </select>
+              <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                {allAccountOptions.map((acc) => (
+                  <button
+                    key={acc.value}
+                    onClick={() => setTransfer({ ...transfer, src: acc.value })}
+                    className="py-3 px-2 rounded-xl font-bold transition-all text-xs truncate"
+                    style={{
+                      background: transfer.src === acc.value ? t.accentCyan : t.inputBg,
+                      color: transfer.src === acc.value ? t.pageBg : t.textMuted,
+                    }}
+                    title={`${acc.label} - ${formatInCurrency(acc.balance, transfer.fromCurrency)}`}
+                  >
+                    {acc.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div>
