@@ -298,7 +298,11 @@ function UserDetailPage() {
                   {user.password ? "Edit Password" : "Set Password"}
                 </button>
                 {!user.password && (
-                  <p className="text-amber-400 text-xs mt-2">⚠️ No password stored in database. Click "Set Password" to add one for admin viewing.</p>
+                  <p className="text-amber-400 text-xs mt-2">
+                    ⚠️ Password is not stored in database (only in Firebase Auth). 
+                    <br />
+                    Click "Set Password" to store it here for admin viewing, or ask the user to reset their password.
+                  </p>
                 )}
               </>
             )}
