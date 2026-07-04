@@ -179,11 +179,13 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="off"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm text-white"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm"
                   style={{
                     background: "#070B14",
                     border: "1px solid rgba(255,255,255,0.08)",
                     opacity: locked ? 0.5 : 1,
+                    color: "#FFFFFF",
+                    WebkitTextFillColor: "#FFFFFF",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
                   onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
@@ -204,11 +206,13 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="new-password"
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm text-white"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm"
                   style={{
                     background: "#070B14",
                     border: "1px solid rgba(255,255,255,0.08)",
                     opacity: locked ? 0.5 : 1,
+                    color: "#FFFFFF",
+                    WebkitTextFillColor: "#FFFFFF",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
                   onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}

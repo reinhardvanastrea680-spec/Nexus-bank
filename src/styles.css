@@ -391,6 +391,45 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(56,189,248,0.18);
 }
 
+/* ── Dark mode input text visibility ──────────────────────────────────────── */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="search"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark textarea {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(255,255,255,0.4) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.4) !important;
+}
+/* Password dots should be white in dark mode */
+.dark input[type="password"] {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* ── Light mode input text visibility ─────────────────────────────────────── */
+.light input[type="text"],
+.light input[type="email"],
+.light input[type="password"],
+.light input[type="search"],
+.light input[type="number"],
+.light input[type="tel"],
+.light textarea {
+  color: #0D1B2A !important;
+  -webkit-text-fill-color: #0D1B2A !important;
+}
+.light input::placeholder,
+.light textarea::placeholder {
+  color: rgba(13,27,42,0.4) !important;
+  -webkit-text-fill-color: rgba(13,27,42,0.4) !important;
+}
+
 /* ── Balance figure — responsive clamp ─────────────────────────────────── */
 .balance-figure {
   font-size: clamp(0.95rem, 5.5vw, 1.9rem);
