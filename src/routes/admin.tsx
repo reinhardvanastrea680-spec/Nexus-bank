@@ -59,6 +59,7 @@ export const Route = createFileRoute("/admin")({
 const navItems = [
   { label: "Overview",              icon: LayoutDashboard, to: "/admin/overview"              },
   { label: "Notifications",         icon: Bell,            to: "/admin/notifications"          },
+  { label: "Users",                 icon: User,            to: "/admin/users-list"             },
   { label: "User Management",       icon: Users,           to: "/admin/users"                  },
   { label: "Account Control",       icon: Wallet,          to: "/admin/accounts"               },
   { label: "Pending Transfers",     icon: Clock,           to: "/admin/pending-transactions"   },
