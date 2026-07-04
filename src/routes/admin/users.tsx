@@ -40,7 +40,12 @@ function AdminUsersPage() {
 
   const handleViewUser = (userId: string) => {
     console.log("🔵 Navigating to user detail:", userId);
-    navigate({ to: "/admin/users/$userId", params: { userId } });
+    try {
+      // Use direct path navigation
+      window.location.href = `/admin/users/${userId}`;
+    } catch (error) {
+      console.error("❌ Navigation error:", error);
+    }
   };
 
   const handleToggleFreeze = async (user: any, e: React.MouseEvent) => {
