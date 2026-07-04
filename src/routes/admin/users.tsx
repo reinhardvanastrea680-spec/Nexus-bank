@@ -143,18 +143,11 @@ function AdminUsersPage() {
                 </thead>
                 <tbody>
                   {pagedUsers.map((user, i) => (
-                    <tr key={user.id} className="border-t border-[rgba(255,255,255,0.05)] hover:bg-white/5 cursor-pointer"
-                      onClick={() => {
-                        const targetUrl = `/admin/users/${user.id}`;
-                        console.log("Table row: Navigating to:", targetUrl);
-                        console.log("User ID:", user.id);
-                        console.log("Current URL:", window.location.href);
-                        alert(`Navigating to: ${targetUrl}`);
-                        window.location.href = targetUrl;
-                      }}>
+                    <tr key={user.id} className="border-t border-[rgba(255,255,255,0.05)] hover:bg-white/5"
+                      >
                       <td className="py-3 px-4 text-blue-300/60 font-mono text-sm">{i + 1}</td>
                       <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
+                        <a href={`/admin/users/${user.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0" aria-hidden="true">
                             {user.fullName.charAt(0).toUpperCase()}
                           </div>
@@ -162,7 +155,7 @@ function AdminUsersPage() {
                             <p className="text-white font-medium text-sm truncate">{user.fullName}</p>
                             <p className="text-blue-300/60 text-xs truncate">{user.email}</p>
                           </div>
-                        </div>
+                        </a>
                       </td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.status === "active" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
@@ -209,15 +202,16 @@ function AdminUsersPage() {
                       </td>
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-1">
-                          <Button variant="ghost" size="icon" aria-label={`View ${user.fullName}`}
-                            className="w-8 h-8 text-blue-300 hover:text-white hover:bg-blue-500/10"
+                          <a 
+                            href={`/admin/users/${user.id}`}
+                            aria-label={`View ${user.fullName}`}
+                            className="w-8 h-8 text-blue-300 hover:text-white hover:bg-blue-500/10 flex items-center justify-center rounded-md transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               console.log("Navigating to user:", user.id);
-                              window.location.href = `/admin/users/${user.id}`;
                             }}>
                             <Eye size={14} aria-hidden="true" />
-                          </Button>
+                          </a>
                           <Button variant="ghost" size="icon" aria-label={`${user.status === "active" ? "Freeze" : "Unfreeze"} ${user.fullName}`}
                             className="w-8 h-8 text-blue-300 hover:text-white hover:bg-blue-500/10"
                             onClick={(e) => handleToggleFreeze(user, e)}>
@@ -245,19 +239,10 @@ function AdminUsersPage() {
                 style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.06)" }}>
 
                 {/* Main row — tap to go to detail page */}
-                <div
-                  className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-white/5"
-                  onClick={() => {
-                    console.log("Mobile: Navigating to user:", user.id);
-                    window.location.href = `/admin/users/${user.id}`;
-                  }}
-                  role="button" tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      console.log("Mobile keyboard: Navigating to user:", user.id);
-                      window.location.href = `/admin/users/${user.id}`;
-                    }
-                  }}>
+                <a 
+                  href={`/admin/users/${user.id}`}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors"
+                  >
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {user.fullName.charAt(0).toUpperCase()}
                   </div>
@@ -267,21 +252,19 @@ function AdminUsersPage() {
                   </div>
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${user.status === "active" ? "bg-green-400" : "bg-red-400"}`} />
                   <ChevronRight size={16} className="text-blue-300/40 flex-shrink-0" aria-hidden="true" />
-                </div>
+                </a>
 
                 {/* Action buttons row */}
                 <div className="flex items-center gap-1 px-3 pb-3 pt-0 flex-wrap"
                   onClick={(e) => e.stopPropagation()}>
                   {/* View detail */}
-                  <button onClick={(e) => {
-                    e.stopPropagation();
-                    console.log("Mobile button: Navigating to user:", user.id);
-                    window.location.href = `/admin/users/${user.id}`;
-                  }}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                  <a 
+                    href={`/admin/users/${user.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:opacity-80 transition-opacity"
                     style={{ background: "rgba(56,189,248,0.1)", color: "#38BDF8" }}>
                     <Eye size={12} /> View
-                  </button>
+                  </a>
                   {/* Freeze/Unfreeze */}
                   <button onClick={(e) => handleToggleFreeze(user, e)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
