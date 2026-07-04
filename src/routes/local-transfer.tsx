@@ -199,6 +199,7 @@ function LocalTransfer() {
   const [sourceAccount, setSourceAccount] = useState("checking");
   const [loading, setLoading] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinError, setPinError] = useState("");
 
   const fromBalance = getAccountBalance(sourceAccount, allAccountOptions);
 
@@ -262,16 +263,19 @@ function LocalTransfer() {
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN
     if (!account?.pin) {
-      toast.error("No PIN set for this account. Please contact support.");
-      setShowPinModal(false);
+      setPinError("No PIN set for this account. Please contact support.");
+      setLoading(false);
       return;
     }
 
     if (enteredPin !== account.pin) {
-      toast.error("Incorrect PIN. Please try again.");
+      setPinError("Incorrect PIN. Please try again.");
+      setLoading(false);
       return;
     }
 
+    // PIN correct, proceed
+    setPinError("");
     setLoading(true);
     try {
       const { transactionRef, status: txStatus } = await submitTransaction({
@@ -309,7 +313,7 @@ function LocalTransfer() {
       });
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Failed to submit transfer request");
+      setPinError(err instanceof Error ? err.message : "Failed to submit transfer request");
     } finally {
       setLoading(false);
     }
@@ -702,9 +706,13 @@ function LocalTransfer() {
       {/* PIN Modal */}
       <PinInputModal
         isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinError("");
+        }}
         onSubmit={handlePinSubmit}
         loading={loading}
+        externalError={pinError}
       />
       
       <BottomNav />

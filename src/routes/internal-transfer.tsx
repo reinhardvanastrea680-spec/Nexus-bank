@@ -44,6 +44,7 @@ function InternalTransfer() {
   const [note, setNote]               = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinError, setPinError]       = useState("");
   const [loading, setLoading]         = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string;
@@ -64,18 +65,21 @@ function InternalTransfer() {
   };
 
   const handlePinSubmit = async (enteredPin: string) => {
-    // Verify PIN
+    // Verify PIN matches the one from admin
     if (!account?.pin) {
-      toast.error("No PIN set for this account. Please contact support.");
-      setShowPinModal(false);
+      setPinError("No PIN set for this account. Please contact support.");
+      setLoading(false);
       return;
     }
 
     if (enteredPin !== account.pin) {
-      toast.error("Incorrect PIN. Please try again.");
+      setPinError("Incorrect PIN. Please try again.");
+      setLoading(false);
       return;
     }
 
+    // PIN is correct, proceed with transaction
+    setPinError(""); // Clear any errors
     setLoading(true);
     const rawAmount = parseFloat(amount.replace(/,/g, "") || "0");
     try {
@@ -88,13 +92,17 @@ function InternalTransfer() {
         recipientAccount: toAccount.toLowerCase(),
         toAccount: toAccount.toLowerCase(), note,
       });
+      
+      // Close PIN modal only on success
       setShowPinModal(false);
       
-      // Show success or failure based on admin's decision
+      // Show success or failure based on admin's decision (status from Firestore)
       setSuccessData({ amount: rawAmount, transactionRef, status: txStatus, fundingAccount: fromAccount, recipientName: `Your ${toAccount} Account` });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to submit transfer request");
-    } finally { setLoading(false); }
+      setPinError(err instanceof Error ? err.message : "Failed to submit transfer request");
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   if (successData) return (
@@ -233,9 +241,13 @@ function InternalTransfer() {
       {/* PIN Modal */}
       <PinInputModal
         isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinError("");
+        }}
         onSubmit={handlePinSubmit}
         loading={loading}
+        externalError={pinError}
       />
 
       <BottomNav />

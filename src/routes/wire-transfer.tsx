@@ -107,6 +107,7 @@ function WireTransferWizard() {
   
   // PIN Modal state
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinError, setPinError] = useState("");
   const [pinLoading, setPinLoading] = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number;
@@ -209,16 +210,19 @@ function WireTransferWizard() {
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN
     if (!account?.pin) {
-      toast.error("No PIN set for this account. Please contact support.");
-      setShowPinModal(false);
+      setPinError("No PIN set for this account. Please contact support.");
+      setPinLoading(false);
       return;
     }
 
     if (enteredPin !== account.pin) {
-      toast.error("Incorrect PIN. Please try again.");
+      setPinError("Incorrect PIN. Please try again.");
+      setPinLoading(false);
       return;
     }
 
+    // PIN is correct, proceed with transaction
+    setPinError(""); // Clear any errors
     setPinLoading(true);
     setError(null);
     
@@ -249,6 +253,9 @@ function WireTransferWizard() {
         fee: 25,
       });
 
+      // Close PIN modal only on success
+      setShowPinModal(false);
+      
       setSuccessData({
         amount: parseFloat(transfer.amount),
         transactionRef,
@@ -259,13 +266,11 @@ function WireTransferWizard() {
         recipientRegion: bankCountry,
       });
       
-      setShowPinModal(false);
       setStep(6);
       toast.success("Transaction submitted successfully!");
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Failed to submit transfer request");
-      toast.error(err.message || "Failed to submit transfer request");
+      setPinError(err.message || "Failed to submit transfer request");
     } finally {
       setPinLoading(false);
     }
@@ -892,9 +897,13 @@ function WireTransferWizard() {
       {/* PIN Input Modal */}
       <PinInputModal
         isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinError("");
+        }}
         onSubmit={handlePinSubmit}
         loading={pinLoading}
+        externalError={pinError}
       />
       
       <BottomNav />

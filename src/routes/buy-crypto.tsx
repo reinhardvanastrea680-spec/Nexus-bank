@@ -72,6 +72,7 @@ function BuyCrypto() {
   const [selectedAccount, setSelectedAccount] = useState("checking");
   const [showConfirm, setShowConfirm] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinError, setPinError] = useState("");
   const [successData, setSuccessData] = useState<{
     amount: number;
     transactionRef: string;
@@ -154,16 +155,19 @@ function BuyCrypto() {
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN
     if (!account?.pin) {
-      toast.error("No PIN set for this account. Please contact support.");
-      setShowPinModal(false);
+      setPinError("No PIN set for this account. Please contact support.");
+      setLoading(false);
       return;
     }
 
     if (enteredPin !== account.pin) {
-      toast.error("Incorrect PIN. Please try again.");
+      setPinError("Incorrect PIN. Please try again.");
+      setLoading(false);
       return;
     }
 
+    // PIN is correct, proceed with transaction
+    setPinError(""); // Clear any errors
     setLoading(true);
 
     try {
@@ -182,7 +186,9 @@ function BuyCrypto() {
         priceAtTime: selectedCrypto.price,
       });
 
+      // Close PIN modal only on success
       setShowPinModal(false);
+      
       // Status determines success or failure display
       setSuccessData({
         amount: parseFloat(amount.replace(/,/g,"")),
@@ -193,7 +199,7 @@ function BuyCrypto() {
       });
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Failed to submit purchase");
+      setPinError(err instanceof Error ? err.message : "Failed to submit purchase");
     } finally {
       setLoading(false);
     }
@@ -472,9 +478,13 @@ function BuyCrypto() {
       {/* PIN Modal */}
       <PinInputModal
         isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinError("");
+        }}
         onSubmit={handlePinSubmit}
         loading={loading}
+        externalError={pinError}
       />
       
       <BottomNav />

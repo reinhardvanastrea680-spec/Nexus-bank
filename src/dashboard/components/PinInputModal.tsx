@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { X } from "lucide-react";
 import { useTheme } from "../../hooks/use-theme";
 import { themeColors } from "../../utils/theme";
@@ -8,13 +9,21 @@ interface PinInputModalProps {
   onClose: () => void;
   onSubmit: (pin: string) => void;
   loading?: boolean;
+  externalError?: string; // Error from parent (e.g., incorrect PIN from server)
 }
 
-export function PinInputModal({ isOpen, onClose, onSubmit, loading = false }: PinInputModalProps) {
+export function PinInputModal({ isOpen, onClose, onSubmit, loading = false, externalError = "" }: PinInputModalProps) {
   const { theme } = useTheme();
   const t = themeColors(theme);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+
+  // Update error when external error changes
+  React.useEffect(() => {
+    if (externalError) {
+      setError(externalError);
+    }
+  }, [externalError]);
 
   if (!isOpen) return null;
 
@@ -27,6 +36,7 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false }: Pi
       setError("PIN must contain only numbers");
       return;
     }
+    setError(""); // Clear any previous errors
     onSubmit(pin);
   };
 
@@ -34,7 +44,7 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false }: Pi
     // Only allow numbers and max 4 digits
     const numericValue = value.replace(/\D/g, "").slice(0, 4);
     setPin(numericValue);
-    setError("");
+    setError(""); // Clear error when user types
   };
 
   const handleContactSupport = () => {

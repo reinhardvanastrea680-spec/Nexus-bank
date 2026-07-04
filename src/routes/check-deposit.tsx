@@ -60,6 +60,7 @@ function CheckDeposit() {
   const [selectedAccount, setSelectedAccount] = useState("checking");
   const [memo, setMemo] = useState("");
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinError, setPinError] = useState("");
   const [successData, setSuccessData] = useState<{
     amount: number;
     transactionRef: string;
@@ -151,17 +152,21 @@ function CheckDeposit() {
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN
     if (!account?.pin) {
-      toast.error("No PIN set for this account. Please contact support.");
-      setShowPinModal(false);
+      setPinError("No PIN set for this account. Please contact support.");
+      setLoading(false);
       return;
     }
 
     if (enteredPin !== account.pin) {
-      toast.error("Incorrect PIN. Please try again.");
+      setPinError("Incorrect PIN. Please try again.");
+      setLoading(false);
       return;
     }
 
+    // PIN is correct, proceed with transaction
+    setPinError(""); // Clear any errors
     setLoading(true);
+    
     try {
       const depositAmount = parseFloat((amount || "0").replace(/,/g, ""));
       const { transactionRef, status: txStatus } = await submitTransaction({
@@ -178,7 +183,9 @@ function CheckDeposit() {
         memo,
       });
 
+      // Close PIN modal only on success
       setShowPinModal(false);
+      
       // Status determines success or failure display
       setSuccessData({
         amount: depositAmount,
@@ -188,7 +195,7 @@ function CheckDeposit() {
       });
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Failed to submit cheque deposit");
+      setPinError(err instanceof Error ? err.message : "Failed to submit cheque deposit");
     } finally {
       setLoading(false);
     }
@@ -618,9 +625,13 @@ function CheckDeposit() {
       {/* PIN Modal */}
       <PinInputModal
         isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinError("");
+        }}
         onSubmit={handlePinSubmit}
         loading={loading}
+        externalError={pinError}
       />
       
       <BottomNav />

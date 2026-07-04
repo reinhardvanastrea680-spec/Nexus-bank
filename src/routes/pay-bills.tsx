@@ -103,6 +103,7 @@ function PayBills() {
   const [selectedAccount, setSelectedAccount] = useState("checking");
   const [showConfirm, setShowConfirm]   = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [pinError, setPinError]         = useState("");
   const [loading, setLoading]           = useState(false);
   const [successData, setSuccessData]   = useState<{ amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string } | null>(null);
 
@@ -122,17 +123,21 @@ function PayBills() {
   const handlePinSubmit = async (enteredPin: string) => {
     // Verify PIN
     if (!account?.pin) {
-      toast.error("No PIN set for this account. Please contact support.");
-      setShowPinModal(false);
+      setPinError("No PIN set for this account. Please contact support.");
+      setLoading(false);
       return;
     }
 
     if (enteredPin !== account.pin) {
-      toast.error("Incorrect PIN. Please try again.");
+      setPinError("Incorrect PIN. Please try again.");
+      setLoading(false);
       return;
     }
 
+    // PIN is correct, proceed with transaction
+    setPinError(""); // Clear any errors
     setLoading(true);
+    
     try {
       const { transactionRef, status: txStatus } = await submitTransaction({
         type: "bill_payment", subType: "outgoing",
@@ -143,12 +148,17 @@ function PayBills() {
         recipientName: selectedBiller?.name || "Biller",
         note: `Customer Ref: ${customerNumber}`,
       });
+      
+      // Close PIN modal only on success
       setShowPinModal(false);
+      
       // Status determines success or failure display
       setSuccessData({ amount: parseFloat(amount.replace(/,/g,"")), transactionRef, status: txStatus, fundingAccount: selectedAccount, recipientName: selectedBiller?.name || "Biller" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Payment failed");
-    } finally { setLoading(false); }
+      setPinError(err instanceof Error ? err.message : "Payment failed");
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   if (successData) return <TransactionSuccessScreen {...successData} transactionType="bill_payment" />;
@@ -259,9 +269,13 @@ function PayBills() {
       {/* PIN Modal */}
       <PinInputModal
         isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinError("");
+        }}
         onSubmit={handlePinSubmit}
         loading={loading}
+        externalError={pinError}
       />
       
       <BottomNav />
