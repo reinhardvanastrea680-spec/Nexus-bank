@@ -44,6 +44,7 @@ function AdminUserDetailPage() {
   // Fetch user data
   useEffect(() => {
     if (!userId) return;
+    console.log("📍 UserDetail: Starting to fetch user with ID:", userId);
     setUserLoading(true);
     setUserError(null);
 
@@ -51,19 +52,23 @@ function AdminUserDetailPage() {
     const unsubscribe = onSnapshot(
       userRef,
       (snap) => {
+        console.log("📍 UserDetail: Snapshot received, exists:", snap.exists());
         if (snap.exists()) {
-          setUser({
+          const userData = {
             id: snap.id,
             ...snap.data(),
             createdAt: snap.data().createdAt?.toDate() ?? new Date(),
-          });
+          };
+          console.log("📍 UserDetail: User data loaded:", userData.fullName);
+          setUser(userData);
         } else {
+          console.error("📍 UserDetail: User not found!");
           setUserError("User not found");
         }
         setUserLoading(false);
       },
       (err) => {
-        console.error(err);
+        console.error("📍 UserDetail: Error loading user:", err);
         setUserError("Failed to load user data");
         setUserLoading(false);
       },
@@ -222,6 +227,7 @@ function AdminUserDetailPage() {
   };
 
   if (authLoading || userLoading) {
+    console.log("📍 UserDetail: Loading... authLoading:", authLoading, "userLoading:", userLoading);
     return (
       <div className="flex items-center justify-center h-full py-24">
         <div className="text-cyan-400 animate-pulse">Loading user details...</div>
@@ -230,6 +236,7 @@ function AdminUserDetailPage() {
   }
 
   if (userError) {
+    console.log("📍 UserDetail: Error state, showing error:", userError);
     return (
       <div className="flex flex-col items-center justify-center h-full py-24 gap-4">
         <p className="text-red-400">{userError}</p>
@@ -242,6 +249,8 @@ function AdminUserDetailPage() {
       </div>
     );
   }
+
+  console.log("📍 UserDetail: Rendering user detail page for:", user?.fullName);
 
   return (
     <div className="space-y-4 pb-16">
