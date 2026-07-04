@@ -32,12 +32,12 @@ function AdminUserDetailPage() {
   const [userLoading, setUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
   const [showBalances, setShowBalances] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { transactions, loading: txLoading, error: txError } = useUserTransactionsById(userId);
 
-  // Ensure client-side rendering to avoid hydration mismatch
+  // Client-side only flag to prevent hydration mismatches
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
   }, []);
 
   // Backdate control state
@@ -235,8 +235,8 @@ function AdminUserDetailPage() {
     }
   };
 
-  if (authLoading || userLoading || !mounted) {
-    console.log("📍 UserDetail: Loading... authLoading:", authLoading, "userLoading:", userLoading, "mounted:", mounted);
+  if (authLoading || userLoading || !isClient) {
+    console.log("📍 UserDetail: Loading... authLoading:", authLoading, "userLoading:", userLoading, "isClient:", isClient);
     return (
       <div className="flex items-center justify-center h-full py-24">
         <div className="text-cyan-400 animate-pulse">Loading user details...</div>
