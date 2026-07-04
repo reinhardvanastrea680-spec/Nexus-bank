@@ -14,6 +14,8 @@ export const Route = createFileRoute("/admin/users/$userId")({
 
 function UserDetailPage() {
   console.log("🟢 UserDetailPage: Component rendering");
+  console.log("🟢 Current URL:", window.location.href);
+  console.log("🟢 Current pathname:", window.location.pathname);
   const { userId } = useParams({ from: "/admin/users/$userId" });
   console.log("🟢 UserDetailPage: userId from params:", userId);
   const navigate = useNavigate();
