@@ -133,7 +133,7 @@ function AdminLoginPage() {
             style={{ background: "linear-gradient(135deg, #06B6D4, #6366F1)" }}>
             <Shield size={32} style={{ color: "#FFFFFF" }} />
           </div>
-          <h1 className="text-2xl font-bold text-white">Nexus Control Centre</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "#FFFFFF" }}>Nexus Control Centre</h1>
           <p className="text-xs mt-2 flex items-center justify-center gap-1" style={{ color: "#EF4444" }}>
             <AlertTriangle size={12} />
             Restricted Access — Authorized Personnel Only
@@ -168,9 +168,9 @@ function AdminLoginPage() {
           <form onSubmit={handleLogin} className="space-y-5" autoComplete="off">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#94A3B8" }}>Admin Email</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: "#E2E8F0" }}>Admin Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#64748B" }} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#94A3B8" }} />
                 <input
                   type="email"
                   value={email}
@@ -179,7 +179,7 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="off"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm placeholder-slate-500"
                   style={{
                     background: "#070B14",
                     border: "1px solid rgba(255,255,255,0.08)",
@@ -195,9 +195,9 @@ function AdminLoginPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: "#94A3B8" }}>Password</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: "#E2E8F0" }}>Password</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#64748B" }} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#94A3B8" }} />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -206,7 +206,7 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="new-password"
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm placeholder-slate-500"
                   style={{
                     background: "#070B14",
                     border: "1px solid rgba(255,255,255,0.08)",
@@ -218,25 +218,25 @@ function AdminLoginPage() {
                   onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={locked}
-                  className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "#64748B" }}>
+                  className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "#94A3B8" }}>
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
             <button type="submit" disabled={loading || locked}
-              className="w-full py-4 rounded-xl font-semibold text-white transition-all"
+              className="w-full py-4 rounded-xl font-bold text-white transition-all text-base"
               style={{
                 background: locked ? "#1E293B" : "linear-gradient(135deg, #06B6D4, #6366F1)",
                 opacity: loading || locked ? 0.6 : 1,
                 cursor: locked ? "not-allowed" : "pointer",
                 boxShadow: locked ? "none" : "0 4px 14px rgba(6,182,212,0.3)",
               }}>
-              {loading ? "Signing in…" : locked ? `Locked — ${formatCountdown(countdown)}` : "Sign in to Console"}
+              {loading ? "Signing in…" : locked ? `Locked — ${formatCountdown(countdown)}` : "Sign In to Console"}
             </button>
           </form>
 
-          <p className="text-center text-xs mt-6" style={{ color: "#475569" }}>
+          <p className="text-center text-xs mt-6" style={{ color: "#64748B" }}>
             All login attempts are logged and monitored
           </p>
         </div>
