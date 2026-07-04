@@ -312,10 +312,6 @@ function HomePage() {
                   </div>
                   <div className="text-right">
                     <p className="text-white/50 text-xs">**** {accountData?.number?.slice(-4) || "----"}</p>
-                    <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(0,230,118,0.2)", color: "#00E676" }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                      {(accountData?.status || "active").toUpperCase()}
-                    </span>
                   </div>
                 </div>
                 <p className="text-white/50 text-xs mb-1">Available Funds</p>
