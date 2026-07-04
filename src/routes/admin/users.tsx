@@ -40,11 +40,14 @@ function AdminUsersPage() {
 
   const handleViewUser = (userId: string) => {
     console.log("🔵 Navigating to user detail:", userId);
+    console.log("🔵 Target URL:", `/admin/users/${userId}`);
+    console.log("🔵 Current location:", window.location.href);
     try {
       // Use direct path navigation
       window.location.href = `/admin/users/${userId}`;
     } catch (error) {
       console.error("❌ Navigation error:", error);
+      alert(`Navigation failed: ${error}`);
     }
   };
 

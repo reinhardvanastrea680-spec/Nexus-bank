@@ -13,9 +13,12 @@ export const Route = createFileRoute("/admin/users/$userId")({
 });
 
 function UserDetailPage() {
+  console.log("🟢 UserDetailPage: Component rendering");
   const { userId } = useParams({ from: "/admin/users/$userId" });
+  console.log("🟢 UserDetailPage: userId from params:", userId);
   const navigate = useNavigate();
   const { admin, loading: authLoading } = useAdminAuth();
+  console.log("🟢 UserDetailPage: admin:", admin?.email, "authLoading:", authLoading);
   
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -39,22 +42,30 @@ function UserDetailPage() {
 
   // Fetch user data
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      console.log("❌ No userId provided");
+      return;
+    }
 
+    console.log("🔄 Fetching user data for:", userId);
     const userRef = doc(db, "users", userId);
     const unsubscribe = onSnapshot(
       userRef,
       (snap) => {
+        console.log("✅ Firestore snapshot received, exists:", snap.exists());
         if (snap.exists()) {
-          setUser({ id: snap.id, ...snap.data() });
+          const userData = { id: snap.id, ...snap.data() };
+          console.log("✅ User data loaded:", userData.fullName);
+          setUser(userData);
           setError(null);
         } else {
+          console.log("❌ User document does not exist");
           setError("User not found");
         }
         setLoading(false);
       },
       (err) => {
-        console.error("Error loading user:", err);
+        console.error("❌ Firestore error:", err);
         setError("Failed to load user data");
         setLoading(false);
       }
