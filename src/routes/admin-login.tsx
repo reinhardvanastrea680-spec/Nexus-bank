@@ -170,7 +170,7 @@ function AdminLoginPage() {
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: "#E2E8F0" }}>Admin Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#94A3B8" }} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#64748B" }} />
                 <input
                   type="email"
                   value={email}
@@ -179,16 +179,16 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="off"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm placeholder-slate-500"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm placeholder-slate-400"
                   style={{
-                    background: "#070B14",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "#FFFFFF",
+                    border: "1px solid #E2E8F0",
                     opacity: locked ? 0.5 : 1,
-                    color: "#FFFFFF",
-                    WebkitTextFillColor: "#FFFFFF",
+                    color: "#0F172A",
+                    WebkitTextFillColor: "#0F172A",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
-                  onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
+                  onBlur={(e)  => { e.target.style.borderColor = "#E2E8F0"; e.target.style.boxShadow = "none"; }}
                 />
               </div>
             </div>
@@ -197,7 +197,7 @@ function AdminLoginPage() {
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: "#E2E8F0" }}>Password</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#94A3B8" }} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#64748B" }} />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -206,19 +206,19 @@ function AdminLoginPage() {
                   required
                   disabled={locked}
                   autoComplete="new-password"
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm placeholder-slate-500"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm placeholder-slate-400"
                   style={{
-                    background: "#070B14",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "#FFFFFF",
+                    border: "1px solid #E2E8F0",
                     opacity: locked ? 0.5 : 1,
-                    color: "#FFFFFF",
-                    WebkitTextFillColor: "#FFFFFF",
+                    color: "#0F172A",
+                    WebkitTextFillColor: "#0F172A",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
-                  onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
+                  onBlur={(e)  => { e.target.style.borderColor = "#E2E8F0"; e.target.style.boxShadow = "none"; }}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={locked}
-                  className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "#94A3B8" }}>
+                  className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "#64748B" }}>
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
