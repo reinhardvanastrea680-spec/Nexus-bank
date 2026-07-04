@@ -421,13 +421,13 @@ input:focus, textarea:focus, select:focus {
 .light input[type="number"],
 .light input[type="tel"],
 .light textarea {
-  color: #0D1B2A !important;
-  -webkit-text-fill-color: #0D1B2A !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 .light input::placeholder,
 .light textarea::placeholder {
-  color: rgba(13,27,42,0.4) !important;
-  -webkit-text-fill-color: rgba(13,27,42,0.4) !important;
+  color: rgba(0,0,0,0.35) !important;
+  -webkit-text-fill-color: rgba(0,0,0,0.35) !important;
 }
 
 /* ── Balance figure — responsive clamp ─────────────────────────────────── */

@@ -184,8 +184,8 @@ function AdminLoginPage() {
                     background: "#FFFFFF",
                     border: "1px solid #E2E8F0",
                     opacity: locked ? 0.5 : 1,
-                    color: "#0F172A",
-                    WebkitTextFillColor: "#0F172A",
+                    color: "#000000",
+                    WebkitTextFillColor: "#000000",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
                   onBlur={(e)  => { e.target.style.borderColor = "#E2E8F0"; e.target.style.boxShadow = "none"; }}
@@ -211,8 +211,8 @@ function AdminLoginPage() {
                     background: "#FFFFFF",
                     border: "1px solid #E2E8F0",
                     opacity: locked ? 0.5 : 1,
-                    color: "#0F172A",
-                    WebkitTextFillColor: "#0F172A",
+                    color: "#000000",
+                    WebkitTextFillColor: "#000000",
                   }}
                   onFocus={(e) => { e.target.style.borderColor = "#06B6D4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
                   onBlur={(e)  => { e.target.style.borderColor = "#E2E8F0"; e.target.style.boxShadow = "none"; }}
