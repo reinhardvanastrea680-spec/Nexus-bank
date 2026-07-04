@@ -211,12 +211,12 @@ function AdminLayout() {
 
       {/* Sidebar — COMPLETELY HIDDEN on mobile (<1024px), visible on desktop */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 flex-col ${
+        className={`fixed left-0 top-0 h-screen bg-[#0A1020] border-r border-[rgba(255,255,255,0.05)] transition-all duration-300 z-40 flex-col overflow-y-auto ${
           sidebarCollapsed ? "w-0 overflow-hidden border-0 !hidden" : "w-[260px] hidden lg:flex"
         }`}
         aria-label="Admin sidebar"
       >
-        <div className="p-4 border-b border-[rgba(255,255,255,0.05)]">
+        <div className="p-4 border-b border-[rgba(255,255,255,0.05)] sticky top-0 bg-[#0A1020] z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center flex-shrink-0">
               <span className="text-white font-bold text-lg">N</span>
@@ -227,7 +227,7 @@ function AdminLayout() {
           </div>
         </div>
 
-        <nav className="p-3 space-y-1" aria-label="Admin navigation">
+        <nav className="p-3 space-y-1 flex-1" aria-label="Admin navigation">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
             let badge = 0;
@@ -275,7 +275,7 @@ function AdminLayout() {
         </nav>
 
         {/* Add New User Button */}
-        <div className="px-3 py-2">
+        <div className="px-3 py-2 mt-auto">
           <Link
             to="/admin/users"
             onClick={() => setMobileSidebarOpen(false)}
@@ -292,7 +292,7 @@ function AdminLayout() {
           </Link>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-[rgba(255,255,255,0.05)]">
+        <div className="p-3 border-t border-[rgba(255,255,255,0.05)] sticky bottom-0 bg-[#0A1020]">
           <div className="flex items-center gap-3 px-3 py-2">
             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center flex-shrink-0" aria-hidden="true">
               <User size={18} className="text-white" />
