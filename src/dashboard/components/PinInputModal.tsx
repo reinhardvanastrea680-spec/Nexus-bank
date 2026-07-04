@@ -25,6 +25,14 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false, exte
     }
   }, [externalError]);
 
+  // Reset PIN and error when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setPin("");
+      setError("");
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleSubmit = () => {
@@ -36,6 +44,7 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false, exte
       setError("PIN must contain only numbers");
       return;
     }
+    
     setError(""); // Clear any previous errors
     onSubmit(pin);
   };
@@ -45,6 +54,12 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false, exte
     const numericValue = value.replace(/\D/g, "").slice(0, 4);
     setPin(numericValue);
     setError(""); // Clear error when user types
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && pin.length === 4 && !loading) {
+      handleSubmit();
+    }
   };
 
   const handleContactSupport = () => {
@@ -87,7 +102,7 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false, exte
         {/* PIN Input */}
         <div className="mb-5">
           <label className="block text-sm font-semibold mb-2" style={{ color: t.textMuted }}>
-            Transaction PIN
+            Transaction PIN {pin.length > 0 && `(${pin.length}/4)`}
           </label>
           <input
             type="password"
@@ -95,6 +110,7 @@ export function PinInputModal({ isOpen, onClose, onSubmit, loading = false, exte
             maxLength={4}
             value={pin}
             onChange={(e) => handlePinChange(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="••••"
             className="w-full px-4 py-4 rounded-xl outline-none text-center text-2xl font-mono tracking-widest"
             style={{
