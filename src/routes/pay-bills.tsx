@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 import { BottomNav } from "../dashboard/components/BottomNav";
+import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";

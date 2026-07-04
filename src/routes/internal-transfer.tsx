@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useUserAccount } from "../dashboard/hooks/useUserAccount";
 import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
