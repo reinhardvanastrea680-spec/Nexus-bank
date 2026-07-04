@@ -145,8 +145,12 @@ function AdminUsersPage() {
                   {pagedUsers.map((user, i) => (
                     <tr key={user.id} className="border-t border-[rgba(255,255,255,0.05)] hover:bg-white/5 cursor-pointer"
                       onClick={() => {
-                        console.log("Table row: Navigating to user:", user.id);
-                        window.location.href = `/admin/users/${user.id}`;
+                        const targetUrl = `/admin/users/${user.id}`;
+                        console.log("Table row: Navigating to:", targetUrl);
+                        console.log("User ID:", user.id);
+                        console.log("Current URL:", window.location.href);
+                        alert(`Navigating to: ${targetUrl}`);
+                        window.location.href = targetUrl;
                       }}>
                       <td className="py-3 px-4 text-blue-300/60 font-mono text-sm">{i + 1}</td>
                       <td className="py-3 px-4">
