@@ -19,6 +19,7 @@ import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
+import { PinInputModal } from "../dashboard/components/PinInputModal";
 import { CURRENCIES, type CurrencyCode, getCurrencySymbol } from "../utils/currency";
 
 export const Route = createFileRoute("/wire-transfer")({
@@ -98,6 +99,10 @@ function WireTransferWizard() {
   const [otherPurposeText, setOtherPurposeText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // PIN Modal state
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinLoading, setPinLoading] = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number;
     transactionRef: string;
@@ -177,7 +182,8 @@ function WireTransferWizard() {
   };
   const back = () => (step > 1 ? setStep((p) => p - 1) : navigate({ to: "/" }));
 
-  const handleSubmit = async () => {
+  // Show PIN modal before submitting
+  const handleSubmit = () => {
     if (!transfer.amount || parseFloat(transfer.amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
@@ -190,8 +196,27 @@ function WireTransferWizard() {
       return;
     }
 
-    setLoading(true);
+    // Show PIN modal
+    setShowPinModal(true);
+  };
+
+  // Handle PIN submission and transaction
+  const handlePinSubmit = async (enteredPin: string) => {
+    // Verify PIN
+    if (!account?.pin) {
+      toast.error("No PIN set for this account. Please contact support.");
+      setShowPinModal(false);
+      return;
+    }
+
+    if (enteredPin !== account.pin) {
+      toast.error("Incorrect PIN. Please try again.");
+      return;
+    }
+
+    setPinLoading(true);
     setError(null);
+    
     try {
       const selectedBen = useSaved
         ? savedBeneficiaries.find((b) => b.id === selectedBeneficiary)
@@ -228,13 +253,16 @@ function WireTransferWizard() {
         recipientBank: bankName,
         recipientRegion: bankCountry,
       });
+      
+      setShowPinModal(false);
       setStep(6);
+      toast.success("Transaction submitted successfully!");
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to submit transfer request");
       toast.error(err.message || "Failed to submit transfer request");
     } finally {
-      setLoading(false);
+      setPinLoading(false);
     }
   };
 
@@ -855,6 +883,15 @@ function WireTransferWizard() {
       {step === 6 && (
         <div />
       )}
+      
+      {/* PIN Input Modal */}
+      <PinInputModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSubmit={handlePinSubmit}
+        loading={pinLoading}
+      />
+      
       <BottomNav />
     </div>
   );
