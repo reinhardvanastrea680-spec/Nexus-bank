@@ -530,112 +530,115 @@ function AdminUserDetailPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* ── Security Credentials ── */}
-        <Card className="glass-card border-0">
-          <CardHeader>
-            <CardTitle className="text-white text-base flex items-center gap-2">
-              <Shield size={18} className="text-cyan-400" />
-              Security Credentials
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Password */}
-            <div>
-              <label className="text-xs font-semibold text-blue-300/60 mb-2 block">Login Password</label>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 px-4 py-3 rounded-xl font-mono text-sm"
-                  style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)", color: showPassword ? "#fff" : "#7A8FA6" }}>
-                  {showPassword ? (user?.password || "Not set") : "••••••••••••"}
-                </div>
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="p-3 rounded-xl hover:bg-[#1E3A5F] transition-colors"
-                  style={{ background: "#111827" }}>
-                  {showPassword ? <EyeOff size={16} className="text-[#7A8FA6]" /> : <Eye size={16} className="text-[#7A8FA6]" />}
-                </button>
-              </div>
-              {!user?.password && (
-                <p className="text-xs text-amber-400 mt-2">⚠️ No password stored for this user</p>
-              )}
-            </div>
-
-            {/* Transaction PIN */}
-            <div>
-              <label className="text-xs font-semibold text-blue-300/60 mb-2 block">Transaction PIN</label>
-              {editingPin ? (
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={newPin}
-                    onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                    placeholder="Enter 4 digits"
-                    maxLength={4}
-                    className="w-full px-4 py-3 rounded-xl font-mono text-lg text-center outline-none"
-                    style={{ background: "#111827", border: "2px solid #38BDF8", color: "#fff" }}
-                    autoFocus
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleUpdatePin}
-                      disabled={newPin.length !== 4}
-                      className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                      style={{
-                        background: newPin.length === 4 ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "rgba(56,189,248,0.3)",
-                        opacity: newPin.length === 4 ? 1 : 0.5,
-                      }}>
-                      Save PIN
-                    </button>
-                    <button
-                      onClick={() => { setEditingPin(false); setNewPin(""); }}
-                      className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                      style={{ background: "#1E3A5F" }}>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex-1 px-4 py-3 rounded-xl font-mono text-lg text-center"
-                      style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)", color: showPin ? "#38BDF8" : "#7A8FA6" }}>
-                      {showPin ? (user?.transactionPin || "Not set") : "••••"}
-                    </div>
-                    <button
-                      onClick={() => setShowPin(!showPin)}
-                      className="p-3 rounded-xl hover:bg-[#1E3A5F] transition-colors"
-                      style={{ background: "#111827" }}>
-                      {showPin ? <EyeOff size={16} className="text-[#7A8FA6]" /> : <Eye size={16} className="text-[#7A8FA6]" />}
-                    </button>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingPin(true)}
-                      className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                      style={{ background: "#1E3A5F" }}>
-                      Edit PIN
-                    </button>
-                    <button
-                      onClick={handleRegeneratePin}
-                      className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all flex items-center justify-center gap-2"
-                      style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>
-                      <Zap size={14} />
-                      Regenerate
-                    </button>
-                  </div>
-                  {!user?.transactionPin && (
-                    <p className="text-xs text-amber-400 mt-2">⚠️ No PIN set for this user</p>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div className="p-3 rounded-xl text-xs" style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.2)", color: "#7A8FA6" }}>
-              💡 Password is used for login. PIN is used to confirm transactions.
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* ── Security Credentials ── FULL WIDTH ROW */}
+      <Card className="glass-card border-0">
+        <CardHeader>
+          <CardTitle className="text-white text-base flex items-center gap-2">
+            <Shield size={18} className="text-cyan-400" />
+            🔐 Security Credentials (Password & PIN)
+          </CardTitle>
+          <p className="text-xs text-blue-300/50 mt-1">View and manage user login password and transaction PIN</p>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Password */}
+          <div>
+            <label className="text-xs font-semibold text-blue-300/60 mb-2 block uppercase tracking-wide">Login Password</label>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 px-4 py-3 rounded-xl font-mono text-sm"
+                style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)", color: showPassword ? "#fff" : "#7A8FA6" }}>
+                {showPassword ? (user?.password || "Not set") : "••••••••••••"}
+              </div>
+              <button
+                onClick={() => setShowPassword(!showPassword)}
+                className="p-3 rounded-xl hover:bg-[#1E3A5F] transition-colors"
+                style={{ background: "#111827" }}>
+                {showPassword ? <EyeOff size={16} className="text-[#7A8FA6]" /> : <Eye size={16} className="text-[#7A8FA6]" />}
+              </button>
+            </div>
+            {!user?.password && (
+              <p className="text-xs text-amber-400 mt-2">⚠️ No password stored for this user</p>
+            )}
+          </div>
+
+          {/* Transaction PIN */}
+          <div>
+            <label className="text-xs font-semibold text-blue-300/60 mb-2 block uppercase tracking-wide">Transaction PIN (4 Digits)</label>
+            {editingPin ? (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="Enter 4 digits"
+                  maxLength={4}
+                  className="w-full px-4 py-3 rounded-xl font-mono text-lg text-center outline-none"
+                  style={{ background: "#111827", border: "2px solid #38BDF8", color: "#fff" }}
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleUpdatePin}
+                    disabled={newPin.length !== 4}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                    style={{
+                      background: newPin.length === 4 ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "rgba(56,189,248,0.3)",
+                      opacity: newPin.length === 4 ? 1 : 0.5,
+                    }}>
+                    Save PIN
+                  </button>
+                  <button
+                    onClick={() => { setEditingPin(false); setNewPin(""); }}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                    style={{ background: "#1E3A5F" }}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex-1 px-4 py-3 rounded-xl font-mono text-lg text-center"
+                    style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)", color: showPin ? "#38BDF8" : "#7A8FA6" }}>
+                    {showPin ? (user?.transactionPin || "Not set") : "••••"}
+                  </div>
+                  <button
+                    onClick={() => setShowPin(!showPin)}
+                    className="p-3 rounded-xl hover:bg-[#1E3A5F] transition-colors"
+                    style={{ background: "#111827" }}>
+                    {showPin ? <EyeOff size={16} className="text-[#7A8FA6]" /> : <Eye size={16} className="text-[#7A8FA6]" />}
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditingPin(true)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                    style={{ background: "#1E3A5F" }}>
+                    Edit PIN
+                  </button>
+                  <button
+                    onClick={handleRegeneratePin}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all flex items-center justify-center gap-2"
+                    style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}>
+                    <Zap size={14} />
+                    Regenerate
+                  </button>
+                </div>
+                {!user?.transactionPin && (
+                  <p className="text-xs text-amber-400 mt-2">⚠️ No PIN set for this user</p>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Info box spanning both columns */}
+          <div className="md:col-span-2 p-3 rounded-xl text-xs flex items-center gap-2" style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.2)", color: "#7A8FA6" }}>
+            <Shield size={14} className="text-cyan-400 flex-shrink-0" />
+            <span>💡 Password is used for login. PIN is used to confirm transactions.</span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* ── Crypto Deposit Addresses ── */}
       <Card className="glass-card border-0">
