@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Outlet } from "@tanstack/react-router";
 import { Plus, Search, Eye, Snowflake, Trash2, Users, ChevronRight, Zap, Ban } from "lucide-react";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -75,7 +75,9 @@ function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <>
+      <Outlet />
+      <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -322,5 +324,6 @@ function AdminUsersPage() {
         </>
       )}
     </div>
+    </>
   );
 }
