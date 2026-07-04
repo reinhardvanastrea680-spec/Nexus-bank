@@ -192,8 +192,10 @@ function LocalTransfer() {
   const [sourceAccount, setSourceAccount] = useState("Checking");
   const [loading, setLoading] = useState(false);
 
-  const fromBalance =
-    sourceAccount === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
+  const fromBalance = 
+    sourceAccount === "Checking" ? account?.checkingBalance || 0 :
+    sourceAccount === "Savings" ? account?.savingsBalance || 0 :
+    account?.investmentBalance || 0;
 
   const [successData, setSuccessData] = useState<{
     amount: number;
@@ -570,10 +572,10 @@ function LocalTransfer() {
               <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
                 Source Account
               </label>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => setSourceAccount("Checking")}
-                  className="flex-1 py-4 px-4 rounded-xl font-bold transition-all"
+                  className="py-4 px-2 rounded-xl font-bold transition-all text-sm"
                   style={{
                     background: sourceAccount === "Checking" ? t.accentCyan : t.inputBg,
                     color: sourceAccount === "Checking" ? t.pageBg : t.textMuted,
@@ -583,13 +585,23 @@ function LocalTransfer() {
                 </button>
                 <button
                   onClick={() => setSourceAccount("Savings")}
-                  className="flex-1 py-4 px-4 rounded-xl font-bold transition-all"
+                  className="py-4 px-2 rounded-xl font-bold transition-all text-sm"
                   style={{
                     background: sourceAccount === "Savings" ? t.accentCyan : t.inputBg,
                     color: sourceAccount === "Savings" ? t.pageBg : t.textMuted,
                   }}
                 >
                   Savings
+                </button>
+                <button
+                  onClick={() => setSourceAccount("Investment")}
+                  className="py-4 px-2 rounded-xl font-bold transition-all text-sm"
+                  style={{
+                    background: sourceAccount === "Investment" ? t.accentCyan : t.inputBg,
+                    color: sourceAccount === "Investment" ? t.pageBg : t.textMuted,
+                  }}
+                >
+                  Investment
                 </button>
               </div>
             </div>

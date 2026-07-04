@@ -195,6 +195,7 @@ function HomePage() {
   const accounts = account ? [
     { id: 1, label: "Checking Account", number: account.checkingAccountNumber || "---", balance: account.checkingBalance || 0, status: account.status || "active" },
     { id: 2, label: "Savings Account",  number: account.savingsAccountNumber  || "---", balance: account.savingsBalance  || 0, status: account.status || "active" },
+    { id: 3, label: "Investment Account", number: account.investmentAccountNumber || "---", balance: account.investmentBalance || 0, status: account.status || "active" },
     ...customAccounts.map((a, i) => ({
       id: 100 + i, label: a.name, number: a.accountNumber || "---", balance: a.balance || 0, status: a.status || "active",
     })),

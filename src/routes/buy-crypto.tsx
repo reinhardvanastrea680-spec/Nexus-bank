@@ -62,7 +62,7 @@ function BuyCrypto() {
   const [cryptos, setCryptos] = useState<CryptoData[]>(initialCryptos);
   const [selectedCrypto, setSelectedCrypto] = useState<CryptoData>(initialCryptos[0]);
   const [amount, setAmount] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings">("Checking");
+  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
   const [showConfirm, setShowConfirm] = useState(false);
   const [successData, setSuccessData] = useState<{
     amount: number;
@@ -76,7 +76,9 @@ function BuyCrypto() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fromBalance =
-    selectedAccount === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
+    selectedAccount === "Checking" ? account?.checkingBalance || 0 :
+    selectedAccount === "Savings" ? account?.savingsBalance || 0 :
+    account?.investmentBalance || 0;
   const cryptoAmount =
     amount && selectedCrypto.price ? (parseFloat(amount.replace(/,/g, "") || "0") / selectedCrypto.price).toFixed(6) : "0";
 
@@ -303,12 +305,12 @@ function BuyCrypto() {
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>
             Pay From
           </label>
-          <div className="flex gap-3">
-            {["Checking", "Savings"].map((acc) => (
+          <div className="grid grid-cols-3 gap-3">
+            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
               <button
                 key={acc}
-                onClick={() => setSelectedAccount(acc as "Checking" | "Savings")}
-                className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
+                onClick={() => setSelectedAccount(acc)}
+                className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
                 style={{
                   background: selectedAccount === acc ? t.accentCyan : t.inputBg,
                   color: selectedAccount === acc ? t.pageBg : t.textMuted,

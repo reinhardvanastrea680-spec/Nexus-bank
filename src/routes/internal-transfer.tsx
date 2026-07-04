@@ -24,8 +24,8 @@ function InternalTransfer() {
   const { theme } = useTheme();
   const t = themeColors(theme);
 
-  const [fromAccount, setFromAccount] = useState("Checking");
-  const [toAccount, setToAccount]     = useState("Savings");
+  const [fromAccount, setFromAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
+  const [toAccount, setToAccount]     = useState<"Checking" | "Savings" | "Investment">("Savings");
   const [amount, setAmount]           = useState("");
   const [note, setNote]               = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -34,8 +34,14 @@ function InternalTransfer() {
     amount: number; transactionRef: string; fundingAccount: string; recipientName: string; status: string;
   } | null>(null);
 
-  const fromBalance = fromAccount === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
-  const toBalance   = toAccount   === "Checking" ? account?.checkingBalance || 0 : account?.savingsBalance || 0;
+  const fromBalance = 
+    fromAccount === "Checking" ? account?.checkingBalance || 0 :
+    fromAccount === "Savings" ? account?.savingsBalance || 0 :
+    account?.investmentBalance || 0;
+  const toBalance = 
+    toAccount === "Checking" ? account?.checkingBalance || 0 :
+    toAccount === "Savings" ? account?.savingsBalance || 0 :
+    account?.investmentBalance || 0;
 
   const handleConfirm = async () => {
     if (!amount || parseFloat(amount) <= 0)    { toast.error("Please enter a valid amount"); return; }
@@ -80,9 +86,9 @@ function InternalTransfer() {
         {/* From */}
         <div className="p-5 rounded-2xl" style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>From</label>
-          <div className="flex gap-3">
-            {["Checking", "Savings"].map((acc) => (
-              <button key={acc} onClick={() => setFromAccount(acc)} className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
+          <div className="grid grid-cols-3 gap-3">
+            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
+              <button key={acc} onClick={() => setFromAccount(acc)} className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
               style={{ background: fromAccount === acc ? t.accentCyan : t.inputBg, color: fromAccount === acc ? t.pageBg : t.textMuted }}>
                 {acc}
               </button>
@@ -94,10 +100,10 @@ function InternalTransfer() {
         {/* To */}
         <div className="p-5 rounded-2xl" style={{ background: t.cardBg, border: `1px solid ${t.border}` }}>
           <label className="block text-sm font-semibold mb-4" style={{ color: t.textMuted }}>To</label>
-          <div className="flex gap-3">
-            {["Checking", "Savings"].map((acc) => (
+          <div className="grid grid-cols-3 gap-3">
+            {(["Checking", "Savings", "Investment"] as const).map((acc) => (
               <button key={acc} onClick={() => setToAccount(acc)} disabled={acc === fromAccount}
-                className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
+                className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
                 style={{ background: toAccount === acc ? t.accentCyan : t.inputBg, color: toAccount === acc ? t.pageBg : t.textMuted, opacity: acc === fromAccount ? 0.3 : 1 }}>
                 {acc}
               </button>

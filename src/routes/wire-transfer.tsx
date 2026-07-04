@@ -456,6 +456,7 @@ function WireTransferWizard() {
               >
                 <option value="Checking">Checking Account</option>
                 <option value="Savings">Savings Account</option>
+                <option value="Investment">Investment Account</option>
               </select>
             </div>
 

@@ -45,7 +45,7 @@ function CheckDeposit() {
   const [checkNumber, setCheckNumber] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings">("Checking");
+  const [selectedAccount, setSelectedAccount] = useState<"Checking" | "Savings" | "Investment">("Checking");
   const [memo, setMemo] = useState("");
   const [successData, setSuccessData] = useState<{
     amount: number;
@@ -445,10 +445,10 @@ function CheckDeposit() {
               <label className="text-sm font-semibold" style={{ color: t.textMuted }}>
                 Deposit To
               </label>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => setSelectedAccount("Checking")}
-                  className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
+                  className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
                   style={{
                     background: selectedAccount === "Checking" ? t.accentCyan : t.inputBg,
                     color: selectedAccount === "Checking" ? t.pageBg : t.textMuted,
@@ -458,13 +458,23 @@ function CheckDeposit() {
                 </button>
                 <button
                   onClick={() => setSelectedAccount("Savings")}
-                  className="flex-1 py-3 px-4 rounded-xl font-bold transition-all"
+                  className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
                   style={{
                     background: selectedAccount === "Savings" ? t.accentCyan : t.inputBg,
                     color: selectedAccount === "Savings" ? t.pageBg : t.textMuted,
                   }}
                 >
                   Savings
+                </button>
+                <button
+                  onClick={() => setSelectedAccount("Investment")}
+                  className="py-3 px-2 rounded-xl font-bold transition-all text-sm"
+                  style={{
+                    background: selectedAccount === "Investment" ? t.accentCyan : t.inputBg,
+                    color: selectedAccount === "Investment" ? t.pageBg : t.textMuted,
+                  }}
+                >
+                  Investment
                 </button>
               </div>
             </div>
