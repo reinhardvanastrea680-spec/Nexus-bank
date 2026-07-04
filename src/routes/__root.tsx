@@ -125,7 +125,8 @@ function RootShell({ children }: { children: ReactNode }) {
   }, []);
 
   // Blocking inline script — runs before React hydrates, prevents theme flash
-  const themeScript = `(function(){try{var t=localStorage.getItem('nexus-bank-theme');if(t==='light'||t==='dark'){document.documentElement.className=t;}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.className='dark';}else{document.documentElement.className='dark';}}catch(e){}})();`;
+  // Auto-detects and follows system theme preference
+  const themeScript = `(function(){try{if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.className='dark';localStorage.setItem('nexus-bank-theme','dark');}else if(window.matchMedia('(prefers-color-scheme: light)').matches){document.documentElement.className='light';localStorage.setItem('nexus-bank-theme','light');}else{document.documentElement.className='dark';localStorage.setItem('nexus-bank-theme','dark');}}catch(e){document.documentElement.className='dark';}})();`;
 
   return (
     <html lang="en">

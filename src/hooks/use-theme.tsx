@@ -3,16 +3,17 @@ import { useState, useEffect } from "react";
 type Theme = "light" | "dark";
 
 // Read theme synchronously — safe because we guard typeof window.
-// On the server this returns "dark" (matches the inline script default).
-// On the client this returns the actual stored value immediately,
-// so there's no flash and useTheme() is correct on the very first render.
+// Auto-detects system theme preference and follows device theme changes.
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
   try {
-    const stored = localStorage.getItem("nexus-bank-theme");
-    if (stored === "light" || stored === "dark") return stored;
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    return "dark"; // default
+    // Always follow system preference - removed stored theme check
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+      return "light";
+    }
+    return "dark"; // fallback default
   } catch {
     return "dark";
   }
@@ -26,26 +27,29 @@ export function useTheme() {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
+    
+    // Store current theme for consistency during session
     localStorage.setItem("nexus-bank-theme", theme);
   }, [theme]);
 
-  // Listen for system theme changes
+  // Listen for system theme changes and auto-sync
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    
     const handleChange = (e: MediaQueryListEvent) => {
-      const manual = localStorage.getItem("nexus-bank-theme-manual");
-      if (!manual) setTheme(e.matches ? "dark" : "light");
+      // Automatically sync with device theme changes
+      setTheme(e.matches ? "dark" : "light");
     };
+    
+    // Use addEventListener for better browser support
     mediaQuery.addEventListener("change", handleChange);
+    
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  // Optional: Manual toggle if needed (currently not used but kept for compatibility)
   const toggleTheme = () => {
-    setTheme((prev) => {
-      const next = prev === "light" ? "dark" : "light";
-      localStorage.setItem("nexus-bank-theme-manual", "1");
-      return next;
-    });
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return { theme, setTheme, toggleTheme };
