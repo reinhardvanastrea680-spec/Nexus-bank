@@ -13,30 +13,31 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError]               = useState("");
   const [loading, setLoading]           = useState(false);
+  const [step, setStep]                 = useState<1 | 2>(1); // 1 = email, 2 = password
   const navigate = useNavigate();
   const { user, loading: authLoading, userLogin } = useUserAuth();
 
-  // Remember last user state
-  const [rememberedUser, setRememberedUser] = useState<{
+  // User profile data fetched after email is entered
+  const [userProfile, setUserProfile] = useState<{
     email: string;
     fullName: string;
     photoURL: string | null;
   } | null>(null);
-  const [showEmailInput, setShowEmailInput] = useState(false);
 
   // Clear admin flag so this device is treated as user going forward
   useEffect(() => {
     localStorage.removeItem("nexus-pwa-type");
   }, []);
 
-  // Load remembered user from localStorage
+  // Load remembered user from localStorage on mount
   useEffect(() => {
     const savedUserData = localStorage.getItem("nexus-remembered-user");
     if (savedUserData) {
       try {
         const userData = JSON.parse(savedUserData);
-        setRememberedUser(userData);
+        setUserProfile(userData);
         setEmail(userData.email);
+        setStep(2); // Go directly to password step
       } catch (e) {
         console.error("Failed to parse saved user data");
       }
@@ -47,7 +48,46 @@ function Login() {
     if (!authLoading && user) navigate({ to: "/" });
   }, [authLoading, user, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1: Handle email submission
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    
+    try {
+      // Fetch user profile from Firestore using email
+      const { collection, query, where, getDocs } = await import("firebase/firestore");
+      const { db } = await import("../firebase/config");
+      
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", email.toLowerCase()));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        setError("No account found with this email address");
+        setLoading(false);
+        return;
+      }
+      
+      const userData = querySnapshot.docs[0].data();
+      const profile = {
+        email: email,
+        fullName: userData.fullName || "User",
+        photoURL: userData.photoURL || null,
+      };
+      
+      setUserProfile(profile);
+      setStep(2); // Move to password step
+    } catch (err: any) {
+      console.error("Error fetching user profile:", err);
+      setError("Failed to verify email. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 2: Handle password submission
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -55,35 +95,31 @@ function Login() {
       const userCredential = await userLogin(email, password);
       
       // Save user data to localStorage for next visit
-      // We'll need to fetch user profile from Firestore
-      if (userCredential?.user) {
-        const { getDoc, doc } = await import("firebase/firestore");
-        const { db } = await import("../firebase/config");
-        const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-        
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          localStorage.setItem("nexus-remembered-user", JSON.stringify({
-            email: email,
-            fullName: userData.fullName || "User",
-            photoURL: userData.photoURL || null,
-          }));
-        }
+      if (userCredential?.user && userProfile) {
+        localStorage.setItem("nexus-remembered-user", JSON.stringify(userProfile));
       }
       
       navigate({ to: "/" });
     } catch (err: any) {
-      setError(err.message || "Invalid credentials");
+      setError("Incorrect password. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleBackToEmail = () => {
+    setStep(1);
+    setUserProfile(null);
+    setPassword("");
+    setError("");
+  };
+
   const handleSwitchUser = () => {
-    setShowEmailInput(true);
-    setRememberedUser(null);
+    setStep(1);
+    setUserProfile(null);
     setEmail("");
     setPassword("");
+    setError("");
     localStorage.removeItem("nexus-remembered-user");
   };
 
@@ -143,34 +179,38 @@ function Login() {
             </div>
           </div>
 
-          {/* Show personalized welcome if user is remembered */}
-          {rememberedUser && !showEmailInput ? (
+          {/* Show personalized welcome when user profile is loaded (step 2) */}
+          {userProfile && step === 2 ? (
             <div className="mt-4">
               {/* Profile Picture */}
               <div className="flex justify-center mb-3">
                 <div
-                  className="w-20 h-20 rounded-full overflow-hidden border-4 flex items-center justify-center"
-                  style={{ borderColor: "rgba(255,255,255,0.3)", background: "#EF4444" }}
+                  className="w-24 h-24 rounded-full overflow-hidden border-4 flex items-center justify-center"
+                  style={{ 
+                    borderColor: "rgba(255,255,255,0.3)", 
+                    background: "linear-gradient(135deg, #EF4444, #F59E0B)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+                  }}
                 >
-                  {rememberedUser.photoURL ? (
+                  {userProfile.photoURL ? (
                     <img
-                      src={rememberedUser.photoURL}
-                      alt={rememberedUser.fullName}
+                      src={userProfile.photoURL}
+                      alt={userProfile.fullName}
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-white font-bold text-2xl">
-                      {getInitials(rememberedUser.fullName)}
+                    <span className="text-white font-bold text-3xl">
+                      {getInitials(userProfile.fullName)}
                     </span>
                   )}
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
-              <p className="text-lg mt-1 font-semibold" style={{ color: "rgba(255,255,255,0.95)" }}>
-                {rememberedUser.fullName}
+              <h1 className="text-2xl font-bold text-white">Welcome Back!</h1>
+              <p className="text-xl mt-2 font-semibold" style={{ color: "rgba(255,255,255,0.95)" }}>
+                {userProfile.fullName}
               </p>
               <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.7)" }}>
-                {rememberedUser.email}
+                {userProfile.email}
               </p>
             </div>
           ) : (
@@ -194,9 +234,9 @@ function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email - Hidden when user is remembered */}
-            {(!rememberedUser || showEmailInput) && (
+          {/* STEP 1: Email Input */}
+          {step === 1 && (
+            <form onSubmit={handleEmailSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-semibold mb-2" style={{ color: "#374151" }}>
                   Email Address
@@ -210,6 +250,7 @@ function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@nexusbank.com"
                     required
+                    autoFocus
                     className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm"
                     style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", color: "#000000" }}
                     onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
@@ -217,53 +258,69 @@ function Login() {
                   />
                 </div>
               </div>
-            )}
 
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: "#374151" }}>
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
-                  style={{ color: "#9CA3AF" }} />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm"
-                  style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", color: "#000000" }}
-                  onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
-                  onBlur={(e)  => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                  style={{ color: "#9CA3AF" }}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 rounded-xl font-semibold text-white transition-all"
+                style={{
+                  background: "linear-gradient(135deg, #1D4ED8, #0EA5E9)",
+                  opacity: loading ? 0.7 : 1,
+                  boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
+                }}
+              >
+                {loading ? "Verifying…" : "Continue"}
+              </button>
+            </form>
+          )}
+
+          {/* STEP 2: Password Input */}
+          {step === 2 && userProfile && (
+            <form onSubmit={handlePasswordSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold mb-2" style={{ color: "#374151" }}>
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
+                    style={{ color: "#9CA3AF" }} />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    autoFocus
+                    className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm"
+                    style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", color: "#000000" }}
+                    onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
+                    onBlur={(e)  => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2"
+                    style={{ color: "#9CA3AF" }}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 rounded-xl font-semibold text-white transition-all"
-              style={{
-                background: "linear-gradient(135deg, #1D4ED8, #0EA5E9)",
-                opacity: loading ? 0.7 : 1,
-                boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
-              }}
-            >
-              {loading ? "Signing in…" : "Sign In"}
-            </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 rounded-xl font-semibold text-white transition-all"
+                style={{
+                  background: "linear-gradient(135deg, #1D4ED8, #0EA5E9)",
+                  opacity: loading ? 0.7 : 1,
+                  boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
+                }}
+              >
+                {loading ? "Signing in…" : "Sign In"}
+              </button>
 
-            {/* Switch User Button */}
-            {rememberedUser && !showEmailInput && (
+              {/* Back/Switch User Button */}
               <button
                 type="button"
                 onClick={handleSwitchUser}
@@ -274,10 +331,10 @@ function Login() {
                   border: "1px solid #E5E7EB",
                 }}
               >
-                Not {rememberedUser.fullName.split(" ")[0]}? Sign in with different account
+                Not {userProfile.fullName.split(" ")[0]}? Sign in with different account
               </button>
-            )}
-          </form>
+            </form>
+          )}
 
           <p className="text-center text-sm mt-6" style={{ color: "#9CA3AF" }}>
             Don't have an account? Contact your administrator.
