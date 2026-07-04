@@ -38,17 +38,11 @@ function AdminUsersPage() {
   const pagedUsers = filteredUsers.slice(0, page * ITEMS_PER_PAGE);
   const hasMore    = pagedUsers.length < filteredUsers.length;
 
-  const handleViewUser = (userId: string) => {
+  const handleViewUser = (userId: string, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     console.log("🔵 Navigating to user detail:", userId);
     console.log("🔵 Target URL:", `/admin/users/${userId}`);
-    console.log("🔵 Current location:", window.location.href);
-    try {
-      // Use direct path navigation
-      window.location.href = `/admin/users/${userId}`;
-    } catch (error) {
-      console.error("❌ Navigation error:", error);
-      alert(`Navigation failed: ${error}`);
-    }
+    navigate({ to: "/admin/users/$userId", params: { userId } });
   };
 
   const handleToggleFreeze = async (user: any, e: React.MouseEvent) => {
