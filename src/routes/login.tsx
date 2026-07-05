@@ -250,7 +250,7 @@ function Login() {
                     placeholder="you@nexusbank.com"
                     required
                     autoFocus
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm"
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm login-input-black"
                     style={{ 
                       background: "#F9FAFB", 
                       border: "1px solid #E5E7EB", 
@@ -295,7 +295,7 @@ function Login() {
                     placeholder="••••••••"
                     required
                     autoFocus
-                    className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm"
+                    className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm login-input-black"
                     style={{ 
                       background: "#F9FAFB", 
                       border: "1px solid #E5E7EB", 

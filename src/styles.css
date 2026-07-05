@@ -1003,3 +1003,31 @@ aside a[aria-label="Add new user"]:active {
   -webkit-text-fill-color: #000000 !important;
   color: #000000 !important;
 }
+
+/* ── Login Page Input Black Text (Always) ────────────────────────────────── */
+.login-input-black,
+.login-input-black:focus,
+.login-input-black:active,
+.login-input-black:-webkit-autofill,
+input[type="email"].login-input-black,
+input[type="password"].login-input-black,
+input[type="text"].login-input-black {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
+}
+.login-input-black::placeholder {
+  color: #9CA3AF !important;
+  -webkit-text-fill-color: #9CA3AF !important;
+  opacity: 1 !important;
+}
+/* Override autofill styles for login */
+.login-input-black:-webkit-autofill,
+.login-input-black:-webkit-autofill:hover,
+.login-input-black:-webkit-autofill:focus,
+.login-input-black:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #F9FAFB inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+  caret-color: #000000 !important;
+}
