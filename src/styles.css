@@ -1155,7 +1155,172 @@ input[type="text"].login-input-black {
   color: #059669 !important;
 }
 .light main .text-red-400 {
-  color: #DC2626 !important;ortant;
+  color: #DC2626 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADMIN DASHBOARD LIGHT MODE - COMPREHENSIVE TEXT VISIBILITY FIX
+   Ensures ALL text in admin dashboard light mode is visible and readable
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Light mode - ALL white text in admin main content becomes dark */
+.light aside + div main .text-white,
+.light main .text-white {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Account card titles and headers (Checking Account, Savings Account, etc) */
+.light main .glass-card .text-base.text-white,
+.light main .glass-card .text-white,
+.light main [class*="border-"] .text-base.text-white,
+.light main [class*="border-"] .text-white {
+  color: #0A1628 !important;
+  font-weight: 600;
+}
+
+/* Light mode - All headings in any card or container */
+.light main h1,
+.light main h2,
+.light main h3,
+.light main h4,
+.light main h5,
+.light main h6 {
+  color: #0A1628 !important;
+}
+
+/* Light mode - CardTitle components everywhere */
+.light main [class*="CardTitle"],
+.light main [data-slot="title"] {
+  color: #0A1628 !important;
+  font-weight: 600;
+}
+
+/* Light mode - All paragraphs and spans without explicit color */
+.light main p:not([style*="color:"]),
+.light main span:not([style*="color:"]) {
+  color: #1E293B !important;
+}
+
+/* Light mode - Account type labels in bordered cards */
+.light main .border .text-white,
+.light main [class*="bg-[#0D1625]"] *,
+.light main [class*="bg-[#070B14]"] * {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Card content - everything visible */
+.light main [class*="CardContent"] *:not([style*="color:"]):not(button *):not(input):not(select) {
+  color: #1E293B !important;
+}
+
+/* Light mode - Text in all rounded containers */
+.light main [class*="rounded"] .text-white:not(button *) {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Labels and secondary text */
+.light main .text-blue-300\\/60,
+.light main .text-blue-300\\/70,
+.light main .text-blue-300\\/50,
+.light main .text-blue-300\\/40 {
+  color: #64748B !important;
+}
+
+/* Light mode - Account balance "Current Balance" labels */
+.light main .text-xs.text-blue-300\\/60,
+.light main .text-sm.text-blue-300\\/60 {
+  color: #64748B !important;
+  font-weight: 500;
+}
+
+/* Light mode - Font-mono text (account numbers, balances) */
+.light main .font-mono:not(.text-cyan-400):not([style*="color:"]) {
+  color: #0A1628 !important;
+  font-weight: 600;
+}
+
+/* Light mode - But preserve colored button text in gradient buttons */
+.light main button[style*="linear-gradient"] *,
+.light main button[style*="background: linear-gradient"] *,
+.light main .gradient-btn * {
+  color: #FFFFFF !important;
+}
+
+/* Light mode - Preserve icon colors that use inline styles */
+.light main button[style*="color:"] span {
+  /* color is set inline - don't override */
+}
+
+/* Light mode - Account card section headers */
+.light main .glass-card > div > div > h3,
+.light main .glass-card > div > div > h4 {
+  color: #0A1628 !important;
+  font-weight: 600;
+}
+
+/* Light mode - Ensure divs with text content are visible */
+.light main div.text-white {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Table headers and cells */
+.light main th,
+.light main td {
+  color: #1E293B !important;
+}
+
+/* Light mode - List items */
+.light main li {
+  color: #1E293B !important;
+}
+
+/* Light mode - Strong and bold text */
+.light main strong,
+.light main b {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Small text */
+.light main small,
+.light main .text-xs,
+.light main .text-sm {
+  color: #64748B !important;
+}
+
+/* Light mode - Large text (balances, totals) */
+.light main .text-xl,
+.light main .text-2xl,
+.light main .text-3xl,
+.light main .text-4xl {
+  color: #0A1628 !important;
+  font-weight: 700;
+}
+
+/* Light mode - Account action button labels (Set, Credit, Debit) */
+.light main button span.text-xs {
+  /* color is set inline via style prop - preserve it */
+}
+
+/* Light mode - Dialog/Modal content */
+.light main [role="dialog"] .text-white {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Description text */
+.light main .text-blue-300\\/60.text-sm,
+.light main p.text-sm {
+  color: #64748B !important;
+}
+
+/* Login page input styles */
+.login-input-black,
+.login-input-black:focus,
+.login-input-black:active,
+.login-input-black:-webkit-autofill,
+input[type="email"].login-input-black,
+input[type="password"].login-input-black,
+input[type="text"].login-input-black {
+  color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
   caret-color: #000000 !important;
 }
@@ -1173,5 +1338,4 @@ input[type="text"].login-input-black {
   -webkit-text-fill-color: #000000 !important;
   color: #000000 !important;
   caret-color: #000000 !important;
-}
 }
