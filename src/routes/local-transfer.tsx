@@ -25,7 +25,7 @@ import { useCustomAccounts } from "../dashboard/hooks/useCustomAccounts";
 import { getAllAccountOptions, getAccountBalance } from "../utils/accountHelpers";
 
 export const Route = createFileRoute("/local-transfer")({
-  head: () => ({ meta: [{ title: "Local Transfer - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Local Transfer - Nexsus Bank" }] }),
   component: LocalTransfer,
 });
 

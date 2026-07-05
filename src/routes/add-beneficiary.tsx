@@ -14,7 +14,7 @@ import { collection, addDoc, serverTimestamp, getDocs, query, where } from "fire
 import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/add-beneficiary")({
-  head: () => ({ meta: [{ title: "Beneficiaries - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Beneficiaries - Nexsus Bank" }] }),
   component: AddBeneficiary,
 });
 

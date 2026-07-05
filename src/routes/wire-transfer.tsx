@@ -23,7 +23,7 @@ import { PinInputModal } from "../dashboard/components/PinInputModal";
 import { CURRENCIES, type CurrencyCode, getCurrencySymbol } from "../utils/currency";
 
 export const Route = createFileRoute("/wire-transfer")({
-  head: () => ({ meta: [{ title: "Wire Transfer - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Wire Transfer - Nexsus Bank" }] }),
   component: WireTransferWizard,
 });
 

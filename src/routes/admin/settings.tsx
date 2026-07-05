@@ -111,7 +111,7 @@ function AdminSettingsPage() {
     <div className="space-y-4">
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold text-white">System Settings</h1>
-        <p className="text-sm text-[#8A9BB5]">Configure Nexus Bank admin console</p>
+        <p className="text-sm text-[#8A9BB5]">Configure Nexsus Bank admin console</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -400,7 +400,7 @@ function AdminSettingsPage() {
                   <div className="flex-1">
                     <p className="text-white font-medium">Live Chat Widget</p>
                     <p className="text-[#8A9BB5] text-xs">
-                      Enable or disable the chat widget on the Nexus Bank landing page and user
+                      Enable or disable the chat widget on the Nexsus Bank landing page and user
                       dashboard
                     </p>
                   </div>

@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Nexus Bank Utility Functions
+// Nexsus Bank Utility Functions
 
 /**
  * Formats a number as currency ($X,XXX.XX)

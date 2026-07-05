@@ -155,7 +155,7 @@ function Login() {
               stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Back to Nexus Bank
+            Back to Nexsus Bank
           </a>
         </div>
 
@@ -172,7 +172,7 @@ function Login() {
               <span className="text-white font-bold text-xl">N</span>
             </div>
             <div className="text-left">
-              <p className="text-white font-bold text-lg leading-tight">Nexus Bank</p>
+              <p className="text-white font-bold text-lg leading-tight">Nexsus Bank</p>
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>
                 Banking Beyond Boundaries
               </p>

@@ -1,4 +1,4 @@
-ï»¿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
@@ -20,7 +20,7 @@ export function isTransactionCredit(tx: any): boolean {
   const type = tx.type || "";
   // Explicit credit types
   if (type === "credit" || type === "check_deposit" || type === "crypto_deposit") return true;
-  // Explicit debit types â€” always outgoing regardless of status
+  // Explicit debit types — always outgoing regardless of status
   if (
     type === "debit" ||
     type === "wire_transfer" ||
@@ -49,7 +49,7 @@ function formatDate(dateInput: any) {
     d = new Date(dateInput);
   }
 
-  if (!d || isNaN(d.getTime())) return "â€”";
+  if (!d || isNaN(d.getTime())) return "—";
 
   // Show time only (e.g. "3:42 PM")
   return d.toLocaleTimeString("en-US", {
@@ -73,13 +73,13 @@ function getStatusBadge(status: string, tl: (key: string) => string) {
     case "cancelled":
       return { text: tl("Cancelled"), color: "#8A9BB5", icon: XCircle       };
     default:
-      // Admin-posted transactions with no status field â€” show completed
+      // Admin-posted transactions with no status field — show completed
       return { text: tl("Completed"), color: "#00E676", icon: CheckCircle2  };
   }
 }
 
 export const Route = createFileRoute("/transactions")({
-  head: () => ({ meta: [{ title: "Transaction History - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Transaction History - Nexsus Bank" }] }),
   component: Transactions,
 });
 

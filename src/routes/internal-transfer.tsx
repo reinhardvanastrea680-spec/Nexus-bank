@@ -13,7 +13,7 @@ import { useTheme } from "../hooks/use-theme";
 import { themeColors } from "../utils/theme";
 
 export const Route = createFileRoute("/internal-transfer")({
-  head: () => ({ meta: [{ title: "Internal Transfer - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Internal Transfer - Nexsus Bank" }] }),
   component: InternalTransfer,
 });
 

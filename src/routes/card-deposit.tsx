@@ -18,7 +18,7 @@ import { submitTransaction } from "../dashboard/functions/submitTransaction";
 import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuccessScreen";
 
 export const Route = createFileRoute("/card-deposit")({
-  head: () => ({ meta: [{ title: "Card Deposit - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Card Deposit - Nexsus Bank" }] }),
   component: CardDeposit,
 });
 

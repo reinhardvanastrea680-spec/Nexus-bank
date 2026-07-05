@@ -1,4 +1,4 @@
-﻿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -35,7 +35,7 @@ import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/fi
 import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "Settings - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Settings - Nexsus Bank" }] }),
   component: Settings,
 });
 
@@ -87,7 +87,7 @@ function Settings() {
           });
           // Also write to chat thread
           await addDoc(collection(db, "chats", userId, "messages"), {
-            text: `⚫ ${userName} has signed out`,
+            text: `? ${userName} has signed out`,
             sender: "system",
             createdAt: serverTimestamp(),
             readByUser: true,
@@ -95,7 +95,7 @@ function Settings() {
             isPresence: true,
           });
           await updateDoc(doc(db, "chats", userId), {
-            lastMessage: `⚫ ${userName} has signed out`,
+            lastMessage: `? ${userName} has signed out`,
             lastMessageAt: serverTimestamp(),
             userFullName: userName,
             userEmail: user?.email || "",
@@ -115,7 +115,7 @@ function Settings() {
       className="min-h-screen w-full flex flex-col pb-24"
       style={{ background: t.pageBg }}
     >
-      {/* Header — gradient on light mode */}
+      {/* Header � gradient on light mode */}
       <div className="px-5 pt-10 pb-6 flex items-center gap-4"
         style={{
           background: theme === "light"
@@ -132,7 +132,7 @@ function Settings() {
         <div className="w-10" />
       </div>
 
-      {/* Content area — rounded top on light mode */}
+      {/* Content area � rounded top on light mode */}
       <div
         className="px-5 flex-1 space-y-6"
         style={{
@@ -145,7 +145,7 @@ function Settings() {
         <div className="space-y-3">
           <p className="text-sm font-semibold" style={{ color: t.textMuted }}>{tl("Profile")}</p>
 
-          {/* Profile card — shows actual photo */}
+          {/* Profile card � shows actual photo */}
           <Link to="/profile" className="w-full flex items-center justify-between p-4 rounded-2xl"
             style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
             <div className="flex items-center gap-3">
@@ -165,10 +165,10 @@ function Settings() {
                 <p className="text-xs" style={{ color: t.textMuted }}>{user?.email}</p>
               </div>
             </div>
-            <span className="text-xs" style={{ color: t.textMuted }}>›</span>
+            <span className="text-xs" style={{ color: t.textMuted }}>�</span>
           </Link>
 
-          {/* Personal Information — view only, expanded */}
+          {/* Personal Information � view only, expanded */}
           <div className="p-4 rounded-2xl space-y-3"
             style={{ background: t.cardBg, boxShadow: theme === "light" ? "0 2px 12px rgba(22,72,176,0.08)" : "none" }}>
             <div className="flex items-center gap-3 mb-1">
@@ -178,9 +178,9 @@ function Settings() {
               <span className="text-sm font-bold" style={{ color: t.textPrimary }}>{tl("Personal Information")}</span>
             </div>
             {[
-              { label: tl("First Name"),  value: account?.fullName?.split(" ")[0] || "—" },
-              { label: tl("Last Name"),   value: account?.fullName?.split(" ").slice(1).join(" ") || "—" },
-              { label: tl("Email"),       value: user?.email || "—" },
+              { label: tl("First Name"),  value: account?.fullName?.split(" ")[0] || "�" },
+              { label: tl("Last Name"),   value: account?.fullName?.split(" ").slice(1).join(" ") || "�" },
+              { label: tl("Email"),       value: user?.email || "�" },
             ].map(({ label, value }) => (
               <div key={label} className="flex justify-between items-center py-2"
                 style={{ borderBottom: `1px solid ${t.inputBg}` }}>
@@ -420,7 +420,7 @@ function Settings() {
                 </div>
                 <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{tl("Connected Cards")}</span>
               </div>
-              <span className="text-xs" style={{ color: t.textMuted }}>›</span>
+              <span className="text-xs" style={{ color: t.textMuted }}>�</span>
             </button>
           </div>
         </div>
@@ -445,21 +445,21 @@ function Settings() {
                   style={{ background: "rgba(56,189,248,0.12)" }}
                 >
                   <span className="text-2xl" role="img" aria-label="flag">
-                    {currentLanguage.code === "en" ? "🇺🇸" :
-                     currentLanguage.code === "fr" ? "🇫🇷" :
-                     currentLanguage.code === "es" ? "🇪🇸" :
-                     currentLanguage.code === "de" ? "🇩🇪" :
-                     currentLanguage.code === "pt" ? "🇧🇷" :
-                     currentLanguage.code === "it" ? "🇮🇹" :
-                     currentLanguage.code === "nl" ? "🇳🇱" :
-                     currentLanguage.code === "ru" ? "🇷🇺" :
-                     currentLanguage.code === "tr" ? "🇹🇷" :
-                     currentLanguage.code === "hi" ? "🇮🇳" :
-                     currentLanguage.code === "ar" ? "🇸🇦" :
-                     currentLanguage.code === "zh" ? "🇨🇳" :
-                     currentLanguage.code === "ja" ? "🇯🇵" :
-                     currentLanguage.code === "ko" ? "🇰🇷" :
-                     currentLanguage.code === "sw" ? "🇰🇪" : "🌐"}
+                    {currentLanguage.code === "en" ? "????" :
+                     currentLanguage.code === "fr" ? "????" :
+                     currentLanguage.code === "es" ? "????" :
+                     currentLanguage.code === "de" ? "????" :
+                     currentLanguage.code === "pt" ? "????" :
+                     currentLanguage.code === "it" ? "????" :
+                     currentLanguage.code === "nl" ? "????" :
+                     currentLanguage.code === "ru" ? "????" :
+                     currentLanguage.code === "tr" ? "????" :
+                     currentLanguage.code === "hi" ? "????" :
+                     currentLanguage.code === "ar" ? "????" :
+                     currentLanguage.code === "zh" ? "????" :
+                     currentLanguage.code === "ja" ? "????" :
+                     currentLanguage.code === "ko" ? "????" :
+                     currentLanguage.code === "sw" ? "????" : "??"}
                   </span>
                 </div>
                 <div className="flex flex-col items-start">
@@ -552,7 +552,7 @@ function Settings() {
         </button>
       </div>
 
-      {/* ── Settings Modals ─────────────────────────────────────────────── */}
+      {/* -- Settings Modals ----------------------------------------------- */}
       {activeModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center px-4 pb-8"
           style={{ background: "rgba(0,0,0,0.6)" }}
@@ -568,7 +568,7 @@ function Settings() {
                 <div className="flex flex-col items-center gap-3 text-center">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
                     style={{ background: t.mutedBg }}>
-                    🔒
+                    ??
                   </div>
                   <h3 className="text-lg font-bold" style={{ color: t.textPrimary }}>{tl("Change Password")}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: t.textMuted }}>
@@ -601,11 +601,11 @@ function Settings() {
                       style={{ background: t.inputBg, border: session.current ? `1px solid ${t.accentCyan}40` : "none" }}>
                       <div>
                         <p className="text-sm font-semibold" style={{ color: t.textPrimary }}>{session.device}</p>
-                        <p className="text-xs" style={{ color: t.textMuted }}>{session.location} · {session.time}</p>
+                        <p className="text-xs" style={{ color: t.textMuted }}>{session.location} � {session.time}</p>
                       </div>
                       {session.current
                         ? <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ background: `${t.accentCyan}20`, color: t.accentCyan }}>Active</span>
-                        : <span className="text-xs" style={{ color: t.textMuted }}>✓ Secure</span>}
+                        : <span className="text-xs" style={{ color: t.textMuted }}>? Secure</span>}
                     </div>
                   ))}
                 </div>
@@ -618,7 +618,7 @@ function Settings() {
               <div className="space-y-4">
                 <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Privacy Controls")}</h3>
                 {[
-                  { label: "Share data for service improvement", desc: "Help us improve Nexus Bank" },
+                  { label: "Share data for service improvement", desc: "Help us improve Nexsus Bank" },
                   { label: "Personalised recommendations", desc: "Receive tailored financial tips" },
                   { label: "Marketing communications", desc: "Receive offers and promotions" },
                 ].map((item, i) => (
@@ -642,7 +642,7 @@ function Settings() {
               <div className="space-y-4">
                 <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("External Bank Accounts")}</h3>
                 <div className="flex flex-col items-center py-6">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>🏦</div>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>??</div>
                   <p className="text-sm font-semibold text-center" style={{ color: t.textPrimary }}>No external banks linked yet</p>
                   <p className="text-xs text-center mt-2 max-w-xs" style={{ color: t.textMuted }}>To link an external bank account, please contact support. We support ACH, SWIFT, and SEPA transfers.</p>
                 </div>
@@ -656,7 +656,7 @@ function Settings() {
               <div className="space-y-4">
                 <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Connected Cards")}</h3>
                 <div className="flex flex-col items-center py-6">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>💳</div>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl" style={{ background: t.inputBg }}>??</div>
                   <p className="text-sm font-semibold text-center" style={{ color: t.textPrimary }}>Contact Support to Add Card</p>
                   <p className="text-xs text-center mt-2 max-w-xs" style={{ color: t.textMuted }}>To request a physical card or link an existing card, please reach out to our support team.</p>
                 </div>
@@ -676,12 +676,12 @@ function Settings() {
                 <h3 className="text-lg font-bold text-center" style={{ color: t.textPrimary }}>{tl("Select Language")}</h3>
                 {[
                   { code: "en", label: "English", native: "English" },
-                  { code: "fr", label: "French", native: "Français" },
-                  { code: "es", label: "Spanish", native: "Español" },
+                  { code: "fr", label: "French", native: "Fran�ais" },
+                  { code: "es", label: "Spanish", native: "Espa�ol" },
                   { code: "de", label: "German", native: "Deutsch" },
-                  { code: "pt", label: "Portuguese", native: "Português" },
-                  { code: "ar", label: "Arabic", native: "العربية" },
-                  { code: "zh", label: "Chinese", native: "中文" },
+                  { code: "pt", label: "Portuguese", native: "Portugu�s" },
+                  { code: "ar", label: "Arabic", native: "???????" },
+                  { code: "zh", label: "Chinese", native: "??" },
                 ].map((lang) => {
                   const isActive = language === lang.code;
                   return (
@@ -699,7 +699,7 @@ function Settings() {
                         <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>{lang.label}</span>
                         <span className="text-xs" style={{ color: t.textMuted }}>{lang.native}</span>
                       </div>
-                      {isActive && <span style={{ color: t.accentCyan }}>✓</span>}
+                      {isActive && <span style={{ color: t.accentCyan }}>?</span>}
                     </button>
                   );
                 })}
@@ -796,9 +796,9 @@ function Settings() {
               {SUPPORTED_LANGUAGES.map((lang) => {
                 const isSelected = lang.code === language;
                 const flags: Record<string, string> = {
-                  en: "🇺🇸", fr: "🇫🇷", es: "🇪🇸", de: "🇩🇪", pt: "🇧🇷",
-                  it: "🇮🇹", nl: "🇳🇱", ru: "🇷🇺", tr: "🇹🇷", hi: "🇮🇳",
-                  ar: "🇸🇦", zh: "🇨🇳", ja: "🇯🇵", ko: "🇰🇷", sw: "🇰🇪",
+                  en: "????", fr: "????", es: "????", de: "????", pt: "????",
+                  it: "????", nl: "????", ru: "????", tr: "????", hi: "????",
+                  ar: "????", zh: "????", ja: "????", ko: "????", sw: "????",
                 };
                 
                 return (
@@ -815,7 +815,7 @@ function Settings() {
                     }}
                   >
                     <span className="text-3xl leading-none flex-shrink-0" role="img" aria-label={lang.nameEn}>
-                      {flags[lang.code] || "🌐"}
+                      {flags[lang.code] || "??"}
                     </span>
                     <div className="flex-1 flex flex-col items-start">
                       <span 

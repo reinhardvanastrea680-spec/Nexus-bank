@@ -39,7 +39,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
-  // Override manifest for admin PWA — installs as "Nexus Bank Admin" opening /admin-login
+  // Override manifest for admin PWA — installs as "Nexsus Bank Admin" opening /admin-login
   head: () => ({
     meta: [
       { name: "theme-color", content: "#06B6D4" },

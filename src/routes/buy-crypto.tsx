@@ -21,7 +21,7 @@ import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuc
 import { PinInputModal } from "../dashboard/components/PinInputModal";
 
 export const Route = createFileRoute("/buy-crypto")({
-  head: () => ({ meta: [{ title: "Buy Crypto - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Buy Crypto - Nexsus Bank" }] }),
   component: BuyCrypto,
 });
 

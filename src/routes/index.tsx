@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
   Bell, User, Eye, EyeOff, Moon, Sun,
@@ -54,8 +54,8 @@ function formatCurrency(value: number) {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nexus Bank - Mobile Banking" },
-      { description: "Manage your accounts, transfers, deposits, and bills with Nexus Bank." },
+      { title: "Nexsus Bank - Mobile Banking" },
+      { description: "Manage your accounts, transfers, deposits, and bills with Nexsus Bank." },
     ],
   }),
   component: HomePage,
@@ -80,7 +80,7 @@ function HomePage() {
   const currency: CurrencyCode = (account?.dashboardCurrency as CurrencyCode) || "USD";
   const currencySymbol = getCurrencySymbol(currency);
 
-  // Quick links — Cards replaces Transaction History
+  // Quick links � Cards replaces Transaction History
   const quickLinks = [
     { label: t("Wire Transfer"),     icon: ArrowUpRight,   to: "/wire-transfer",     color: "#38BDF8" },
     { label: t("Local Transfer"),    icon: ArrowLeftRight, to: "/local-transfer",    color: "#6366F1" },
@@ -158,11 +158,11 @@ function HomePage() {
         });
         try {
           await addDoc(collection(db, "chats", user.uid, "messages"), {
-            text: action === "entered" ? `🟢 ${userName} is now online` : `⚫ ${userName} has gone offline`,
+            text: action === "entered" ? `?? ${userName} is now online` : `? ${userName} has gone offline`,
             sender: "system", createdAt: serverTimestamp(), readByUser: true, readByAdmin: false, isPresence: true,
           });
           await updateDoc(doc(db, "chats", user.uid), {
-            lastMessage: action === "entered" ? `🟢 ${userName} is now online` : `⚫ ${userName} has gone offline`,
+            lastMessage: action === "entered" ? `?? ${userName} is now online` : `? ${userName} has gone offline`,
             lastMessageAt: serverTimestamp(), userFullName: userName, userEmail: user.email || "", status: "active",
           });
         } catch { /* non-critical */ }
@@ -201,7 +201,7 @@ function HomePage() {
     })),
   ] : [];
 
-  // Always derived from the accounts array — automatically includes any future accounts
+  // Always derived from the accounts array � automatically includes any future accounts
   const totalAllAccounts = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
 
   const accountData = accounts[currentAccount];
@@ -263,7 +263,7 @@ function HomePage() {
           </div>
         </div>
         <div className="px-5 pb-8 relative z-10">
-          {/* ── Total Balance mini bar ─────────────────────────────── */}
+          {/* -- Total Balance mini bar ------------------------------- */}
           <div className="mb-4 px-1"
             style={mounted ? { animation: "nx-fadeDown 0.45s cubic-bezier(0.22,1,0.36,1) 0.05s both", opacity: 0 } : { opacity: 0 }}>
             <div className="flex items-center justify-between px-4 py-3 rounded-2xl"
@@ -314,7 +314,7 @@ function HomePage() {
                 <p className="text-white/50 text-xs mb-1">Available Funds</p>
                 <div className="flex items-center gap-3 mb-5">
                   <span className="font-bold font-mono balance-figure" style={{ color: "#FFFFFF", textShadow: "0 2px 16px rgba(56,189,248,0.4), 0 1px 3px rgba(0,0,0,0.3)", fontSize: "clamp(1rem, 5vw, 1.9rem)", wordBreak: "break-all", overflowWrap: "anywhere", maxWidth: "calc(100% - 40px)", display: "block" }}>
-                    {balanceVisible ? formatInCurrency(accountData?.balance || 0, currency) : `${currencySymbol}��������`}
+                    {balanceVisible ? formatInCurrency(accountData?.balance || 0, currency) : `${currencySymbol}????????`}
                   </span>
                   <button onClick={() => setBalanceVisible(!balanceVisible)} className="p-1.5 rounded-full transition-transform active:scale-90" style={{ background: "rgba(255,255,255,0.15)" }}>
                     {balanceVisible ? <EyeOff size={14} color="white" /> : <Eye size={14} color="white" />}
@@ -322,7 +322,7 @@ function HomePage() {
                 </div>
                 <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
                   <span className="text-white/50 text-xs">Account Status</span>
-                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>● {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
+                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>? {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
                 </div>
               </div>
             </div>
@@ -370,7 +370,7 @@ function HomePage() {
                 const desc = tx.description || tx.type?.replace(/_/g, " ") || "Transaction";
                 const timeStr = tx.createdAt instanceof Date
                   ? tx.createdAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) + ", " + tx.createdAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-                  : "�";
+                  : "?";
                 return (
                   <div key={tx.id} className="flex items-center justify-between p-4 rounded-2xl transition-all tx-row" style={{ background: dark ? "rgba(255,255,255,0.04)" : "#F8FAFF", border: `1px solid ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)"}`, animation: mounted ? `nx-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) ${0.65+idx*0.08}s both` : "none", opacity: mounted ? 0 : 1 }}>
                     <div className="flex items-center gap-3">

@@ -81,7 +81,7 @@ function AdminUsersPage() {
             <Users size={22} className="text-cyan-400" aria-hidden="true" />
             User Management
           </h1>
-          <p className="text-blue-300/60 text-xs md:text-sm mt-0.5">Manage all Nexus Bank users</p>
+          <p className="text-blue-300/60 text-xs md:text-sm mt-0.5">Manage all Nexsus Bank users</p>
         </div>
         <Button onClick={() => setShowAddModal(true)} size="sm"
           className="bg-gradient-to-r from-cyan-500 to-violet-600 text-white gap-1.5 shrink-0">

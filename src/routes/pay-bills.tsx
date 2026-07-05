@@ -13,7 +13,7 @@ import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuc
 import { PinInputModal } from "../dashboard/components/PinInputModal";
 
 export const Route = createFileRoute("/pay-bills")({
-  head: () => ({ meta: [{ title: "Pay Bills - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Pay Bills - Nexsus Bank" }] }),
   component: PayBills,
 });
 

@@ -22,7 +22,7 @@ import { TransactionSuccessScreen } from "../dashboard/components/TransactionSuc
 import { PinInputModal } from "../dashboard/components/PinInputModal";
 
 export const Route = createFileRoute("/check-deposit")({
-  head: () => ({ meta: [{ title: "Cheque Deposit - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Cheque Deposit - Nexsus Bank" }] }),
   component: CheckDeposit,
 });
 

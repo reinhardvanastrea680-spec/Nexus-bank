@@ -13,7 +13,7 @@ import { toast } from "sonner";
 type Message = { id: string; text: string; sender: "user" | "admin" | "system"; createdAt: Date; readByUser: boolean; readByAdmin: boolean; time?: string; mediaUrl?: string; mediaType?: string; };
 
 export const Route = createFileRoute("/support")({
-  head: () => ({ meta: [{ title: "Support - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Support - Nexsus Bank" }] }),
   component: SupportPage,
 });
 

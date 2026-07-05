@@ -36,7 +36,7 @@ function AdminUsersListPage() {
           Users
         </h1>
         <p className="text-blue-300/60 text-xs md:text-sm mt-0.5">
-          Browse all Nexus Bank users
+          Browse all Nexsus Bank users
         </p>
       </div>
 

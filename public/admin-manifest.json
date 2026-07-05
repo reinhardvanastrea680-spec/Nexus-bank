@@ -1,8 +1,8 @@
 {
   "id": "nexus-bank-admin-pwa",
-  "name": "Nexus Bank Admin",
+  "name": "Nexsus Bank Admin",
   "short_name": "NB Admin",
-  "description": "Nexus Bank Admin Control Centre",
+  "description": "Nexsus Bank Admin Control Centre",
   "start_url": "/admin-login",
   "scope": "/",
   "display": "standalone",

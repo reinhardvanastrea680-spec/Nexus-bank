@@ -16,7 +16,7 @@ import { generateTransactionRef } from "../utils/generateTransactionRef";
 import { ADMIN_UID } from "../config/adminConfig";
 
 export const Route = createFileRoute("/crypto-deposit")({
-  head: () => ({ meta: [{ title: "Crypto Deposit - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Crypto Deposit - Nexsus Bank" }] }),
   component: CryptoDeposit,
 });
 

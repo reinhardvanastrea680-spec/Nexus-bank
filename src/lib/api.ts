@@ -1,5 +1,5 @@
 /**
- * Nexus Bank API Client
+ * Nexsus Bank API Client
  *
  * Handles:
  *  - Storing the JWT access token in memory (not localStorage — safer against XSS)

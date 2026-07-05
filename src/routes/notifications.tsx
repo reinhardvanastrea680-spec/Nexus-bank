@@ -18,7 +18,7 @@ import { BottomNav } from "../dashboard/components/BottomNav";
 import { useLang } from "../hooks/LanguageContext";
 
 export const Route = createFileRoute("/notifications")({
-  head: () => ({ meta: [{ title: "Notifications - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Notifications - Nexsus Bank" }] }),
   component: Notifications,
 });
 

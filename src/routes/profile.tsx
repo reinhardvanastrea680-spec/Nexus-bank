@@ -11,7 +11,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Profile - Nexus Bank" }] }),
+  head: () => ({ meta: [{ title: "Profile - Nexsus Bank" }] }),
   component: ProfilePage,
 });
 

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin-login")({
   component: AdminLoginPage,
   head: () => ({
     meta: [
-      { title: "Admin Login - Nexus Bank" },
+      { title: "Admin Login - Nexsus Bank" },
       { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
