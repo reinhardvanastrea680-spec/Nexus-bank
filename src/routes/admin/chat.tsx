@@ -317,7 +317,7 @@ function AdminChatPage() {
             </span>
           )}
         </h1>
-        <p className="text-gray-600 mt-1 text-sm">Manage customer conversations in real-time</p>
+        <p className="text-gray-600 mt-1 text-sm">Manage customer conversations in real time</p>
       </div>
 
       {/* Desktop: side by side | Mobile: conditional panels */}

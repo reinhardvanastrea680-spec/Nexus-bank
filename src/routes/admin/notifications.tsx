@@ -362,7 +362,7 @@ function AdminNotificationsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Admin Notifications</h1>
-          <p className="text-blue-300/60 text-xs">Real-time transaction alerts</p>
+          <p className="text-blue-300/60 text-xs">Real time transaction alerts</p>
         </div>
         <div className="flex items-center gap-3">
           {unreadCount > 0 && (
