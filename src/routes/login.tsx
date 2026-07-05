@@ -183,13 +183,13 @@ function Login() {
           {userProfile && step === 2 ? (
             <div className="mt-4">
               {/* Profile Picture */}
-              <div className="flex justify-center mb-3">
+              <div className="flex justify-center mb-4">
                 <div
-                  className="w-24 h-24 rounded-full overflow-hidden border-4 flex items-center justify-center"
+                  className="w-28 h-28 rounded-full overflow-hidden border-4 flex items-center justify-center"
                   style={{ 
-                    borderColor: "rgba(255,255,255,0.3)", 
+                    borderColor: "rgba(255,255,255,0.4)", 
                     background: "linear-gradient(135deg, #EF4444, #F59E0B)",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+                    boxShadow: "0 8px 16px rgba(0,0,0,0.25)"
                   }}
                 >
                   {userProfile.photoURL ? (
@@ -199,18 +199,17 @@ function Login() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-white font-bold text-3xl">
+                    <span className="text-white font-bold text-4xl">
                       {getInitials(userProfile.fullName)}
                     </span>
                   )}
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-white">Welcome Back!</h1>
-              <p className="text-xl mt-2 font-semibold" style={{ color: "rgba(255,255,255,0.95)" }}>
-                {userProfile.fullName}
-              </p>
-              <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.7)" }}>
-                {userProfile.email}
+              <h1 className="text-3xl font-bold text-white mb-1">
+                Welcome {userProfile.fullName.split(" ")[0]}
+              </h1>
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Enter your password to continue
               </p>
             </div>
           ) : (
