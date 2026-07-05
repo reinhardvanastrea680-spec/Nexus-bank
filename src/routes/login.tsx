@@ -251,7 +251,12 @@ function Login() {
                     required
                     autoFocus
                     className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm"
-                    style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", color: "#000000" }}
+                    style={{ 
+                      background: "#F9FAFB", 
+                      border: "1px solid #E5E7EB", 
+                      color: "#000000",
+                      WebkitTextFillColor: "#000000"
+                    }}
                     onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
                     onBlur={(e)  => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                   />
@@ -291,7 +296,12 @@ function Login() {
                     required
                     autoFocus
                     className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm"
-                    style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", color: "#000000" }}
+                    style={{ 
+                      background: "#F9FAFB", 
+                      border: "1px solid #E5E7EB", 
+                      color: "#000000",
+                      WebkitTextFillColor: "#000000"
+                    }}
                     onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
                     onBlur={(e)  => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                   />
