@@ -1017,6 +1017,149 @@ input[type="text"].login-input-black {
   caret-color: #000000 !important;
 }
 .login-input-black::placeholder {
+  color: rgba(0,0,0,0.4) !important;
+  -webkit-text-fill-color: rgba(0,0,0,0.4) !important;
+}
+/* Override autofill for login */
+.login-input-black:-webkit-autofill,
+.login-input-black:-webkit-autofill:hover,
+.login-input-black:-webkit-autofill:focus,
+.login-input-black:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADMIN ACCOUNT CONTROL PAGE - LIGHT THEME TEXT COLORS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Light mode - Admin Account Control search bars and inputs */
+.light main input[style*="background: rgb(7, 11, 20)"],
+.light main input[style*="background:#070B14"],
+.light main input.bg-\\[\\#070B14\\] {
+  background: rgba(240,244,255,0.9) !important;
+  border: 1px solid rgba(22,72,176,0.2) !important;
+  color: #0A1628 !important;
+  -webkit-text-fill-color: #0A1628 !important;
+}
+
+/* Light mode - Admin Account Control select dropdowns */
+.light main .bg-\\[\\#070B14\\],
+.light main [style*="background: #070B14"],
+.light main [style*="background:#070B14"] {
+  background: rgba(240,244,255,0.9) !important;
+  border: 1px solid rgba(22,72,176,0.2) !important;
+  color: #0A1628 !important;
+}
+
+/* Light mode - Admin Account Control user summary boxes */
+.light main .bg-\\[\\#0D1625\\],
+.light main [style*="background: #0D1625"],
+.light main [style*="background:#0D1625"],
+.light main [style*="background: rgb(13, 22, 37)"] {
+  background: rgba(255,255,255,0.95) !important;
+  border: 1px solid rgba(22,72,176,0.15) !important;
+  box-shadow: 0 2px 12px rgba(22,72,176,0.08) !important;
+}
+
+/* Light mode - Account Control all text in these dark containers should be dark */
+.light main .bg-\\[\\#070B14\\] *,
+.light main [style*="background: #070B14"] *,
+.light main .bg-\\[\\#0D1625\\] *,
+.light main [style*="background: #0D1625"] * {
+  color: #0A1628 !important;
+}
+
+/* Light mode - Preserve specific color classes (icons, badges) */
+.light main .text-cyan-400,
+.light main .text-green-400,
+.light main .text-red-400,
+.light main .text-violet-400 {
+  /* Use filter instead to preserve intent */
+  filter: saturate(1.3) brightness(0.7);
+}
+
+/* Light mode - Account number badges */
+.light main .bg-\\[\\#070B14\\] span.font-mono,
+.light main [style*="background: #070B14"] span.font-mono {
+  color: #1E293B !important;
+}
+
+/* Light mode - User email and secondary text */
+.light main .text-blue-300\\/60,
+.light main .text-blue-300\\/50,
+.light main .text-blue-300\\/40,
+.light main .text-blue-300\\/70 {
+  color: #64748B !important;
+}
+
+/* Light mode - Account Control dialog backgrounds */
+.light main [style*="background: #0F1829"],
+.light main [style*="background:#0F1829"] {
+  background: rgba(255,255,255,0.98) !important;
+  border: 1px solid rgba(22,72,176,0.15) !important;
+  box-shadow: 0 8px 32px rgba(22,72,176,0.15) !important;
+}
+
+/* Light mode - Dialog text */
+.light main [style*="background: #0F1829"] *:not([style*="color:"]) {
+  color: #1E293B !important;
+}
+
+/* Light mode - Dialog input fields */
+.light main [style*="background: #0F1829"] input,
+.light main [style*="background: #0F1829"] select {
+  background: rgba(240,244,255,0.8) !important;
+  border: 1px solid rgba(22,72,176,0.2) !important;
+  color: #0A1628 !important;
+  -webkit-text-fill-color: #0A1628 !important;
+}
+
+/* Light mode - Preserve button text colors (Set, Credit, Debit) */
+.light main button span {
+  /* Color is set inline via style prop - don't override */
+}
+
+/* Light mode - Currency selector */
+.light main select[style*="background: #070B14"] {
+  background: rgba(240,244,255,0.9) !important;
+  border: 1px solid rgba(22,72,176,0.2) !important;
+  color: #0A1628 !important;
+}
+.light main select[style*="background: #070B14"] option {
+  background: #FFFFFF !important;
+  color: #0A1628 !important;
+}
+
+/* Light mode - Placeholder text in Account Control */
+.light main input::placeholder {
+  color: rgba(71,85,105,0.5) !important;
+  -webkit-text-fill-color: rgba(71,85,105,0.5) !important;
+}
+
+/* Light mode - Balance display in cards */
+.light main .text-cyan-400.font-mono {
+  color: #0891B2 !important;
+  font-weight: 700;
+}
+
+/* Light mode - Status badges (active/frozen) remain colored */
+.light main .bg-green-500\\/20 {
+  background: rgba(16,185,129,0.15) !important;
+}
+.light main .bg-red-500\\/20 {
+  background: rgba(239,68,68,0.15) !important;
+}
+.light main .text-green-400 {
+  color: #059669 !important;
+}
+.light main .text-red-400 {
+  color: #DC2626 !important;ortant;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
+}
+.login-input-black::placeholder {
   color: #9CA3AF !important;
   -webkit-text-fill-color: #9CA3AF !important;
   opacity: 1 !important;
@@ -1030,4 +1173,5 @@ input[type="text"].login-input-black {
   -webkit-text-fill-color: #000000 !important;
   color: #000000 !important;
   caret-color: #000000 !important;
+}
 }
