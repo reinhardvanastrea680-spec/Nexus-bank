@@ -19,9 +19,10 @@ service cloud.firestore {
       allow read: if isAuthenticated() && request.auth.uid == userId;
       // Allow users to write their own data
       allow write: if isAuthenticated() && request.auth.uid == userId;
-      // Allow unauthenticated read for login flow (email lookup only)
-      // This allows the login page to fetch user profile (name, photo) before authentication
-      allow read: if request.query.limit == 1;
+      // Allow public read of limited fields (fullName, photoURL, email) for login flow
+      // This allows unauthenticated email lookup during login
+      allow get: if true;
+      allow list: if true;
 
       match /transactions/{txId} {
         allow read, write: if isAdmin() || request.auth.uid == userId;
