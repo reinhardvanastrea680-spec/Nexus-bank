@@ -80,7 +80,7 @@ function HomePage() {
   const currency: CurrencyCode = (account?.dashboardCurrency as CurrencyCode) || "USD";
   const currencySymbol = getCurrencySymbol(currency);
 
-  // Quick links � Cards replaces Transaction History
+  // Quick links � Cards replaces Transaction History
   const quickLinks = [
     { label: t("Wire Transfer"),     icon: ArrowUpRight,   to: "/wire-transfer",     color: "#38BDF8" },
     { label: t("Local Transfer"),    icon: ArrowLeftRight, to: "/local-transfer",    color: "#6366F1" },
@@ -158,11 +158,11 @@ function HomePage() {
         });
         try {
           await addDoc(collection(db, "chats", user.uid, "messages"), {
-            text: action === "entered" ? `?? ${userName} is now online` : `? ${userName} has gone offline`,
+            text: action === "entered" ? `🟢 ${userName} is now online` : `⚪ ${userName} has gone offline`,
             sender: "system", createdAt: serverTimestamp(), readByUser: true, readByAdmin: false, isPresence: true,
           });
           await updateDoc(doc(db, "chats", user.uid), {
-            lastMessage: action === "entered" ? `?? ${userName} is now online` : `? ${userName} has gone offline`,
+            lastMessage: action === "entered" ? `🟢 ${userName} is now online` : `⚪ ${userName} has gone offline`,
             lastMessageAt: serverTimestamp(), userFullName: userName, userEmail: user.email || "", status: "active",
           });
         } catch { /* non-critical */ }
@@ -201,7 +201,7 @@ function HomePage() {
     })),
   ] : [];
 
-  // Always derived from the accounts array � automatically includes any future accounts
+  // Always derived from the accounts array � automatically includes any future accounts
   const totalAllAccounts = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
 
   const accountData = accounts[currentAccount];
