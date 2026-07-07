@@ -322,7 +322,7 @@ function HomePage() {
                 </div>
                 <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
                   <span className="text-white/50 text-xs">Account Status</span>
-                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>? {(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
+                  <span className="text-xs font-semibold" style={{ color: "#00E676" }}>{(accountData?.status || "active").charAt(0).toUpperCase() + (accountData?.status || "active").slice(1)}</span>
                 </div>
               </div>
             </div>

@@ -1036,8 +1036,7 @@ input[type="text"].login-input-black {
 
 /* Light mode - Admin Account Control search bars and inputs */
 .light main input[style*="background: rgb(7, 11, 20)"],
-.light main input[style*="background:#070B14"],
-.light main input.bg-\\[\\#070B14\\] {
+.light main input[style*="background:#070B14"] {
   background: rgba(240,244,255,0.9) !important;
   border: 1px solid rgba(22,72,176,0.2) !important;
   color: #0A1628 !important;
@@ -1045,7 +1044,6 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Admin Account Control select dropdowns */
-.light main .bg-\\[\\#070B14\\],
 .light main [style*="background: #070B14"],
 .light main [style*="background:#070B14"] {
   background: rgba(240,244,255,0.9) !important;
@@ -1054,7 +1052,6 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Admin Account Control user summary boxes */
-.light main .bg-\\[\\#0D1625\\],
 .light main [style*="background: #0D1625"],
 .light main [style*="background:#0D1625"],
 .light main [style*="background: rgb(13, 22, 37)"] {
@@ -1064,9 +1061,7 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Account Control all text in these dark containers should be dark */
-.light main .bg-\\[\\#070B14\\] *,
 .light main [style*="background: #070B14"] *,
-.light main .bg-\\[\\#0D1625\\] *,
 .light main [style*="background: #0D1625"] * {
   color: #0A1628 !important;
 }
@@ -1081,16 +1076,12 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Account number badges */
-.light main .bg-\\[\\#070B14\\] span.font-mono,
 .light main [style*="background: #070B14"] span.font-mono {
   color: #1E293B !important;
 }
 
 /* Light mode - User email and secondary text */
-.light main .text-blue-300\\/60,
-.light main .text-blue-300\\/50,
-.light main .text-blue-300\\/40,
-.light main .text-blue-300\\/70 {
+.light main .text-blue-300 {
   color: #64748B !important;
 }
 
@@ -1145,10 +1136,10 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Status badges (active/frozen) remain colored */
-.light main .bg-green-500\\/20 {
+.light main .bg-green-500 {
   background: rgba(16,185,129,0.15) !important;
 }
-.light main .bg-red-500\\/20 {
+.light main .bg-red-500 {
   background: rgba(239,68,68,0.15) !important;
 }
 .light main .text-green-400 {
@@ -1203,8 +1194,8 @@ input[type="text"].login-input-black {
 
 /* Light mode - Account type labels in bordered cards */
 .light main .border .text-white,
-.light main [class*="bg-[#0D1625]"] *,
-.light main [class*="bg-[#070B14]"] * {
+.light main [style*="background: #0D1625"] *,
+.light main [style*="background: #070B14"] * {
   color: #0A1628 !important;
 }
 
@@ -1219,16 +1210,13 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Labels and secondary text */
-.light main .text-blue-300\\/60,
-.light main .text-blue-300\\/70,
-.light main .text-blue-300\\/50,
-.light main .text-blue-300\\/40 {
+.light main .text-blue-300 {
   color: #64748B !important;
 }
 
 /* Light mode - Account balance "Current Balance" labels */
-.light main .text-xs.text-blue-300\\/60,
-.light main .text-sm.text-blue-300\\/60 {
+.light main .text-xs.text-blue-300,
+.light main .text-sm.text-blue-300 {
   color: #64748B !important;
   font-weight: 500;
 }
@@ -1307,7 +1295,7 @@ input[type="text"].login-input-black {
 }
 
 /* Light mode - Description text */
-.light main .text-blue-300\\/60.text-sm,
+.light main .text-blue-300.text-sm,
 .light main p.text-sm {
   color: #64748B !important;
 }
