@@ -348,7 +348,17 @@ function Login() {
           <p className="text-center text-sm mt-6" style={{ color: "#9CA3AF" }}>
             Don't have an account? Contact your administrator.
           </p>
-        </div>
+
+          {/* ── Security Disclaimer ── */}
+          <div className="mx-8 mb-6 mt-4 px-4 py-3 rounded-xl" style={{ background: "#F0F9FF", border: "1px solid #BAE6FD" }}>
+            <p className="text-xs text-center leading-relaxed" style={{ color: "#0369A1" }}>
+              🔒 <strong>Secure Portal:</strong> This is a private, encrypted portal for existing Nexsus Bank customers only.
+              If you did not receive login credentials from our team, please{" "}
+              <a href="https://nexsus-co.com/contact" style={{ color: "#0EA5E9", fontWeight: 600, textDecoration: "underline" }}>
+                contact support
+              </a>. We will never ask for your password by email or phone.
+            </p>
+          </div>
       </div>
     </div>
   );
