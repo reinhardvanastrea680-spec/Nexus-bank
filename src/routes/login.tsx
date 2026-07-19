@@ -359,6 +359,7 @@ function Login() {
               </a>. We will never ask for your password by email or phone.
             </p>
           </div>
+        </div>
       </div>
     </div>
   );
