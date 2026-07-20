@@ -71,7 +71,6 @@ function AdminTransactionsPage() {
   const [addOpen, setAddOpen]           = useState(false);
   const [form, setForm]                 = useState<NewTxForm>(defaultForm);
   const [submitting, setSubmitting]     = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<any>(null);
   const [deleting, setDeleting]         = useState(false);
   const [editTarget, setEditTarget]     = useState<any>(null);
   const [editStatus, setEditStatus]     = useState<string>("");
@@ -155,19 +154,19 @@ function AdminTransactionsPage() {
   };
 
   // ── Delete transaction ───────────────────────────────────────────────
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
+  const handleDelete = async (tx: any) => {
+    if (!tx) return;
     setDeleting(true);
     try {
       // Delete from top-level transactions collection
-      await deleteDoc(doc(db, "transactions", deleteTarget.id));
+      await deleteDoc(doc(db, "transactions", tx.id));
 
       // Also delete from user's subcollection if userId available
-      if (deleteTarget.userId) {
+      if (tx.userId) {
         try {
           const userTxQuery = fsQuery(
-            collection(db, "users", deleteTarget.userId, "transactions"),
-            where("transactionRef", "==", deleteTarget.transactionRef)
+            collection(db, "users", tx.userId, "transactions"),
+            where("transactionRef", "==", tx.transactionRef)
           );
           const snap = await getDocs(userTxQuery);
           await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
@@ -178,17 +177,16 @@ function AdminTransactionsPage() {
         try {
           const notifQuery = fsQuery(
             collection(db, "notifications"),
-            where("userId", "==", deleteTarget.userId),
-            where("transactionId", "==", deleteTarget.id)
+            where("userId", "==", tx.userId),
+            where("transactionId", "==", tx.id)
           );
           const notifSnap = await getDocs(notifQuery);
           await Promise.all(notifSnap.docs.map((d) => deleteDoc(d.ref)));
         } catch { /* notifications may not exist */ }
       }
 
-      await logAdminAction("TRANSACTION_DELETED", `Deleted transaction ${deleteTarget.transactionRef}`, deleteTarget.userId, deleteTarget.userFullName, {});
+      await logAdminAction("TRANSACTION_DELETED", `Deleted transaction ${tx.transactionRef}`, tx.userId, tx.userFullName, {});
       toast.success("Transaction deleted from all records");
-      setDeleteTarget(null);
     } catch (err: any) {
       toast.error(err?.message || "Failed to delete");
     } finally {
@@ -325,7 +323,7 @@ function AdminTransactionsPage() {
                             <Pencil size={13} />
                           </Button>
                           <Button variant="ghost" size="icon" className="w-8 h-8 text-red-400 hover:text-red-300"
-                            onClick={() => setDeleteTarget(tx)}>
+                            onClick={() => void handleDelete(tx)}>
                             <Trash2 size={13} />
                           </Button>
                         </div>
@@ -365,7 +363,7 @@ function AdminTransactionsPage() {
                       <Pencil size={13} />
                     </button>
                     <button className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10"
-                      onClick={() => setDeleteTarget(tx)}>
+                      onClick={() => void handleDelete(tx)}>
                       <Trash2 size={13} />
                     </button>
                   </div>
@@ -468,41 +466,6 @@ function AdminTransactionsPage() {
                 className="flex-1 py-3 rounded-xl font-semibold text-sm text-white"
                 style={{ background: submitting ? "rgba(56,189,248,0.4)" : "linear-gradient(135deg,#38BDF8,#6366F1)", opacity: submitting ? 0.7 : 1 }}>
                 {submitting ? "Creating…" : "Create Transaction"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── DELETE CONFIRMATION ── */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.7)" }}
-          onClick={() => setDeleteTarget(null)}>
-          <div className="w-full max-w-sm rounded-2xl p-6 space-y-4"
-            style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.08)" }}
-            onClick={(e) => e.stopPropagation()}>
-            <div className="text-center space-y-2">
-              <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center"
-                style={{ background: "rgba(239,68,68,0.12)" }}>
-                <Trash2 size={24} className="text-red-400" />
-              </div>
-              <h3 className="text-white font-bold">Delete Transaction</h3>
-              <p className="text-blue-300/60 text-sm">
-                Delete <strong className="text-white">{deleteTarget.description}</strong> of{" "}
-                <strong className="text-white">${formatCurrency(deleteTarget.amount)}</strong>?
-                This cannot be undone.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 rounded-xl font-semibold text-sm"
-                style={{ background: "rgba(255,255,255,0.06)", color: "#8A9BB5" }}>
-                Cancel
-              </button>
-              <button onClick={() => void handleDelete()} disabled={deleting}
-                className="flex-1 py-3 rounded-xl font-semibold text-sm text-white"
-                style={{ background: "rgba(239,68,68,0.8)" }}>
-                {deleting ? "Deleting…" : "Delete"}
               </button>
             </div>
           </div>

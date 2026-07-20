@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { ArrowLeft, Eye, EyeOff, Edit2, Save, X, RefreshCw } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Edit2, Save, X, RefreshCw, Camera } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { db } from "../../firebase/config";
@@ -34,6 +34,78 @@ function UserDetailPage() {
   const [isEditingPin, setIsEditingPin] = useState(false);
   const [newPin, setNewPin] = useState("");
   const [savingPin, setSavingPin] = useState(false);
+
+  // Photo upload state
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Account tier editing state
+  const [isEditingTier, setIsEditingTier] = useState(false);
+  const [newTier, setNewTier] = useState("");
+  const [savingTier, setSavingTier] = useState(false);
+
+  // Member Since editing state
+  const [isEditingMemberSince, setIsEditingMemberSince] = useState(false);
+  const [newMemberSince, setNewMemberSince] = useState("");
+  const [savingMemberSince, setSavingMemberSince] = useState(false);
+
+  const ACCOUNT_TIERS = ["Standard", "Bronze", "Silver", "Gold", "Platinum", "VIP", "Elite", "Diamond"];
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be under 5MB"); return; }
+    if (!file.type.startsWith("image/")) { toast.error("Only image files are allowed"); return; }
+    setUploadingPhoto(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      await updateDoc(doc(db, "users", userId), { photoURL: base64 });
+      toast.success("Profile photo updated!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload photo. Please try again.");
+    } finally {
+      setUploadingPhoto(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  const handleUpdateTier = async () => {
+    if (!newTier) return;
+    setSavingTier(true);
+    try {
+      await updateDoc(doc(db, "users", userId), { accountTier: newTier });
+      toast.success(`Account tier updated to ${newTier}`);
+      setIsEditingTier(false);
+      setNewTier("");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update tier");
+    } finally {
+      setSavingTier(false);
+    }
+  };
+
+  const handleUpdateMemberSince = async () => {
+    if (!newMemberSince) return;
+    setSavingMemberSince(true);
+    try {
+      // Store as a plain ISO string so it survives round-trips without serverTimestamp
+      const date = new Date(newMemberSince);
+      await updateDoc(doc(db, "users", userId), { createdAt: date.toISOString() });
+      toast.success("Member since date updated");
+      setIsEditingMemberSince(false);
+      setNewMemberSince("");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update date");
+    } finally {
+      setSavingMemberSince(false);
+    }
+  };
 
   // Redirect if not admin
   useEffect(() => {
@@ -188,9 +260,49 @@ function UserDetailPage() {
         <CardContent className="space-y-6">
           {/* Profile Picture & Name */}
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
-              {user.fullName?.charAt(0).toUpperCase() || "U"}
+            {/* Clickable avatar with upload */}
+            <div className="relative flex-shrink-0">
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center relative group focus:outline-none"
+                style={{ background: "linear-gradient(to right, #06b6d4, #7c3aed)" }}
+                title="Click to upload profile photo"
+              >
+                {user.photoURL
+                  ? <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                  : <span className="text-white text-3xl font-bold">{user.fullName?.charAt(0).toUpperCase() || "U"}</span>
+                }
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera size={20} color="#fff" />
+                  <span className="text-white text-[10px] mt-1 font-medium">Change</span>
+                </div>
+                {/* Uploading spinner */}
+                {uploadingPhoto && (
+                  <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </button>
+              {/* Small camera badge */}
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 transition-colors focus:outline-none"
+                style={{ border: "2px solid #0f172a" }}
+                title="Upload photo"
+              >
+                <Camera size={12} color="#fff" />
+              </button>
             </div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoUpload}
+            />
             <div>
               <h2 className="text-white text-xl font-semibold">{user.fullName || "Unknown User"}</h2>
               <p className="text-gray-400 text-sm">{user.email || "No email"}</p>
@@ -414,6 +526,129 @@ function UserDetailPage() {
               ${(user.savingsBalance || 0).toFixed(2)}
             </p>
             <p className="text-xs text-gray-500 mt-1">#{user.savingsAccountNumber || "N/A"}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Account Settings Card */}
+      <Card className="glass-card border-0">
+        <CardHeader>
+          <CardTitle className="text-white text-lg">Account Settings</CardTitle>
+          <p className="text-xs text-gray-400 mt-1">Manage account tier and other settings</p>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Account Tier */}
+          <div>
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 block">
+              Account Tier
+            </label>
+            {isEditingTier ? (
+              <div className="space-y-3">
+                <select
+                  value={newTier}
+                  onChange={(e) => setNewTier(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border-2 border-cyan-500 text-white outline-none"
+                  autoFocus
+                >
+                  {ACCOUNT_TIERS.map((tier) => (
+                    <option key={tier} value={tier}>{tier}</option>
+                  ))}
+                </select>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleUpdateTier}
+                    disabled={!newTier || savingTier}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-600 hover:to-violet-700"
+                  >
+                    <Save size={14} className="inline mr-2" />
+                    {savingTier ? "Saving..." : "Save Tier"}
+                  </button>
+                  <button
+                    onClick={() => { setIsEditingTier(false); setNewTier(""); }}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-all"
+                  >
+                    <X size={14} className="inline mr-2" />
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="flex-1 px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white text-sm font-medium">
+                  {user.accountTier || "Standard"}
+                </div>
+                <button
+                  onClick={() => { setNewTier(user.accountTier || "Standard"); setIsEditingTier(true); }}
+                  className="px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-all"
+                >
+                  <Edit2 size={14} className="inline mr-1" />
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
+
+          <hr className="border-gray-700" />
+
+          {/* Member Since */}
+          <div>
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 block">
+              Member Since
+            </label>
+            {isEditingMemberSince ? (
+              <div className="space-y-3">
+                <input
+                  type="date"
+                  value={newMemberSince}
+                  onChange={(e) => setNewMemberSince(e.target.value)}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border-2 border-cyan-500 text-white outline-none"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleUpdateMemberSince}
+                    disabled={!newMemberSince || savingMemberSince}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-600 hover:to-violet-700"
+                  >
+                    <Save size={14} className="inline mr-2" />
+                    {savingMemberSince ? "Saving..." : "Save Date"}
+                  </button>
+                  <button
+                    onClick={() => { setIsEditingMemberSince(false); setNewMemberSince(""); }}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-all"
+                  >
+                    <X size={14} className="inline mr-2" />
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="flex-1 px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white text-sm font-medium">
+                  {user.createdAt
+                    ? new Date(
+                        typeof user.createdAt.toDate === "function"
+                          ? user.createdAt.toDate()
+                          : user.createdAt
+                      ).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+                    : "—"}
+                </div>
+                <button
+                  onClick={() => {
+                    const d = user.createdAt
+                      ? new Date(typeof user.createdAt.toDate === "function" ? user.createdAt.toDate() : user.createdAt)
+                      : new Date();
+                    setNewMemberSince(d.toISOString().split("T")[0]);
+                    setIsEditingMemberSince(true);
+                  }}
+                  className="px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-all"
+                >
+                  <Edit2 size={14} className="inline mr-1" />
+                  Edit
+                </button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
