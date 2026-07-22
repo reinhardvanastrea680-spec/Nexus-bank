@@ -168,7 +168,7 @@ function LocalTransfer() {
   const navigate = useNavigate();
   const { account } = useUserAccount();
   const { beneficiaries } = useBeneficiaries();
-  const { customBanks } = useCustomBanks();
+  const { customBanks, addCustomBank } = useCustomBanks();
   const { customAccounts } = useCustomAccounts(account?.id);
 
   // Get all available accounts dynamically
@@ -187,9 +187,24 @@ function LocalTransfer() {
   ];
 
   const [step, setStep] = useState(1);
-  const [selectedBank, setSelectedBank] = useState<(typeof globalBanks)[0] | null>(null);
+  // Use a loose bank type so custom/added banks with optional fields are accepted
+  const [selectedBank, setSelectedBank] = useState<{
+    id: string;
+    name: string;
+    country: string;
+    swift?: string;
+    routing?: string;
+    [key: string]: any;
+  } | null>(null);
   const [bankSearchQuery, setBankSearchQuery] = useState("");
   const [showBankResults, setShowBankResults] = useState(false);
+  // Inline "add bank" form state
+  const [showAddBankForm, setShowAddBankForm] = useState(false);
+  const [addBankName, setAddBankName] = useState("");
+  const [addBankCountry, setAddBankCountry] = useState("");
+  const [addBankSwift, setAddBankSwift] = useState("");
+  const [addBankRouting, setAddBankRouting] = useState("");
+  const [addingBank, setAddingBank] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [recipientSwift, setRecipientSwift] = useState("");
@@ -226,12 +241,47 @@ function LocalTransfer() {
       (bank.routing && bank.routing.includes(bankSearchQuery)),
   );
 
-  const handleSelectBank = (bank: (typeof allBanks)[0]) => {
-    setSelectedBank(bank);
+  const handleSelectBank = (bank: (typeof allBanks)[0]) => {    setSelectedBank(bank);
     setRecipientSwift(bank.swift || "");
     setRecipientRouting(bank.routing || "");
     setBankSearchQuery(bank.name);
     setShowBankResults(false);
+    setShowAddBankForm(false);
+  };
+
+  const handleAddBank = async () => {
+    const name = addBankName.trim();
+    if (!name) { toast.error("Bank name is required"); return; }
+    setAddingBank(true);
+    try {
+      // Save to Firestore customBanks collection
+      await addCustomBank(name, addBankCountry.trim());
+      toast.success(`"${name}" added to your bank list`);
+      // Auto-select the newly added bank and jump straight into recipient form
+      const newBank = {
+        id: `custom_${name.toLowerCase().replace(/\s+/g, "_")}_${Date.now()}`,
+        name,
+        country: addBankCountry.trim() || "Custom",
+        swift: addBankSwift.trim() || undefined,
+        routing: addBankRouting.trim() || undefined,
+      };
+      setSelectedBank(newBank);
+      setRecipientSwift(addBankSwift.trim());
+      setRecipientRouting(addBankRouting.trim());
+      setBankSearchQuery(name);
+      setShowBankResults(false);
+      setShowAddBankForm(false);
+      // Reset add-bank form fields
+      setAddBankName("");
+      setAddBankCountry("");
+      setAddBankSwift("");
+      setAddBankRouting("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add bank. Please try again.");
+    } finally {
+      setAddingBank(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -277,6 +327,7 @@ function LocalTransfer() {
     // PIN correct, proceed
     setPinError("");
     setLoading(true);
+    if (!selectedBank) return;
     try {
       const { transactionRef, status: txStatus } = await submitTransaction({
         type: "local_transfer",
@@ -459,16 +510,80 @@ function LocalTransfer() {
                   ) : (
                     <div className="p-4 space-y-3">
                       <p className="text-center text-sm" style={{ color: t.textMuted }}>No matching bank found</p>
-                      {bankSearchQuery.trim().length >= 2 && (
+                      {bankSearchQuery.trim().length >= 2 && !showAddBankForm && (
                         <button
                           onClick={() => {
-                            toast.info(`Bank not found. Your request to add "${bankSearchQuery}" has been noted. Please contact support to add this bank.`, { duration: 5000 });
+                            setAddBankName(bankSearchQuery.trim());
+                            setShowAddBankForm(true);
                           }}
                           className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all"
                           style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}
                         >
-                          + Request to Add "{bankSearchQuery}"
+                          + Add Bank "{bankSearchQuery}"
                         </button>
+                      )}
+
+                      {/* Inline Add Bank Form */}
+                      {showAddBankForm && (
+                        <div className="space-y-3 pt-1">
+                          <p className="text-xs font-semibold" style={{ color: t.textMuted }}>
+                            Fill in the bank details to add it:
+                          </p>
+                          {/* Bank Name */}
+                          <input
+                            type="text"
+                            value={addBankName}
+                            onChange={(e) => setAddBankName(e.target.value)}
+                            placeholder="Bank name *"
+                            className="w-full px-4 py-3 rounded-xl outline-none text-sm"
+                            style={{ background: t.inputBg, color: t.textPrimary }}
+                            autoFocus
+                          />
+                          {/* Country */}
+                          <input
+                            type="text"
+                            value={addBankCountry}
+                            onChange={(e) => setAddBankCountry(e.target.value)}
+                            placeholder="Country (optional)"
+                            className="w-full px-4 py-3 rounded-xl outline-none text-sm"
+                            style={{ background: t.inputBg, color: t.textPrimary }}
+                          />
+                          {/* SWIFT */}
+                          <input
+                            type="text"
+                            value={addBankSwift}
+                            onChange={(e) => setAddBankSwift(e.target.value.toUpperCase())}
+                            placeholder="SWIFT code (optional)"
+                            className="w-full px-4 py-3 rounded-xl outline-none text-sm"
+                            style={{ background: t.inputBg, color: t.textPrimary }}
+                          />
+                          {/* Routing */}
+                          <input
+                            type="text"
+                            value={addBankRouting}
+                            onChange={(e) => setAddBankRouting(e.target.value)}
+                            placeholder="Routing / Sort code (optional)"
+                            className="w-full px-4 py-3 rounded-xl outline-none text-sm"
+                            style={{ background: t.inputBg, color: t.textPrimary }}
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => { setShowAddBankForm(false); setAddBankName(""); setAddBankCountry(""); setAddBankSwift(""); setAddBankRouting(""); }}
+                              className="flex-1 py-3 rounded-xl text-sm font-semibold"
+                              style={{ background: t.inputBg, color: t.textMuted }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleAddBank}
+                              disabled={!addBankName.trim() || addingBank}
+                              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
+                              style={{ background: "linear-gradient(135deg, #38BDF8, #6366F1)" }}
+                            >
+                              {addingBank ? "Adding…" : "Add Bank"}
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
