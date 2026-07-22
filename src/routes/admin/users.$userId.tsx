@@ -4,7 +4,7 @@ import { ArrowLeft, Eye, EyeOff, Edit2, Save, X, RefreshCw, Camera } from "lucid
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { db } from "../../firebase/config";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
 
@@ -94,9 +94,9 @@ function UserDetailPage() {
     if (!newMemberSince) return;
     setSavingMemberSince(true);
     try {
-      // Store as a plain ISO string so it survives round-trips without serverTimestamp
+      // Store as a Firestore Timestamp so orderBy("createdAt") still works
       const date = new Date(newMemberSince);
-      await updateDoc(doc(db, "users", userId), { createdAt: date.toISOString() });
+      await updateDoc(doc(db, "users", userId), { createdAt: Timestamp.fromDate(date) });
       toast.success("Member since date updated");
       setIsEditingMemberSince(false);
       setNewMemberSince("");

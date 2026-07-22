@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/button";
 import { useUsers } from "../../admin/hooks/useUsers";
 import { useTransactions } from "../../admin/hooks/useTransactions";
 import { db } from "../../firebase/config";
-import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { formatInCurrency, type CurrencyCode } from "../../utils/currency";
 
 export const Route = createFileRoute("/admin/overview")({
@@ -175,19 +175,24 @@ function AdminOverviewPage() {
   });
 
   // Live chat preview — listen to chats with unread or recent messages
+  // Use a separate count query so the cap of 5 doesn't affect the stat card.
+  const [totalChatsCount, setTotalChatsCount] = useState(0);
   useEffect(() => {
+    // Fetch all chats without orderBy so chats missing lastMessageAt aren't excluded
     const unsub = onSnapshot(
-      query(collection(db, "chats"), orderBy("lastMessageAt", "desc"), limit(5)),
+      query(collection(db, "chats")),
       (snap) => {
-        setActiveChats(
-          snap.docs.map((d) => ({
-            id: d.id,
-            ...d.data(),
-            lastMessageAt: d.data().lastMessageAt?.toDate?.() ?? new Date(),
-          }))
-        );
+        const chats = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+          lastMessageAt: d.data().lastMessageAt?.toDate?.() ?? new Date(0),
+        }));
+        // Sort client-side so we don't exclude anything
+        chats.sort((a: any, b: any) => b.lastMessageAt - a.lastMessageAt);
+        setTotalChatsCount(chats.length);
+        setActiveChats(chats.slice(0, 5));
       },
-      () => {} // ignore errors silently
+      () => {}
     );
     return unsub;
   }, []);
@@ -198,10 +203,11 @@ function AdminOverviewPage() {
       totalAssets += (user.checkingBalance || 0) + (user.savingsBalance || 0);
     });
 
+    // createdAt is already a JS Date (converted in the hook) — no .toDate() needed
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const txToday = transactions.filter((tx) => {
-      const txDate = tx.createdAt?.toDate ? tx.createdAt.toDate() : new Date(tx.createdAt);
+      const txDate = tx.createdAt instanceof Date ? new Date(tx.createdAt) : new Date(tx.createdAt);
       txDate.setHours(0, 0, 0, 0);
       return txDate.getTime() === today.getTime();
     }).length;
@@ -209,10 +215,10 @@ function AdminOverviewPage() {
     setStats({
       totalUsers: users.length,
       totalAssets,
-      activeChatsCount: activeChats.length,
+      activeChatsCount: totalChatsCount,
       transactionsToday: txToday,
     });
-  }, [users, transactions, activeChats]);
+  }, [users, transactions, totalChatsCount]);
 
   return (
     <div className="space-y-6">
