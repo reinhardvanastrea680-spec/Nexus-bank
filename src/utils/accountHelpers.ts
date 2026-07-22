@@ -39,15 +39,20 @@ export function getAllAccountOptions(
         balance: account.savingsBalance || 0,
         accountNumber: account.savingsAccountNumber,
         status: account.status || "active",
-      },
-      {
-        value: "investment",
-        label: "Investment",
-        balance: account.investmentBalance || 0,
-        accountNumber: account.investmentAccountNumber,
-        status: account.status || "active",
       }
     );
+
+    // Only show investment account if it was explicitly created
+    // (investmentBalance must be a positive number set by the admin)
+    if (typeof account.investmentBalance === "number" && account.investmentBalance > 0) {
+      options.push({
+        value: "investment",
+        label: "Investment",
+        balance: account.investmentBalance,
+        accountNumber: account.investmentAccountNumber,
+        status: account.status || "active",
+      });
+    }
   }
 
   // Custom accounts
