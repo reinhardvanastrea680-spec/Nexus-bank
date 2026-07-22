@@ -359,6 +359,26 @@ function Login() {
               </a>. We will never ask for your password by email or phone.
             </p>
           </div>
+
+          {/* ── Legal Footer ── */}
+          <div className="mx-8 mb-8 text-center">
+            <p className="text-xs mb-2" style={{ color: "#9CA3AF" }}>
+              © {new Date().getFullYear()} Nexsus Bank. All rights reserved.
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <a href="/privacy" style={{ color: "#0EA5E9", fontSize: "0.75rem", textDecoration: "underline" }}>
+                Privacy Policy
+              </a>
+              <span style={{ color: "#D1D5DB", fontSize: "0.75rem" }}>·</span>
+              <a href="/terms" style={{ color: "#0EA5E9", fontSize: "0.75rem", textDecoration: "underline" }}>
+                Terms of Service
+              </a>
+              <span style={{ color: "#D1D5DB", fontSize: "0.75rem" }}>·</span>
+              <a href="https://nexsus-co.com/contact" style={{ color: "#0EA5E9", fontSize: "0.75rem", textDecoration: "underline" }}>
+                Contact Us
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
