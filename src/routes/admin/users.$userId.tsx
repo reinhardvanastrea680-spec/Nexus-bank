@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { ArrowLeft, Eye, EyeOff, Edit2, Save, X, RefreshCw, Camera } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Edit2, Save, X, RefreshCw, Camera, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { db } from "../../firebase/config";
-import { doc, onSnapshot, updateDoc, Timestamp } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, Timestamp, collection, addDoc } from "firebase/firestore";
 import { toast } from "sonner";
 import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
+import { generateTransactionRef } from "../../utils/generateTransactionRef";
 
 export const Route = createFileRoute("/admin/users/$userId")({
   component: UserDetailPage,
@@ -48,6 +49,12 @@ function UserDetailPage() {
   const [isEditingMemberSince, setIsEditingMemberSince] = useState(false);
   const [newMemberSince, setNewMemberSince] = useState("");
   const [savingMemberSince, setSavingMemberSince] = useState(false);
+
+  // Backdate transactions state
+  const [showBackdateModal, setShowBackdateModal] = useState(false);
+  const [backdateFrom, setBackdateFrom] = useState("");
+  const [backdateTo, setBackdateTo] = useState("");
+  const [backdating, setBackdating] = useState(false);
 
   const ACCOUNT_TIERS = ["Standard", "Bronze", "Silver", "Gold", "Platinum", "VIP", "Elite", "Diamond"];
 
@@ -104,6 +111,110 @@ function UserDetailPage() {
       toast.error(err?.message || "Failed to update date");
     } finally {
       setSavingMemberSince(false);
+    }
+  };
+
+  // ── Backdate transactions ────────────────────────────────────────────
+  const handleBackdateTransactions = async () => {
+    if (!backdateFrom || !backdateTo) {
+      toast.error("Please select both a start and end date");
+      return;
+    }
+    const start = new Date(backdateFrom);
+    const end   = new Date(backdateTo);
+    end.setHours(23, 59, 59, 999);
+
+    if (start >= end) {
+      toast.error("Start date must be before end date");
+      return;
+    }
+    if (end > new Date()) {
+      toast.error("End date cannot be in the future");
+      return;
+    }
+
+    setBackdating(true);
+    try {
+      const fullName     = user.fullName || "Account Holder";
+      const checkingAcct = user.checkingAccountNumber || "";
+      const savingsAcct  = user.savingsAccountNumber  || "";
+
+      // ── Transaction templates that feel realistic ─────────────────
+      const templates = [
+        { desc: "Direct Deposit — Payroll",           type: "credit",  cat: "Income",    acct: "checking", minAmt: 1200, maxAmt: 4500  },
+        { desc: "ACH Transfer — Online Bill Pay",     type: "debit",   cat: "Bills",     acct: "checking", minAmt: 50,   maxAmt: 350   },
+        { desc: "POS Purchase — Grocery Store",       type: "debit",   cat: "Shopping",  acct: "checking", minAmt: 25,   maxAmt: 180   },
+        { desc: "ATM Withdrawal",                     type: "debit",   cat: "Cash",      acct: "checking", minAmt: 40,   maxAmt: 300   },
+        { desc: "Utility Bill — Electric Company",    type: "debit",   cat: "Bills",     acct: "checking", minAmt: 60,   maxAmt: 220   },
+        { desc: "Online Transfer to Savings",         type: "debit",   cat: "Transfer",  acct: "checking", minAmt: 100,  maxAmt: 800   },
+        { desc: "Transfer from Checking",             type: "credit",  cat: "Transfer",  acct: "savings",  minAmt: 100,  maxAmt: 800   },
+        { desc: "Interest Credit — Savings Account",  type: "credit",  cat: "Interest",  acct: "savings",  minAmt: 1,    maxAmt: 35    },
+        { desc: "Mobile Deposit — Check",             type: "credit",  cat: "Deposit",   acct: "checking", minAmt: 200,  maxAmt: 2000  },
+        { desc: "Subscription — Streaming Service",  type: "debit",   cat: "Bills",     acct: "checking", minAmt: 10,   maxAmt: 50    },
+        { desc: "Restaurant — Dining",                type: "debit",   cat: "Food",      acct: "checking", minAmt: 15,   maxAmt: 120   },
+        { desc: "Gas Station Purchase",               type: "debit",   cat: "Transport", acct: "checking", minAmt: 30,   maxAmt: 90    },
+        { desc: "Freelance Payment Received",         type: "credit",  cat: "Income",    acct: "checking", minAmt: 300,  maxAmt: 2500  },
+        { desc: "Insurance Premium Payment",          type: "debit",   cat: "Bills",     acct: "checking", minAmt: 80,   maxAmt: 400   },
+        { desc: "Online Shopping — Retail",           type: "debit",   cat: "Shopping",  acct: "checking", minAmt: 20,   maxAmt: 250   },
+      ];
+
+      // Spread transactions across the date range
+      const totalDays = Math.ceil((end.getTime() - start.getTime()) / 86_400_000);
+      // 1–3 transactions per day on average, capped at 60 total
+      const count = Math.min(Math.max(Math.round(totalDays * 1.8), 5), 60);
+
+      const writes: Promise<any>[] = [];
+
+      for (let i = 0; i < count; i++) {
+        // Spread evenly across the range with slight randomness
+        const fraction = i / count + (Math.random() * 0.6) / count;
+        const txDate   = new Date(start.getTime() + fraction * (end.getTime() - start.getTime()));
+        txDate.setSeconds(Math.floor(Math.random() * 59));
+        txDate.setMinutes(Math.floor(Math.random() * 59));
+        txDate.setHours(Math.floor(Math.random() * 22) + 1); // 01:00 – 23:00
+
+        // Pick a template, weighted towards checking debits (realistic)
+        const tpl = templates[Math.floor(Math.random() * templates.length)];
+        const amount = parseFloat(
+          (tpl.minAmt + Math.random() * (tpl.maxAmt - tpl.minAmt)).toFixed(2)
+        );
+        const accountNumber = tpl.acct === "savings" ? savingsAcct : checkingAcct;
+        const txTimestamp   = Timestamp.fromDate(txDate);
+
+        writes.push(
+          addDoc(collection(db, "transactions"), {
+            userId,
+            userFullName: fullName,
+            description:  tpl.desc,
+            type:         tpl.type,
+            amount,
+            category:     tpl.cat,
+            status:       "completed",
+            fundingAccount:   tpl.acct,
+            accountNumber,
+            transactionRef:   generateTransactionRef(),
+            createdAt:        txTimestamp,
+            date:             txTimestamp,
+            createdByAdmin:   true,
+            backdated:        true,
+          })
+        );
+      }
+
+      await Promise.all(writes);
+
+      toast.success(
+        `${count} backdated transactions created between ${start.toLocaleDateString()} and ${end.toLocaleDateString()}`,
+        { duration: 6000 }
+      );
+      setShowBackdateModal(false);
+      setBackdateFrom("");
+      setBackdateTo("");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "Failed to create backdated transactions");
+    } finally {
+      setBackdating(false);
     }
   };
 
@@ -650,8 +761,141 @@ function UserDetailPage() {
               </div>
             )}
           </div>
+
+          <hr className="border-gray-700" />
+
+          {/* Backdate Transactions */}
+          <div>
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 block">
+              Backdate Transactions
+            </label>
+            <p className="text-xs text-gray-500 mb-3">
+              Automatically generate realistic past transactions within a date range to build account history.
+            </p>
+            <button
+              onClick={() => setShowBackdateModal(true)}
+              className="w-full px-4 py-3 rounded-xl text-sm font-semibold text-white transition-all flex items-center justify-center gap-2"
+              style={{ background: "linear-gradient(135deg, #f59e0b, #ef4444)" }}
+            >
+              <Clock size={15} className="inline" />
+              Backdate Transactions
+            </button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* ── Backdate Modal ── */}
+      {showBackdateModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.75)" }}
+          onClick={() => !backdating && setShowBackdateModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl p-6 space-y-5"
+            style={{ background: "#0F1829", border: "1px solid rgba(255,255,255,0.08)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-white font-bold text-lg flex items-center gap-2">
+                  <Clock size={18} className="text-amber-400" />
+                  Backdate Transactions
+                </h3>
+                <p className="text-gray-400 text-xs mt-1">
+                  Generate realistic transaction history for{" "}
+                  <span className="text-white font-medium">{user.fullName}</span>
+                </p>
+              </div>
+              <button
+                onClick={() => setShowBackdateModal(false)}
+                disabled={backdating}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X size={18} className="text-gray-400" />
+              </button>
+            </div>
+
+            {/* Date Range */}
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 block">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={backdateFrom}
+                  onChange={(e) => setBackdateFrom(e.target.value)}
+                  max={backdateTo || new Date().toISOString().split("T")[0]}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white outline-none focus:border-amber-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 block">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  value={backdateTo}
+                  onChange={(e) => setBackdateTo(e.target.value)}
+                  min={backdateFrom || undefined}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white outline-none focus:border-amber-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Preview */}
+            {backdateFrom && backdateTo && new Date(backdateFrom) < new Date(backdateTo) && (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <p className="text-amber-300 text-xs font-medium">
+                  📋 Preview: Approximately{" "}
+                  <strong>
+                    {Math.min(
+                      Math.max(
+                        Math.round(
+                          ((new Date(backdateTo).getTime() - new Date(backdateFrom).getTime()) /
+                            86_400_000) * 1.8
+                        ),
+                        5
+                      ),
+                      60
+                    )}
+                  </strong>{" "}
+                  realistic transactions will be created — deposits, withdrawals, bill payments, transfers — spread across the date range.
+                </p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setShowBackdateModal(false); setBackdateFrom(""); setBackdateTo(""); }}
+                disabled={backdating}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-gray-400 bg-gray-800 hover:bg-gray-700 transition-all disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBackdateTransactions}
+                disabled={!backdateFrom || !backdateTo || backdating}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg, #f59e0b, #ef4444)" }}
+              >
+                {backdating ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                    Generating…
+                  </span>
+                ) : (
+                  "Backdate"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
