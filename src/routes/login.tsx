@@ -4,6 +4,14 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useUserAuth } from "../dashboard/hooks/useUserAuth";
 
 export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Sign In - Nexsus Bank" },
+      // Block search engines from indexing the login page
+      // A credential-collection page should never appear in search results
+      { name: "robots", content: "noindex, nofollow, noarchive, nosnippet" },
+    ],
+  }),
   component: Login,
 });
 
