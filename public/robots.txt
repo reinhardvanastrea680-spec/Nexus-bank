@@ -1,0 +1,7 @@
+# Nexsus Bank - Customer Portal
+# This is a private banking portal. All pages are restricted from indexing.
+
+User-agent: *
+Disallow: /
+
+# Sitemap: none — this is a private portal, not a public website
