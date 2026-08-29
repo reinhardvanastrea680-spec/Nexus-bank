@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 import { useUsers } from "../../admin/hooks/useUsers";
 import { db } from "../../firebase/config";
 import {
@@ -113,7 +112,15 @@ function AdminChatPage() {
   }, [selectedUserId]);
 
   useEffect(() => { 
-    // Only scroll if input is not focused (prevents keyboard from closing on mobile)
+    // Completely disable auto-scroll on mobile to prevent ANY focus interference
+    // Only scroll on desktop or when input is definitely not focused
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      // On mobile, never auto-scroll - user can scroll manually
+      return;
+    }
+    
+    // On desktop, only scroll if input is not focused
     if (document.activeElement !== inputRef.current) {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
     }
@@ -307,7 +314,7 @@ function AdminChatPage() {
       {/* Input */}
       <div className="p-3 md:p-4 border-t border-gray-200">
         <form onSubmit={sendAdminMessage} className="flex gap-2 md:gap-3">
-          <Input 
+          <input 
             ref={inputRef}
             type="text" 
             placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
@@ -318,8 +325,10 @@ function AdminChatPage() {
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
-            spellCheck="false"
-            className="flex-1 h-11 md:h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" 
+            spellCheck={false}
+            inputMode="text"
+            enterKeyHint="send"
+            className="flex-1 h-11 md:h-12 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 text-gray-900" 
           />
           <Button type="submit" disabled={!chatInput.trim() || !selectedUserId}
             aria-label="Send reply"
