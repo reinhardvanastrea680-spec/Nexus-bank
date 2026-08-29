@@ -52,25 +52,11 @@ function AdminChatPage() {
     }
   };
 
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setChatInput(value);
-    
-    if (!selectedUserId) return;
-    
-    // Clear any existing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    
-    // Debounce the typing indicator update to avoid interfering with input
-    typingTimeoutRef.current = setTimeout(() => {
-      updateDoc(doc(db, "chats", selectedUserId), { 
-        isTypingAdmin: value.length > 0 
-      }).catch(() => {});
-    }, 300); // Wait 300ms after user stops typing
+    // Removed Firestore update from here - it was causing keyboard issues
+    // Typing indicator is not critical enough to risk input stability
   };
 
   // Load all chats
@@ -116,15 +102,6 @@ function AdminChatPage() {
   }, [selectedUserId]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
-
-  // Cleanup typing timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const sendAdminMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
