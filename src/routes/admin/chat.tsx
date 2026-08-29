@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -36,6 +36,7 @@ function AdminChatPage() {
   const [chats, setChats]           = useState<Chat[]>([]);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const selectedUser = selectedUserId ? users.find((u) => u.id === selectedUserId) : null;
   const totalUnread  = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
   const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
@@ -52,12 +53,12 @@ function AdminChatPage() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setChatInput(value);
     // Removed Firestore update from here - it was causing keyboard issues
     // Typing indicator is not critical enough to risk input stability
-  };
+  }, []);
 
   // Load all chats
   useEffect(() => {
@@ -94,16 +95,31 @@ function AdminChatPage() {
         };
       });
       setChatMessages(msgs);
-      msgs.filter((m) => m.sender === "user" && !m.readByAdmin)
-        .forEach((m) => updateDoc(doc(db, "chats", selectedUserId, "messages", m.id), { readByAdmin: true }));
-      updateDoc(doc(db, "chats", selectedUserId), { unreadByAdmin: 0 }).catch(() => {});
+      
+      // Mark messages as read WITHOUT blocking the UI - fire and forget
+      const unreadMsgs = msgs.filter((m) => m.sender === "user" && !m.readByAdmin);
+      if (unreadMsgs.length > 0) {
+        // Use Promise.all to batch these operations and don't await
+        Promise.all([
+          ...unreadMsgs.map((m) => 
+            updateDoc(doc(db, "chats", selectedUserId, "messages", m.id), { readByAdmin: true })
+              .catch(() => {}) // Silently fail
+          ),
+          updateDoc(doc(db, "chats", selectedUserId), { unreadByAdmin: 0 }).catch(() => {})
+        ]);
+      }
     });
     return unsub;
   }, [selectedUserId]);
 
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
+  useEffect(() => { 
+    // Only scroll if input is not focused (prevents keyboard from closing on mobile)
+    if (document.activeElement !== inputRef.current) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
+    }
+  }, [chatMessages]);
 
-  const sendAdminMessage = async (e?: React.FormEvent) => {
+  const sendAdminMessage = useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!chatInput.trim() || !selectedUserId) return;
     const text = chatInput.trim();
@@ -115,7 +131,7 @@ function AdminChatPage() {
       lastMessage: text, lastMessageAt: serverTimestamp(),
       unreadByUser: increment(1), isTypingAdmin: false,
     });
-  };
+  }, [chatInput, selectedUserId]);
 
   const openChat = (id: string) => {
     setSelectedUserId(id);
@@ -291,10 +307,20 @@ function AdminChatPage() {
       {/* Input */}
       <div className="p-3 md:p-4 border-t border-gray-200">
         <form onSubmit={sendAdminMessage} className="flex gap-2 md:gap-3">
-          <Input type="text" placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
-            value={chatInput} onChange={handleInputChange} disabled={!selectedUserId}
+          <Input 
+            ref={inputRef}
+            type="text" 
+            placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
+            value={chatInput} 
+            onChange={handleInputChange} 
+            disabled={!selectedUserId}
             aria-label="Reply message"
-            className="flex-1 h-11 md:h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            className="flex-1 h-11 md:h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" 
+          />
           <Button type="submit" disabled={!chatInput.trim() || !selectedUserId}
             aria-label="Send reply"
             className="h-11 md:h-12 px-4 md:px-6 bg-gradient-to-r from-cyan-500 to-violet-600 text-white">
