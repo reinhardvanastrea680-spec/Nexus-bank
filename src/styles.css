@@ -1305,24 +1305,40 @@ input[type="text"].login-input-black {
    ══════════════════════════════════════════════════════════════════════════════ */
 .admin-chat-input,
 .admin-chat-input:focus,
-.admin-chat-input:active {
-  color: #111827 !important;
-  -webkit-text-fill-color: #111827 !important;
-  caret-color: #111827 !important;
+.admin-chat-input:active,
+.admin-chat-input:hover,
+.admin-chat-input:disabled {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
   font-size: 16px !important;
+  background-color: #FFFFFF !important;
   opacity: 1 !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 .dark .admin-chat-input,
 .dark .admin-chat-input:focus,
-.dark .admin-chat-input:active {
+.dark .admin-chat-input:active,
+.dark .admin-chat-input:hover {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
   caret-color: #FFFFFF !important;
+  background-color: #1F2937 !important;
 }
 .admin-chat-input::placeholder {
   color: #9CA3AF !important;
   -webkit-text-fill-color: #9CA3AF !important;
-  opacity: 1 !important;
+  opacity: 0.6 !important;
+}
+/* Force input value to be visible */
+.admin-chat-input:not(:placeholder-shown) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark .admin-chat-input:not(:placeholder-shown) {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 /* Login page input styles */

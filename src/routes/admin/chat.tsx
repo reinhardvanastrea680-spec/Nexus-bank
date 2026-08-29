@@ -371,7 +371,15 @@ function AdminChatPage() {
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                className="admin-chat-input flex-1 h-11 md:h-12 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{
+                  color: '#000000',
+                  WebkitTextFillColor: '#000000',
+                  caretColor: '#000000',
+                  fontSize: '16px',
+                  backgroundColor: '#FFFFFF',
+                  opacity: 1
+                }}
+                className="admin-chat-input flex-1 h-11 md:h-12 rounded-md border border-gray-300 px-3 py-1 shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
               <Button
                 type="submit"
