@@ -39,6 +39,9 @@ function AdminChatPage() {
   const selectedUser = selectedUserId ? users.find((u) => u.id === selectedUserId) : null;
   const totalUnread  = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
   const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
+  
+  // Prevent ANY re-renders from affecting input by tracking if user is actively typing
+  const isTypingRef = useRef(false);
 
   const handleDeleteMessage = async (msgId: string) => {
     if (!selectedUserId) return;
@@ -53,10 +56,14 @@ function AdminChatPage() {
   };
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    isTypingRef.current = true; // Mark that user is actively typing
     const value = e.target.value;
     setChatInput(value);
-    // Removed Firestore update from here - it was causing keyboard issues
-    // Typing indicator is not critical enough to risk input stability
+    
+    // Clear typing flag after a delay
+    setTimeout(() => {
+      isTypingRef.current = false;
+    }, 500);
   }, []);
 
   // Load all chats
@@ -82,6 +89,11 @@ function AdminChatPage() {
     if (!selectedUserId) { setChatMessages([]); return; }
     const q = query(collection(db, "chats", selectedUserId, "messages"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (snap) => {
+      // CRITICAL: Don't update state if user is actively typing
+      if (isTypingRef.current) {
+        return; // Skip this update to prevent re-render while typing
+      }
+      
       const msgs: Message[] = snap.docs.map((d) => {
         const data = d.data();
         const createdAt = data.createdAt?.toDate() || new Date();
@@ -111,7 +123,12 @@ function AdminChatPage() {
     return unsub;
   }, [selectedUserId]);
 
-  useEffect(() => { 
+  useEffect(() => {
+    // CRITICAL: Never scroll while user is typing - prevents ALL keyboard interference
+    if (isTypingRef.current) {
+      return; // Don't scroll at all while typing
+    }
+    
     // Completely disable auto-scroll on mobile to prevent ANY focus interference
     // Only scroll on desktop or when input is definitely not focused
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -129,6 +146,9 @@ function AdminChatPage() {
   const sendAdminMessage = useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!chatInput.trim() || !selectedUserId) return;
+    
+    isTypingRef.current = false; // Clear typing flag
+    
     const text = chatInput.trim();
     setChatInput("");
     await addDoc(collection(db, "chats", selectedUserId, "messages"), {
@@ -319,7 +339,12 @@ function AdminChatPage() {
             type="text" 
             placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
             value={chatInput} 
-            onChange={handleInputChange} 
+            onChange={handleInputChange}
+            onFocus={() => { isTypingRef.current = true; }}
+            onBlur={() => { 
+              // Delay clearing to handle clipboard paste/autocomplete
+              setTimeout(() => { isTypingRef.current = false; }, 300);
+            }}
             disabled={!selectedUserId}
             aria-label="Reply message"
             autoComplete="off"
