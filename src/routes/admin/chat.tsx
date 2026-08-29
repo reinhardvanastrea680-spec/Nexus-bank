@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, memo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -30,18 +30,15 @@ function AdminChatPage() {
   const { userId } = useSearch({ from: "/admin/chat" });
   const { users } = useUsers();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(userId ?? null);
-  const [chatInput, setChatInput]   = useState("");
+  const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
-  const [chats, setChats]           = useState<Chat[]>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const selectedUser = selectedUserId ? users.find((u) => u.id === selectedUserId) : null;
-  const totalUnread  = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
+  const totalUnread = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
   const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
-  
-  // Prevent ANY re-renders from affecting input by tracking if user is actively typing
-  const isTypingRef = useRef(false);
 
   const handleDeleteMessage = async (msgId: string) => {
     if (!selectedUserId) return;
@@ -55,28 +52,17 @@ function AdminChatPage() {
     }
   };
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    isTypingRef.current = true; // Mark that user is actively typing
-    const value = e.target.value;
-    setChatInput(value);
-    
-    // Clear typing flag after a delay
-    setTimeout(() => {
-      isTypingRef.current = false;
-    }, 500);
-  }, []);
-
   // Load all chats
   useEffect(() => {
     const unsub = onSnapshot(query(collection(db, "chats")), (snap) => {
       const list: Chat[] = snap.docs.map((d) => ({
         id: d.id,
         userFullName: d.data().userFullName || "User",
-        userEmail:    d.data().userEmail    || "",
-        lastMessage:  d.data().lastMessage  || "",
+        userEmail: d.data().userEmail || "",
+        lastMessage: d.data().lastMessage || "",
         lastMessageAt: d.data().lastMessageAt?.toDate() || new Date(),
         unreadByAdmin: d.data().unreadByAdmin || 0,
-        status:       d.data().status        || "active",
+        status: d.data().status || "active",
       }));
       list.sort((a, b) => b.lastMessageAt.getTime() - a.lastMessageAt.getTime());
       setChats(list);
@@ -86,284 +72,75 @@ function AdminChatPage() {
 
   // Load messages
   useEffect(() => {
-    if (!selectedUserId) { setChatMessages([]); return; }
+    if (!selectedUserId) {
+      setChatMessages([]);
+      return;
+    }
     const q = query(collection(db, "chats", selectedUserId, "messages"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (snap) => {
-      // CRITICAL: Don't update state if user is actively typing
-      if (isTypingRef.current) {
-        return; // Skip this update to prevent re-render while typing
-      }
-      
       const msgs: Message[] = snap.docs.map((d) => {
         const data = d.data();
         const createdAt = data.createdAt?.toDate() || new Date();
         return {
-          id: d.id, text: data.text, sender: data.sender, createdAt,
-          readByUser: data.readByUser ?? false, readByAdmin: data.readByAdmin ?? true,
+          id: d.id,
+          text: data.text,
+          sender: data.sender,
+          createdAt,
+          readByUser: data.readByUser ?? false,
+          readByAdmin: data.readByAdmin ?? true,
           time: createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           mediaUrl: data.mediaUrl || undefined,
           mediaType: data.mediaType || undefined,
         };
       });
       setChatMessages(msgs);
-      
-      // Mark messages as read WITHOUT blocking the UI - fire and forget
+
+      // Mark messages as read
       const unreadMsgs = msgs.filter((m) => m.sender === "user" && !m.readByAdmin);
       if (unreadMsgs.length > 0) {
-        // Use Promise.all to batch these operations and don't await
         Promise.all([
-          ...unreadMsgs.map((m) => 
-            updateDoc(doc(db, "chats", selectedUserId, "messages", m.id), { readByAdmin: true })
-              .catch(() => {}) // Silently fail
+          ...unreadMsgs.map((m) =>
+            updateDoc(doc(db, "chats", selectedUserId, "messages", m.id), { readByAdmin: true }).catch(() => {})
           ),
-          updateDoc(doc(db, "chats", selectedUserId), { unreadByAdmin: 0 }).catch(() => {})
+          updateDoc(doc(db, "chats", selectedUserId), { unreadByAdmin: 0 }).catch(() => {}),
         ]);
       }
     });
     return unsub;
   }, [selectedUserId]);
 
+  // Auto-scroll - disabled on mobile
   useEffect(() => {
-    // CRITICAL: Never scroll while user is typing - prevents ALL keyboard interference
-    if (isTypingRef.current) {
-      return; // Don't scroll at all while typing
-    }
-    
-    // Completely disable auto-scroll on mobile to prevent ANY focus interference
-    // Only scroll on desktop or when input is definitely not focused
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      // On mobile, never auto-scroll - user can scroll manually
-      return;
-    }
-    
-    // On desktop, only scroll if input is not focused
-    if (document.activeElement !== inputRef.current) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
+    if (!isMobile && document.activeElement !== inputRef.current) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatMessages]);
 
-  const sendAdminMessage = useCallback(async (e?: React.FormEvent) => {
+  const sendAdminMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!chatInput.trim() || !selectedUserId) return;
-    
-    isTypingRef.current = false; // Clear typing flag
-    
     const text = chatInput.trim();
     setChatInput("");
     await addDoc(collection(db, "chats", selectedUserId, "messages"), {
-      text, sender: "admin", readByAdmin: true, readByUser: false, createdAt: serverTimestamp(),
+      text,
+      sender: "admin",
+      readByAdmin: true,
+      readByUser: false,
+      createdAt: serverTimestamp(),
     });
     await updateDoc(doc(db, "chats", selectedUserId), {
-      lastMessage: text, lastMessageAt: serverTimestamp(),
-      unreadByUser: increment(1), isTypingAdmin: false,
+      lastMessage: text,
+      lastMessageAt: serverTimestamp(),
+      unreadByUser: increment(1),
+      isTypingAdmin: false,
     });
-  }, [chatInput, selectedUserId]);
+  };
 
   const openChat = (id: string) => {
     setSelectedUserId(id);
     setShowMobileChat(true);
   };
-
-  // ── Chat list panel ──────────────────────────────────────────────────────
-  const ChatList = () => (
-    <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
-            <Users size={16} className="text-cyan-600" aria-hidden="true" />
-            Chats
-          </div>
-          {totalUnread > 0 && (
-            <span className="px-2 py-0.5 rounded-full text-xs font-bold"
-              style={{ background: "#EF4444", color: "#FFFFFF" }}>
-              {totalUnread} new
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        {chats.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">
-            <MessageSquare size={32} className="mx-auto mb-3 opacity-30" aria-hidden="true" />
-            No active chats
-          </div>
-        ) : chats.map((chat) => (
-          <button key={chat.id} onClick={() => openChat(chat.id)}
-            className={`w-full p-2.5 rounded-xl cursor-pointer transition-all text-left ${
-              selectedUserId === chat.id
-                ? "bg-gradient-to-r from-cyan-50 to-violet-50 border border-cyan-300"
-                : "hover:bg-gray-50 border border-transparent"
-            }`}
-            aria-label={`Chat with ${chat.userFullName}${chat.unreadByAdmin > 0 ? `, ${chat.unreadByAdmin} unread` : ""}`}>
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0" aria-hidden="true">
-                {chat.userFullName.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1">
-                  <p className="text-gray-900 font-medium truncate text-sm">{chat.userFullName}</p>
-                  {chat.unreadByAdmin > 0 && (
-                    <span className="min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                      style={{ background: "#38BDF8", color: "#FFFFFF" }} aria-hidden="true">
-                      {chat.unreadByAdmin}
-                    </span>
-                  )}
-                </div>
-                <p className="text-gray-500 text-xs truncate">{chat.lastMessage || chat.userEmail}</p>
-              </div>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
-  // ── Chat window panel ────────────────────────────────────────────────────
-  const ChatWindow = () => (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center gap-3">
-        {/* Back button on mobile */}
-        <button onClick={() => setShowMobileChat(false)} aria-label="Back to chat list"
-          className="lg:hidden p-2 -ml-1 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 mr-1">
-          <ArrowLeft size={20} aria-hidden="true" />
-        </button>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white flex-shrink-0" aria-hidden="true">
-          {selectedUser ? selectedUser.fullName.charAt(0).toUpperCase() : <User size={20} />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-gray-900 font-semibold truncate">
-            {selectedUser ? selectedUser.fullName : "Select a chat"}
-          </p>
-          {selectedUser && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500">
-              <Circle size={6} className="fill-green-400 text-green-400" aria-hidden="true" />
-              {selectedUser.email}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" aria-label="Chat messages" aria-live="polite">
-        {!selectedUserId ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 py-12">
-            <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
-            <p>Select a chat to start replying</p>
-          </div>
-        ) : chatMessages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 py-12">
-            <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
-            <p>No messages yet</p>
-          </div>
-        ) : chatMessages.map((msg) => {
-          // ── System presence message (online/offline indicator) ──
-          if ((msg as any).sender === "system" || (msg as any).isPresence) {
-            return (
-              <div key={msg.id} className="flex justify-center my-1">
-                <span className="text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600">
-                  {msg.text}
-                </span>
-              </div>
-            );
-          }
-          // ── Regular message ──
-          return (
-          <div key={msg.id} className={`flex items-end gap-1 group ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
-            {/* Delete button — user messages get it on the right, admin messages on the left */}
-            {msg.sender === "user" && (
-              <button
-                onClick={() => handleDeleteMessage(msg.id)}
-                disabled={deletingMsgId === msg.id}
-                className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-all"
-                style={{ color: "#EF4444" }}
-                title="Delete message">
-                <Trash2 size={13} />
-              </button>
-            )}
-            <div className="max-w-[80%] p-3 rounded-2xl"
-              style={{
-                background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#FFFFFF",
-                borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-                border: msg.sender === "user" ? "1px solid #E5E7EB" : "none",
-              }}>
-              {/* Render image if mediaUrl is an image */}
-              {msg.mediaUrl && (
-                msg.mediaType?.startsWith("video/") ? (
-                  <video src={msg.mediaUrl} controls
-                    className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 220 }} />
-                ) : (
-                  <img src={msg.mediaUrl} alt="Shared image"
-                    className="rounded-xl mb-2 max-w-full cursor-pointer"
-                    style={{ maxHeight: 220 }}
-                    onClick={() => window.open(msg.mediaUrl, "_blank")}
-                  />
-                )
-              )}
-              {/* Only show text if it's not just an emoji label */}
-              {(!msg.mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text)) ? (
-                <p className={`text-sm leading-relaxed ${msg.sender === "admin" ? "text-white" : "text-gray-900"}`}>{msg.text}</p>
-              ) : null}
-              <div className="flex items-center justify-end gap-1 mt-1">
-                <p className={`text-xs ${msg.sender === "admin" ? "text-white/60" : "text-gray-500"}`}>{msg.time}</p>
-                {msg.sender === "admin" && (
-                  msg.readByUser
-                    ? <CheckCheck size={12} style={{ color: "rgba(255,255,255,0.8)" }} aria-label="Read" />
-                    : <Check     size={12} style={{ color: "rgba(255,255,255,0.5)" }} aria-label="Sent" />
-                )}
-              </div>
-            </div>
-            {/* Delete button on the right for admin messages */}
-            {msg.sender === "admin" && (
-              <button
-                onClick={() => handleDeleteMessage(msg.id)}
-                disabled={deletingMsgId === msg.id}
-                className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-all"
-                style={{ color: "#EF4444" }}
-                title="Delete message">
-                <Trash2 size={13} />
-              </button>
-            )}
-          </div>
-          );
-        })}
-        <div ref={chatEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="p-3 md:p-4 border-t border-gray-200">
-        <form onSubmit={sendAdminMessage} className="flex gap-2 md:gap-3">
-          <input 
-            ref={inputRef}
-            type="text" 
-            placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
-            value={chatInput} 
-            onChange={handleInputChange}
-            onFocus={() => { isTypingRef.current = true; }}
-            onBlur={() => { 
-              // Delay clearing to handle clipboard paste/autocomplete
-              setTimeout(() => { isTypingRef.current = false; }, 300);
-            }}
-            disabled={!selectedUserId}
-            aria-label="Reply message"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            inputMode="text"
-            enterKeyHint="send"
-            className="flex-1 h-11 md:h-12 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 text-gray-900" 
-          />
-          <Button type="submit" disabled={!chatInput.trim() || !selectedUserId}
-            aria-label="Send reply"
-            className="h-11 md:h-12 px-4 md:px-6 bg-gradient-to-r from-cyan-500 to-violet-600 text-white">
-            <Send size={16} aria-hidden="true" />
-          </Button>
-        </form>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex flex-col h-full">
@@ -372,8 +149,11 @@ function AdminChatPage() {
           <MessageSquare className="text-cyan-600" aria-hidden="true" />
           Live Chat Center
           {totalUnread > 0 && (
-            <span className="ml-2 px-2.5 py-0.5 rounded-full text-sm font-bold"
-              style={{ background: "#EF4444", color: "#FFFFFF" }} aria-label={`${totalUnread} unread messages`}>
+            <span
+              className="ml-2 px-2.5 py-0.5 rounded-full text-sm font-bold"
+              style={{ background: "#EF4444", color: "#FFFFFF" }}
+              aria-label={`${totalUnread} unread messages`}
+            >
               {totalUnread}
             </span>
           )}
@@ -381,17 +161,227 @@ function AdminChatPage() {
         <p className="text-gray-600 mt-1 text-sm">Manage customer conversations in real time</p>
       </div>
 
-      {/* Desktop: side by side | Mobile: conditional panels */}
-      <div className="flex-1 flex min-h-0 rounded-2xl overflow-hidden border border-gray-200" style={{ minHeight: "calc(100vh - 200px)" }}>
-
-        {/* Chat list — narrow sidebar, always visible on desktop */}
-        <div className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 border-r border-gray-200 bg-white`}>
-          <ChatList />
+      <div
+        className="flex-1 flex min-h-0 rounded-2xl overflow-hidden border border-gray-200"
+        style={{ minHeight: "calc(100vh - 200px)" }}
+      >
+        {/* Chat list */}
+        <div
+          className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 border-r border-gray-200 bg-white`}
+        >
+          <div className="p-3 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+                <Users size={16} className="text-cyan-600" aria-hidden="true" />
+                Chats
+              </div>
+              {totalUnread > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-bold" style={{ background: "#EF4444", color: "#FFFFFF" }}>
+                  {totalUnread} new
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {chats.length === 0 ? (
+              <div className="text-center py-12 text-gray-400 text-sm">
+                <MessageSquare size={32} className="mx-auto mb-3 opacity-30" aria-hidden="true" />
+                No active chats
+              </div>
+            ) : (
+              chats.map((chat) => (
+                <button
+                  key={chat.id}
+                  onClick={() => openChat(chat.id)}
+                  className={`w-full p-2.5 rounded-xl cursor-pointer transition-all text-left ${
+                    selectedUserId === chat.id
+                      ? "bg-gradient-to-r from-cyan-50 to-violet-50 border border-cyan-300"
+                      : "hover:bg-gray-50 border border-transparent"
+                  }`}
+                  aria-label={`Chat with ${chat.userFullName}${chat.unreadByAdmin > 0 ? `, ${chat.unreadByAdmin} unread` : ""}`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="w-9 h-9 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0"
+                      aria-hidden="true"
+                    >
+                      {chat.userFullName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <p className="text-gray-900 font-medium truncate text-sm">{chat.userFullName}</p>
+                        {chat.unreadByAdmin > 0 && (
+                          <span
+                            className="min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                            style={{ background: "#38BDF8", color: "#FFFFFF" }}
+                            aria-hidden="true"
+                          >
+                            {chat.unreadByAdmin}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-500 text-xs truncate">{chat.lastMessage || chat.userEmail}</p>
+                    </div>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Chat window — takes all remaining space */}
+        {/* Chat window */}
         <div className={`${showMobileChat ? "flex" : "hidden"} lg:flex flex-col flex-1 min-w-0 bg-white`}>
-          <ChatWindow />
+          {/* Header */}
+          <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+            <button
+              onClick={() => setShowMobileChat(false)}
+              aria-label="Back to chat list"
+              className="lg:hidden p-2 -ml-1 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 mr-1"
+            >
+              <ArrowLeft size={20} aria-hidden="true" />
+            </button>
+            <div
+              className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white flex-shrink-0"
+              aria-hidden="true"
+            >
+              {selectedUser ? selectedUser.fullName.charAt(0).toUpperCase() : <User size={20} />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-900 font-semibold truncate">{selectedUser ? selectedUser.fullName : "Select a chat"}</p>
+              {selectedUser && (
+                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <Circle size={6} className="fill-green-400 text-green-400" aria-hidden="true" />
+                  {selectedUser.email}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" aria-label="Chat messages" aria-live="polite">
+            {!selectedUserId ? (
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 py-12">
+                <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
+                <p>Select a chat to start replying</p>
+              </div>
+            ) : chatMessages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 py-12">
+                <MessageSquare size={48} className="mb-4 opacity-30" aria-hidden="true" />
+                <p>No messages yet</p>
+              </div>
+            ) : (
+              chatMessages.map((msg) => {
+                if ((msg as any).sender === "system" || (msg as any).isPresence) {
+                  return (
+                    <div key={msg.id} className="flex justify-center my-1">
+                      <span className="text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600">{msg.text}</span>
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex items-end gap-1 group ${msg.sender === "user" ? "justify-start" : "justify-end"}`}
+                  >
+                    {msg.sender === "user" && (
+                      <button
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        disabled={deletingMsgId === msg.id}
+                        className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-all"
+                        style={{ color: "#EF4444" }}
+                        title="Delete message"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                    <div
+                      className="max-w-[80%] p-3 rounded-2xl"
+                      style={{
+                        background: msg.sender === "admin" ? "linear-gradient(135deg, #38BDF8, #6366F1)" : "#FFFFFF",
+                        borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                        border: msg.sender === "user" ? "1px solid #E5E7EB" : "none",
+                      }}
+                    >
+                      {msg.mediaUrl &&
+                        (msg.mediaType?.startsWith("video/") ? (
+                          <video src={msg.mediaUrl} controls className="rounded-xl mb-2 max-w-full" style={{ maxHeight: 220 }} />
+                        ) : (
+                          <img
+                            src={msg.mediaUrl}
+                            alt="Shared image"
+                            className="rounded-xl mb-2 max-w-full cursor-pointer"
+                            style={{ maxHeight: 220 }}
+                            onClick={() => window.open(msg.mediaUrl, "_blank")}
+                          />
+                        ))}
+                      {!msg.mediaUrl || !["🖼️ Image", "📹 Video"].includes(msg.text) ? (
+                        <p className={`text-sm leading-relaxed ${msg.sender === "admin" ? "text-white" : "text-gray-900"}`}>{msg.text}</p>
+                      ) : null}
+                      <div className="flex items-center justify-end gap-1 mt-1">
+                        <p className={`text-xs ${msg.sender === "admin" ? "text-white/60" : "text-gray-500"}`}>{msg.time}</p>
+                        {msg.sender === "admin" &&
+                          (msg.readByUser ? (
+                            <CheckCheck size={12} style={{ color: "rgba(255,255,255,0.8)" }} aria-label="Read" />
+                          ) : (
+                            <Check size={12} style={{ color: "rgba(255,255,255,0.5)" }} aria-label="Sent" />
+                          ))}
+                      </div>
+                    </div>
+                    {msg.sender === "admin" && (
+                      <button
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        disabled={deletingMsgId === msg.id}
+                        className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-all"
+                        style={{ color: "#EF4444" }}
+                        title="Delete message"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          {/* Input */}
+          <div className="p-3 md:p-4 border-t border-gray-200">
+            <form
+              onSubmit={sendAdminMessage}
+              className="flex gap-2 md:gap-3"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendAdminMessage();
+                }
+              }}
+            >
+              <input
+                key={`input-${selectedUserId}`}
+                ref={inputRef}
+                type="text"
+                placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                disabled={!selectedUserId}
+                aria-label="Reply message"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                className="flex-1 h-11 md:h-12 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 text-gray-900"
+              />
+              <Button
+                type="submit"
+                disabled={!chatInput.trim() || !selectedUserId}
+                aria-label="Send reply"
+                className="h-11 md:h-12 px-4 md:px-6 bg-gradient-to-r from-cyan-500 to-violet-600 text-white"
+              >
+                <Send size={16} aria-hidden="true" />
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
