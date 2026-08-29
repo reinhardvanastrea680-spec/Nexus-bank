@@ -119,11 +119,54 @@ function WireTransferWizard() {
     recipientRegion: string;
   } | null>(null);
 
-  // Mock saved beneficiaries
-  const savedBeneficiaries = [
-    { id: "1", nickname: "John Doe", bankName: "Deutsche Bank", country: "Germany", cc: "DE" },
-    { id: "2", nickname: "Sarah Smith", bankName: "Barclays", country: "United Kingdom", cc: "GB" },
-  ];
+  // Fetch saved beneficiaries from Firestore
+  const [savedBeneficiaries, setSavedBeneficiaries] = useState<Array<{
+    id: string;
+    nickname: string;
+    bankName: string;
+    country: string;
+    cc: string;
+  }>>([]);
+  const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(true);
+
+  // Fetch beneficiaries from Firestore when component mounts
+  useEffect(() => {
+    if (!account?.id) {
+      setSavedBeneficiaries([]);
+      setLoadingBeneficiaries(false);
+      return;
+    }
+
+    const fetchBeneficiaries = async () => {
+      try {
+        const { collection: firestoreCollection, query: firestoreQuery, getDocs } = await import('firebase/firestore');
+        const { db } = await import('../firebase/config');
+        
+        const beneficiariesRef = firestoreCollection(db, 'users', account.id, 'beneficiaries');
+        const snapshot = await getDocs(beneficiariesRef);
+        
+        const beneficiaries = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            nickname: data.fullName || data.nickname || 'Unknown',
+            bankName: data.bankName || 'Unknown Bank',
+            country: data.bankCountry || data.country || 'Unknown',
+            cc: data.countryCode || data.cc || data.bankCountry?.substring(0, 2).toUpperCase() || 'XX',
+          };
+        });
+        
+        setSavedBeneficiaries(beneficiaries);
+      } catch (error) {
+        console.error('Error fetching beneficiaries:', error);
+        setSavedBeneficiaries([]);
+      } finally {
+        setLoadingBeneficiaries(false);
+      }
+    };
+
+    fetchBeneficiaries();
+  }, [account?.id]);
 
   const validateStep = (currentStep: number) => {
     switch (currentStep) {
@@ -363,7 +406,14 @@ function WireTransferWizard() {
 
             {useSaved ? (
               <div className="space-y-3">
-                {savedBeneficiaries.length === 0 ? (
+                {loadingBeneficiaries ? (
+                  <div className="p-6 rounded-2xl text-center" style={{ background: t.cardBg }}>
+                    <div className="w-8 h-8 border-3 border-t-cyan-500 border-gray-300 rounded-full animate-spin mx-auto mb-3" />
+                    <p className="text-sm" style={{ color: t.textMuted }}>
+                      Loading beneficiaries...
+                    </p>
+                  </div>
+                ) : savedBeneficiaries.length === 0 ? (
                   <div className="p-6 rounded-2xl text-center" style={{ background: t.cardBg }}>
                     <p className="text-sm font-semibold mb-2" style={{ color: t.textPrimary }}>
                       No saved beneficiaries
