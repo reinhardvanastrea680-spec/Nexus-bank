@@ -1300,6 +1300,31 @@ input[type="text"].login-input-black {
   color: #64748B !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   ADMIN CHAT INPUT - FORCE TEXT VISIBILITY
+   ══════════════════════════════════════════════════════════════════════════════ */
+.admin-chat-input,
+.admin-chat-input:focus,
+.admin-chat-input:active {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827 !important;
+  font-size: 16px !important;
+  opacity: 1 !important;
+}
+.dark .admin-chat-input,
+.dark .admin-chat-input:focus,
+.dark .admin-chat-input:active {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  caret-color: #FFFFFF !important;
+}
+.admin-chat-input::placeholder {
+  color: #9CA3AF !important;
+  -webkit-text-fill-color: #9CA3AF !important;
+  opacity: 1 !important;
+}
+
 /* Login page input styles */
 .login-input-black,
 .login-input-black:focus,

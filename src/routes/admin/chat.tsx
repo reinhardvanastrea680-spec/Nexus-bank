@@ -358,19 +358,20 @@ function AdminChatPage() {
               }}
             >
               <input
-                key={`input-${selectedUserId}`}
                 ref={inputRef}
                 type="text"
                 placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
                 value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
+                onChange={(e) => {
+                  setChatInput(e.target.value);
+                }}
                 disabled={!selectedUserId}
                 aria-label="Reply message"
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                className="flex-1 h-11 md:h-12 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 text-gray-900"
+                className="admin-chat-input flex-1 h-11 md:h-12 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
               <Button
                 type="submit"
