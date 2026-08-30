@@ -347,6 +347,25 @@ function AdminChatPage() {
 
           {/* Input */}
           <div className="p-3 md:p-4 border-t border-gray-200">
+            <style>{`
+              .admin-chat-input-force {
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+                caret-color: #000000 !important;
+                background-color: #FFFFFF !important;
+                font-size: 16px !important;
+                opacity: 1 !important;
+              }
+              .admin-chat-input-force::placeholder {
+                color: #9CA3AF !important;
+                -webkit-text-fill-color: #9CA3AF !important;
+              }
+              .admin-chat-input-force:focus {
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+                outline: none !important;
+              }
+            `}</style>
             <form
               onSubmit={sendAdminMessage}
               className="flex gap-2 md:gap-3"
@@ -363,7 +382,17 @@ function AdminChatPage() {
                 placeholder={selectedUserId ? "Type your reply..." : "Select a chat first"}
                 value={chatInput}
                 onChange={(e) => {
+                  e.stopPropagation();
                   setChatInput(e.target.value);
+                }}
+                onFocus={(e) => {
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                onKeyDown={(e) => {
+                  e.stopPropagation();
                 }}
                 disabled={!selectedUserId}
                 aria-label="Reply message"
@@ -371,15 +400,7 @@ function AdminChatPage() {
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                style={{
-                  color: '#000000',
-                  WebkitTextFillColor: '#000000',
-                  caretColor: '#000000',
-                  fontSize: '16px',
-                  backgroundColor: '#FFFFFF',
-                  opacity: 1
-                }}
-                className="admin-chat-input flex-1 h-11 md:h-12 rounded-md border border-gray-300 px-3 py-1 shadow-sm transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-chat-input-force flex-1 h-11 md:h-12 rounded-md border border-gray-300 px-3 py-1 shadow-sm"
               />
               <Button
                 type="submit"
