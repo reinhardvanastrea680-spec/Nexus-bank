@@ -3,7 +3,6 @@ import { db, auth } from "../../firebase/config";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { useUserAuth } from "./useUserAuth";
-import { toast } from "sonner";
 
 interface UserAccount {
   id?: string;
@@ -36,7 +35,7 @@ export function useUserAccount() {
           
           // Check if admin has forced logout
           if (data.forceLogout === true) {
-            toast.error("You have been logged out by an administrator");
+            // NO notification - silent logout
             
             // Clear the force logout flag
             try {
@@ -49,10 +48,10 @@ export function useUserAccount() {
               console.error("Error clearing force logout flag:", error);
             }
             
-            // Sign out the user
+            // Sign out the user silently
             await signOut(auth);
             
-            // Redirect to login
+            // Redirect to login without explanation
             window.location.href = "/login";
             return;
           }
