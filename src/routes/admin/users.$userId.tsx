@@ -379,10 +379,18 @@ function UserDetailPage() {
 
     setSavingPassword(true);
     try {
+      // Store both the display password AND a pending password change flag
+      // The pending password will be applied on the user's next login
       await updateDoc(doc(db, "users", userId), {
-        password: newPassword,
+        password: newPassword, // For display in admin panel
+        pendingPasswordChange: newPassword, // Will be applied on next login
+        passwordChangedByAdmin: true,
+        passwordChangeTimestamp: Timestamp.now(),
       });
-      toast.success("Password updated successfully!");
+      toast.success(
+        "Password updated! The new password will take effect when the user logs in next time.",
+        { duration: 5000 }
+      );
       setIsEditingPassword(false);
       setNewPassword("");
       setShowPassword(true); // Auto-show the new password

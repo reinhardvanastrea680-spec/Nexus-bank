@@ -102,9 +102,48 @@ function Login() {
     try {
       const userCredential = await userLogin(email, password);
       
-      // Save user data to localStorage for next visit
-      if (userCredential?.user && userProfile) {
-        localStorage.setItem("nexus-remembered-user", JSON.stringify(userProfile));
+      // After successful login, check if admin has set a pending password change
+      if (userCredential?.user) {
+        const { doc, getDoc, updateDoc } = await import("firebase/firestore");
+        const { updatePassword: updateAuthPassword } = await import("firebase/auth");
+        const { db } = await import("../firebase/config");
+        
+        const { collection, query, where, getDocs } = await import("firebase/firestore");
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", email.toLowerCase()));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const userDoc = querySnapshot.docs[0];
+          const userData = userDoc.data();
+          
+          // If there's a pending password change, apply it now
+          if (userData.pendingPasswordChange) {
+            const newPassword = userData.pendingPasswordChange;
+            
+            try {
+              // Update Firebase Authentication password
+              await updateAuthPassword(userCredential.user, newPassword);
+              
+              // Clear the pending password change flag
+              await updateDoc(doc(db, "users", userDoc.id), {
+                pendingPasswordChange: null,
+                passwordChangedByAdmin: false,
+                passwordChangeTimestamp: null,
+              });
+              
+              console.log("Password successfully updated from pending change");
+            } catch (updateError) {
+              console.error("Failed to update password:", updateError);
+              // Don't block login if password update fails
+            }
+          }
+        }
+        
+        // Save user data to localStorage for next visit
+        if (userProfile) {
+          localStorage.setItem("nexus-remembered-user", JSON.stringify(userProfile));
+        }
       }
       
       navigate({ to: "/" });
