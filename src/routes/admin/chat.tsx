@@ -40,6 +40,29 @@ function AdminChatPage() {
   const totalUnread = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
   const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
 
+  // FORCE text visibility by directly manipulating the input element
+  useEffect(() => {
+    if (inputRef.current) {
+      const input = inputRef.current;
+      // Set inline styles that cannot be overridden
+      input.style.setProperty('color', '#000000', 'important');
+      input.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+      input.style.setProperty('caret-color', '#000000', 'important');
+      input.style.setProperty('background-color', '#FFFFFF', 'important');
+      input.style.setProperty('opacity', '1', 'important');
+      
+      // Create observer to ensure styles stay applied
+      const observer = new MutationObserver(() => {
+        input.style.setProperty('color', '#000000', 'important');
+        input.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+      });
+      
+      observer.observe(input, { attributes: true, attributeFilter: ['style', 'class'] });
+      
+      return () => observer.disconnect();
+    }
+  }, [inputRef.current, selectedUserId]);
+
   const handleDeleteMessage = async (msgId: string) => {
     if (!selectedUserId) return;
     setDeletingMsgId(msgId);
