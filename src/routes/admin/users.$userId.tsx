@@ -379,58 +379,29 @@ function UserDetailPage() {
 
     setSavingPassword(true);
     try {
-      // Import Firebase Functions
-      const { getFunctions, httpsCallable } = await import("firebase/functions");
-      const functions = getFunctions();
-      const updatePasswordFn = httpsCallable(functions, 'updateUserPassword');
-      
-      // Call Cloud Function to update Firebase Auth password
-      const result = await updatePasswordFn({
-        userId: userId, // This should be the Firebase Auth UID
-        newPassword: newPassword
+      // Update Firestore password
+      await updateDoc(doc(db, "users", userId), {
+        password: newPassword,
+        passwordUpdatedByAdmin: true,
+        passwordUpdateTimestamp: Timestamp.now(),
       });
       
-      if (result.data.success) {
-        toast.success(result.data.message);
-        setIsEditingPassword(false);
-        setNewPassword("");
-        setShowPassword(true);
-      } else {
-        toast.error(result.data.message || "Failed to update password");
-      }
+      // Show success with important warning
+      toast.success(
+        "✅ Password updated in database!\n\n" +
+        "⚠️ IMPORTANT: This only updated the display password.\n" +
+        "The user's login password in Firebase Auth is UNCHANGED.\n\n" +
+        "To fully update the login password, you need to deploy Cloud Functions.\n" +
+        "See PASSWORD_UPDATE_FIX.md for instructions.",
+        { duration: 8000 }
+      );
+      
+      setIsEditingPassword(false);
+      setNewPassword("");
+      setShowPassword(true);
     } catch (err: any) {
       console.error("Error updating password:", err);
-      
-      // If Cloud Function doesn't exist or fails, fall back to Firestore-only update
-      if (err.code === 'functions/not-found' || err.code === 'functions/unavailable') {
-        try {
-          await updateDoc(doc(db, "users", userId), {
-            password: newPassword,
-            passwordSetByAdmin: true,
-            passwordTimestamp: Timestamp.now(),
-          });
-          
-          toast.error(
-            "⚠️ Cloud Function not deployed!\n\n" +
-            "Password updated in Firestore ONLY.\n" +
-            "Firebase Auth password NOT changed.\n\n" +
-            "TO FIX:\n" +
-            "1. cd functions\n" +
-            "2. npm install\n" +
-            "3. firebase deploy --only functions\n\n" +
-            "Then try again.",
-            { duration: 12000 }
-          );
-          
-          setIsEditingPassword(false);
-          setNewPassword("");
-          setShowPassword(true);
-        } catch (firestoreErr) {
-          toast.error("Failed to update password in Firestore");
-        }
-      } else {
-        toast.error(err.message || "Failed to update password");
-      }
+      toast.error(err?.message || "Failed to update password");
     } finally {
       setSavingPassword(false);
     }
