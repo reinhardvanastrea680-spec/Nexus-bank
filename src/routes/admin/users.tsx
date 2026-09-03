@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { createFileRoute, useNavigate, Outlet } from "@tanstack/react-router";
-import { Plus, Search, Eye, Snowflake, Trash2, Users, ChevronRight, Zap, Ban } from "lucide-react";
+import { Plus, Search, Eye, Snowflake, Trash2, Users, ChevronRight, Zap, Ban, LogOut } from "lucide-react";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useUsers } from "../../admin/hooks/useUsers";
 import { toggleUserFreeze } from "../../admin/utils/toggleUserFreeze";
 import { deleteUserAndData } from "../../admin/utils/deleteUserAndData";
+import { forceLogoutUser } from "../../admin/utils/forceLogoutUser";
 import { AddUserModal } from "../../admin/components/AddUserModal";
 import { db } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
@@ -68,6 +69,17 @@ function AdminUsersPage() {
       await deleteUserAndData(user.id, user.fullName);
       toast.success("User deleted");
     } catch { toast.error("Failed to delete user"); }
+  };
+
+  const handleForceLogout = async (user: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm(`Force logout ${user.fullName}?\n\nThey will be immediately logged out from all devices.`)) return;
+    try {
+      await forceLogoutUser(user.id, user.fullName);
+      toast.success(`${user.fullName} will be logged out`);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to force logout");
+    }
   };
 
   return (
@@ -222,6 +234,12 @@ function AdminUsersPage() {
                             onClick={(e) => handleToggleFreeze(user, e)}>
                             <Snowflake size={14} aria-hidden="true" />
                           </Button>
+                          <Button variant="ghost" size="icon" aria-label={`Force logout ${user.fullName}`}
+                            title="Force user to logout from all devices"
+                            className="w-8 h-8 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                            onClick={(e) => handleForceLogout(user, e)}>
+                            <LogOut size={14} aria-hidden="true" />
+                          </Button>
                           <Button variant="ghost" size="icon" aria-label={`Delete ${user.fullName}`}
                             className="w-8 h-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
                             onClick={(e) => handleDelete(user, e)}>
@@ -273,6 +291,13 @@ function AdminUsersPage() {
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
                     style={{ background: user.status === "active" ? "rgba(56,189,248,0.08)" : "rgba(0,230,118,0.08)", color: user.status === "active" ? "#38BDF8" : "#00E676" }}>
                     <Snowflake size={12} /> {user.status === "active" ? "Freeze" : "Unfreeze"}
+                  </button>
+                  {/* Force Logout */}
+                  <button 
+                    onClick={(e) => handleForceLogout(user, e)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{ background: "rgba(251,191,36,0.1)", color: "#F59E0B" }}>
+                    <LogOut size={12} /> Logout
                   </button>
                   {/* Auto Approve */}
                   <button onClick={(e) => handleToggleTxMode(user, "auto_approve", e)}

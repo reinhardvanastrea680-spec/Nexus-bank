@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { db } from "../../firebase/config";
-import { doc, onSnapshot } from "firebase/firestore";
+import { db, auth } from "../../firebase/config";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { useUserAuth } from "./useUserAuth";
+import { toast } from "sonner";
 
 interface UserAccount {
   id?: string;
@@ -28,9 +30,34 @@ export function useUserAccount() {
 
     const unsub = onSnapshot(
       doc(db, "users", user.uid),
-      (snap) => {
+      async (snap) => {
         if (snap.exists()) {
-          setAccount({ id: snap.id, ...snap.data() });
+          const data = snap.data();
+          
+          // Check if admin has forced logout
+          if (data.forceLogout === true) {
+            toast.error("You have been logged out by an administrator");
+            
+            // Clear the force logout flag
+            try {
+              await updateDoc(doc(db, "users", user.uid), {
+                forceLogout: false,
+                forceLogoutAt: null,
+                forceLogoutReason: null,
+              });
+            } catch (error) {
+              console.error("Error clearing force logout flag:", error);
+            }
+            
+            // Sign out the user
+            await signOut(auth);
+            
+            // Redirect to login
+            window.location.href = "/login";
+            return;
+          }
+          
+          setAccount({ id: snap.id, ...data });
         } else {
           setAccount(null);
         }
