@@ -379,48 +379,26 @@ function UserDetailPage() {
 
     setSavingPassword(true);
     try {
-      // Update Firestore password (for display in admin panel)
+      // Update Firestore password (for display and record)
       await updateDoc(doc(db, "users", userId), {
         password: newPassword,
         passwordSetByAdmin: true,
         passwordUpdateTimestamp: Timestamp.now(),
-        pendingPasswordReset: true,
       });
       
-      // Send password reset email to user
-      const { sendPasswordResetEmail } = await import("firebase/auth");
-      const { auth } = await import("../../firebase/config");
-      
-      try {
-        await sendPasswordResetEmail(auth, user.email);
-        
-        toast.success(
-          `✅ Password updated!\n\n` +
-          `📧 Password reset email sent to: ${user.email}\n\n` +
-          `NEXT STEPS:\n` +
-          `1. User checks their email\n` +
-          `2. User clicks the reset link\n` +
-          `3. User sets password to: ${newPassword}\n` +
-          `4. User can now login!\n\n` +
-          `💡 The new password is shown in this dashboard for reference.`,
-          { duration: 10000 }
-        );
-      } catch (emailError: any) {
-        console.error("Failed to send reset email:", emailError);
-        
-        // If email fails, provide manual instructions
-        toast.warning(
-          `⚠️ Password updated in database, but email failed to send.\n\n` +
-          `MANUAL STEPS:\n` +
-          `1. Tell user to go to the login page\n` +
-          `2. Click "Forgot Password"\n` +
-          `3. Enter email: ${user.email}\n` +
-          `4. Follow reset link in email\n` +
-          `5. Set password to: ${newPassword}\n\n` +
-          `Error: ${emailError.message}`,
-          { duration: 12000 }
-        );
-      }
+      toast.success(
+        `✅ Password updated to: ${newPassword}\n\n` +
+        `IMPORTANT: Tell the user their new password is: ${newPassword}\n\n` +
+        `⚠️ NOTE: This only updates the display password.\n` +
+        `For login to work, you need to:\n\n` +
+        `1. Go to Firebase Console\n` +
+        `2. Authentication → Users\n` +
+        `3. Find user: ${user.email}\n` +
+        `4. Click ⋮ menu → Reset password\n` +
+        `5. Set password to: ${newPassword}\n\n` +
+        `OR upgrade to Blaze plan and deploy Cloud Functions for automatic sync.`,
+        { duration: 15000 }
+      );
       
       setIsEditingPassword(false);
       setNewPassword("");
