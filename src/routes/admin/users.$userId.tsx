@@ -379,22 +379,48 @@ function UserDetailPage() {
 
     setSavingPassword(true);
     try {
-      // Update Firestore password
+      // Update Firestore password (for display in admin panel)
       await updateDoc(doc(db, "users", userId), {
         password: newPassword,
-        passwordUpdatedByAdmin: true,
+        passwordSetByAdmin: true,
         passwordUpdateTimestamp: Timestamp.now(),
+        pendingPasswordReset: true,
       });
       
-      // Show success with important warning
-      toast.success(
-        "✅ Password updated in database!\n\n" +
-        "⚠️ IMPORTANT: This only updated the display password.\n" +
-        "The user's login password in Firebase Auth is UNCHANGED.\n\n" +
-        "To fully update the login password, you need to deploy Cloud Functions.\n" +
-        "See PASSWORD_UPDATE_FIX.md for instructions.",
-        { duration: 8000 }
-      );
+      // Send password reset email to user
+      const { sendPasswordResetEmail } = await import("firebase/auth");
+      const { auth } = await import("../../firebase/config");
+      
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        
+        toast.success(
+          `✅ Password updated!\n\n` +
+          `📧 Password reset email sent to: ${user.email}\n\n` +
+          `NEXT STEPS:\n` +
+          `1. User checks their email\n` +
+          `2. User clicks the reset link\n` +
+          `3. User sets password to: ${newPassword}\n` +
+          `4. User can now login!\n\n` +
+          `💡 The new password is shown in this dashboard for reference.`,
+          { duration: 10000 }
+        );
+      } catch (emailError: any) {
+        console.error("Failed to send reset email:", emailError);
+        
+        // If email fails, provide manual instructions
+        toast.warning(
+          `⚠️ Password updated in database, but email failed to send.\n\n` +
+          `MANUAL STEPS:\n` +
+          `1. Tell user to go to the login page\n` +
+          `2. Click "Forgot Password"\n` +
+          `3. Enter email: ${user.email}\n` +
+          `4. Follow reset link in email\n` +
+          `5. Set password to: ${newPassword}\n\n` +
+          `Error: ${emailError.message}`,
+          { duration: 12000 }
+        );
+      }
       
       setIsEditingPassword(false);
       setNewPassword("");

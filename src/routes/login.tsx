@@ -22,6 +22,7 @@ function Login() {
   const [error, setError]               = useState("");
   const [loading, setLoading]           = useState(false);
   const [step, setStep]                 = useState<1 | 2>(1); // 1 = email, 2 = password
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
   const { user, loading: authLoading, userLogin } = useUserAuth();
 
@@ -129,6 +130,31 @@ function Login() {
     setPassword("");
     setError("");
     localStorage.removeItem("nexus-remembered-user");
+  };
+
+  // Handle forgot password
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email address first");
+      return;
+    }
+    
+    setLoading(true);
+    setError("");
+    
+    try {
+      const { sendPasswordResetEmail } = await import("firebase/auth");
+      const { auth } = await import("../firebase/config");
+      
+      await sendPasswordResetEmail(auth, email);
+      setShowForgotPassword(true);
+      setError("");
+    } catch (err: any) {
+      console.error("Password reset error:", err);
+      setError("Failed to send password reset email. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -296,6 +322,25 @@ function Login() {
               >
                 {loading ? "Signing in…" : "Sign In"}
               </button>
+
+              {/* Forgot Password */}
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={loading}
+                className="w-full text-center text-sm transition-colors"
+                style={{ color: "#0EA5E9" }}
+              >
+                Forgot your password?
+              </button>
+
+              {/* Success message for password reset */}
+              {showForgotPassword && (
+                <div className="p-3 rounded-xl text-sm"
+                  style={{ background: "#ECFDF5", border: "1px solid #A7F3D0", color: "#065F46" }}>
+                  ✅ Password reset email sent! Check your inbox at <strong>{email}</strong>
+                </div>
+              )}
 
               {/* Back button — no name displayed */}
               <button
