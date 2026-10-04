@@ -4,6 +4,89 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 /**
+ * Send notification to admin when user sends a chat message
+ */
+exports.notifyAdminOnNewMessage = functions.firestore
+  .document('chats/{userId}/messages/{messageId}')
+  .onCreate(async (snap, context) => {
+    const message = snap.data();
+    const userId = context.params.userId;
+
+    // Only notify if message is from user (not admin or system)
+    if (message.sender !== 'user') {
+      return null;
+    }
+
+    try {
+      // Get chat document to find user details
+      const chatDoc = await admin.firestore().collection('chats').doc(userId).get();
+      const chatData = chatDoc.data();
+      
+      if (!chatData) {
+        console.log('Chat document not found');
+        return null;
+      }
+
+      const userFullName = chatData.userFullName || 'User';
+
+      // Get admin FCM token
+      const adminSnapshot = await admin.firestore().collection('admin').get();
+      
+      if (adminSnapshot.empty) {
+        console.log('No admin found');
+        return null;
+      }
+
+      // Send notification to all admins with FCM tokens
+      const promises = [];
+      
+      adminSnapshot.forEach((adminDoc) => {
+        const adminData = adminDoc.data();
+        
+        if (adminData.fcmToken && adminData.notificationsEnabled) {
+          const payload = {
+            notification: {
+              title: `New message from ${userFullName}`,
+              body: message.text.substring(0, 100), // First 100 chars
+              icon: '/favicon.svg',
+              badge: '/favicon.svg',
+              tag: 'chat-notification',
+            },
+            data: {
+              userId: userId,
+              messageId: context.params.messageId,
+              clickAction: '/admin/chat'
+            },
+            token: adminData.fcmToken
+          };
+
+          promises.push(
+            admin.messaging().send(payload).catch((error) => {
+              console.error('Error sending notification:', error);
+              // If token is invalid, remove it
+              if (error.code === 'messaging/invalid-registration-token' ||
+                  error.code === 'messaging/registration-token-not-registered') {
+                return admin.firestore().collection('admin').doc(adminDoc.id).update({
+                  fcmToken: null,
+                  notificationsEnabled: false
+                });
+              }
+            })
+          );
+        }
+      });
+
+      await Promise.all(promises);
+      console.log('Notifications sent successfully');
+      return null;
+
+    } catch (error) {
+      console.error('Error in notifyAdminOnNewMessage:', error);
+      return null;
+    }
+  });
+
+/**
  * Update User Password
  * 
  * Callable function that allows admins to update a user's Firebase Auth password

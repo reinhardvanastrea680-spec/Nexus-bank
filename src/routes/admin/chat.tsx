@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle, Trash2 } from "lucide-react";
+import { MessageSquare, Send, User, Users, CheckCheck, Check, ArrowLeft, Circle, Trash2, Bell, BellOff } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useUsers } from "../../admin/hooks/useUsers";
 import { db } from "../../firebase/config";
@@ -8,6 +8,9 @@ import {
   collection, addDoc, doc, orderBy, query,
   onSnapshot, serverTimestamp, updateDoc, increment, deleteDoc,
 } from "firebase/firestore";
+import { requestNotificationPermission, hasNotificationsEnabled, setupForegroundNotifications, disableNotifications } from "../../utils/notificationService";
+import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
+import { toast } from "sonner";
 
 type Message = {
   id: string; text: string; sender: "user" | "admin" | "system";
@@ -29,16 +32,47 @@ export const Route = createFileRoute("/admin/chat")({
 function AdminChatPage() {
   const { userId } = useSearch({ from: "/admin/chat" });
   const { users } = useUsers();
+  const { admin } = useAdminAuth();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(userId ?? null);
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const selectedUser = selectedUserId ? users.find((u) => u.id === selectedUserId) : null;
   const totalUnread = chats.reduce((s, c) => s + c.unreadByAdmin, 0);
   const [deletingMsgId, setDeletingMsgId] = useState<string | null>(null);
+
+  // Check if notifications are enabled
+  useEffect(() => {
+    if (admin?.uid) {
+      hasNotificationsEnabled(admin.uid).then(setNotificationsEnabled);
+      setupForegroundNotifications();
+    }
+  }, [admin?.uid]);
+
+  // Handle enable/disable notifications
+  const handleToggleNotifications = async () => {
+    if (!admin?.uid) return;
+
+    if (notificationsEnabled) {
+      // Disable notifications
+      await disableNotifications(admin.uid);
+      setNotificationsEnabled(false);
+      toast.success("Notifications disabled");
+    } else {
+      // Enable notifications
+      const success = await requestNotificationPermission(admin.uid);
+      if (success) {
+        setNotificationsEnabled(true);
+        toast.success("Notifications enabled! You'll receive alerts for new messages.");
+      } else {
+        toast.error("Failed to enable notifications. Please check your browser settings.");
+      }
+    }
+  };
 
   // FORCE text visibility by directly manipulating the input element
   useEffect(() => {
@@ -193,7 +227,7 @@ function AdminChatPage() {
           className={`${showMobileChat ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 border-r border-gray-200 bg-white`}
         >
           <div className="p-3 border-b border-gray-200">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
                 <Users size={16} className="text-cyan-600" aria-hidden="true" />
                 Chats
@@ -204,6 +238,18 @@ function AdminChatPage() {
                 </span>
               )}
             </div>
+            {/* Notification toggle */}
+            <button
+              onClick={handleToggleNotifications}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+              style={{
+                background: notificationsEnabled ? "#10B981" : "#6B7280",
+                color: "#FFFFFF"
+              }}
+            >
+              {notificationsEnabled ? <Bell size={14} /> : <BellOff size={14} />}
+              {notificationsEnabled ? "Notifications ON" : "Enable Notifications"}
+            </button>
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {chats.length === 0 ? (
