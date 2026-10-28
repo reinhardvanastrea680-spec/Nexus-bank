@@ -46,7 +46,7 @@ service cloud.firestore {
     match /notifications/{notifId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated() && resource.data.recipientId == request.auth.uid;
-      allow create: if isAuthenticated();
+      allow create: if true;
       allow update, delete: if isAuthenticated() && resource.data.recipientId == request.auth.uid;
     }
 
@@ -79,14 +79,14 @@ service cloud.firestore {
 
     // ── Prospective Chats & Contacts ─────────────────────────────────────────
     match /prospectiveChats/{chatId} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if true;
       match /messages/{msgId} {
-        allow read, write: if isAuthenticated();
+        allow read, write: if true;
       }
     }
 
     match /prospectiveContacts/{contactId} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if true;
     }
 
     // ── Admin Activity Logs ──────────────────────────────────────────────────
