@@ -53,7 +53,7 @@ export default function OpenAccount() {
             To open a Nexsus Bank account, please contact our support team. A dedicated representative will guide you through the process securely and personally.
           </p>
 
-          <Link to="/contact" className="btn btn-primary btn-lg" style={{ display: "inline-block" }}>
+          <Link to="/landing/contact" className="btn btn-primary btn-lg" style={{ display: "inline-block" }}>
             Contact Support
           </Link>
 

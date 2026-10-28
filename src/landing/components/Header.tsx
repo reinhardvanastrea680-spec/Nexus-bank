@@ -59,7 +59,7 @@ export default function Header() {
                   <Link to="/login" className="btn-login-header">
                     Log In
                   </Link>
-                  <Link to="/open-account" className="btn btn-primary btn-sm">
+                  <Link to="/landing/open-account" className="btn btn-primary btn-sm">
                     Open Account
                   </Link>
                 </>
@@ -97,7 +97,7 @@ export default function Header() {
               <Link to="/login" className="btn btn-outline w-full">
                 Log In
               </Link>
-              <Link to="/open-account" className="btn btn-primary w-full" onClick={() => setMenuOpen(false)}>
+              <Link to="/landing/open-account" className="btn btn-primary w-full" onClick={() => setMenuOpen(false)}>
                 Open Account
               </Link>
             </>

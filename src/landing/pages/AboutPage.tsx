@@ -62,7 +62,7 @@ export default function AboutPage() {
           <div className="section-label">Join Us</div>
           <h2 className="section-title">Ready to experience better banking?</h2>
           <p className="section-subtitle" style={{ margin: "0 auto 28px", textAlign: "center" }}>Open your account today and join 13 million people who trust Nexsus Bank with their financial future.</p>
-          <Link to="/open-account" className="btn btn-gold btn-lg">Open Your Account</Link>
+          <Link to="/landing/open-account" className="btn btn-gold btn-lg">Open Your Account</Link>
         </div>
       </section>
     </>

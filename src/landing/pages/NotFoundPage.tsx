@@ -11,7 +11,7 @@ export default function NotFoundPage() {
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <Link to="/" className="btn btn-primary">← Back to Home</Link>
-          <Link to="/contact" className="btn btn-outline">Contact Support</Link>
+          <Link to="/landing/contact" className="btn btn-outline">Contact Support</Link>
         </div>
       </div>
     </section>

@@ -63,7 +63,7 @@ export default function CookieBanner() {
           <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.55)", margin: 0, lineHeight: 1.6 }}>
             We use cookies to enhance your browsing experience and analyse site traffic.
             By clicking "Accept", you consent to our use of cookies.{" "}
-            <Link to="/privacy-policy" style={{ color: "#38BDF8", textDecoration: "underline" }}>
+            <Link to="/landing/privacy-policy" style={{ color: "#38BDF8", textDecoration: "underline" }}>
               Learn more
             </Link>
           </p>

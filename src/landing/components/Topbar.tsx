@@ -8,10 +8,10 @@ export default function Topbar() {
             <span>FDIC Insured · Backed by the full faith and credit of the U.S. Government · Member FDIC</span>
           </div>
           <div className="topbar-links">
-            <a href="/contact">Help Center</a>
-            <a href="/about">About</a>
-            <a href="/personal">Personal</a>
-            <a href="/cooperate">Business</a>
+            <a href="/landing/contact">Help Center</a>
+            <a href="/landing/about">About</a>
+            <a href="/landing/personal">Personal</a>
+            <a href="/landing/cooperate">Business</a>
           </div>
         </div>
       </div>

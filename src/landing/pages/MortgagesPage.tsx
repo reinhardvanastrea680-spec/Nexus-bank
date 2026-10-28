@@ -34,7 +34,7 @@ export default function MortgagesPage() {
                   </div>
                 ))}
               </div>
-              <Link to="/contact" className="btn btn-primary">Get Pre Approved</Link>
+              <Link to="/landing/contact" className="btn btn-primary">Get Pre Approved</Link>
             </div>
             <div className="two-col-img">
               <PageScene theme="mortgage" />

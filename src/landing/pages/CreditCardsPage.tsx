@@ -28,7 +28,7 @@ export default function CreditCardsPage() {
                   </li>
                 ))}
               </ul>
-              <Link to="/open-account" className="btn btn-primary">Apply for a Card</Link>
+              <Link to="/landing/open-account" className="btn btn-primary">Apply for a Card</Link>
             </div>
             <div className="two-col-img">
               <PageScene theme="cards" />
@@ -51,7 +51,7 @@ export default function CreditCardsPage() {
                 <div className="feature-icon" style={{ background: c.bg }}>{c.icon}</div>
                 <h3>{c.title}</h3>
                 <p>{c.desc}</p>
-                <Link to="/open-account" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Apply now →</Link>
+                <Link to="/landing/open-account" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Apply now →</Link>
               </div>
             ))}
           </div>

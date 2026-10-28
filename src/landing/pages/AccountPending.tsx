@@ -59,7 +59,7 @@ export default function AccountPending() {
           </div>
 
           <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-            Questions? <Link to="/contact" style={{ color: "var(--blue)", fontWeight: 600 }}>Contact our support team</Link>
+            Questions? <Link to="/landing/contact" style={{ color: "var(--blue)", fontWeight: 600 }}>Contact our support team</Link>
           </p>
           <Link to="/" className="btn btn-primary" style={{ marginTop: 16, display: "inline-flex" }}>← Back to Home</Link>
         </div>

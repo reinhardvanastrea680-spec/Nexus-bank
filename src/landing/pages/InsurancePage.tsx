@@ -32,7 +32,7 @@ export default function InsurancePage() {
                   </div>
                 ))}
               </div>
-              <Link to="/contact" className="btn btn-primary">Get a Quote</Link>
+              <Link to="/landing/contact" className="btn btn-primary">Get a Quote</Link>
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@ export default function InsurancePage() {
                 <div className="feature-icon" style={{ background: c.bg }}>{c.icon}</div>
                 <h3>{c.title}</h3>
                 <p>{c.desc}</p>
-                <Link to="/contact" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Get a quote →</Link>
+                <Link to="/landing/contact" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Get a quote →</Link>
               </div>
             ))}
           </div>

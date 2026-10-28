@@ -246,13 +246,13 @@ function Login() {
                     autoFocus
                     className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none text-sm login-input-black"
                     style={{ 
-                      background: "#F9FAFB", 
-                      border: "1px solid #E5E7EB", 
+                      background: "#FFFFFF", 
+                      border: "1px solid #CBD5E1", 
                       color: "#000000",
                       WebkitTextFillColor: "#000000"
                     }}
                     onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
-                    onBlur={(e)  => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
+                    onBlur={(e)  => { e.target.style.borderColor = "#CBD5E1"; e.target.style.boxShadow = "none"; }}
                   />
                 </div>
               </div>
@@ -264,7 +264,7 @@ function Login() {
                 style={{
                   background: "linear-gradient(135deg, #1D4ED8, #0EA5E9)",
                   opacity: loading ? 0.7 : 1,
-                  boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
+                  boxShadow: "0 2px 8px rgba(14,165,233,0.2)",
                 }}
               >
                 {loading ? "Verifying…" : "Continue"}
@@ -291,13 +291,13 @@ function Login() {
                     autoFocus
                     className="w-full pl-11 pr-12 py-3.5 rounded-xl outline-none text-sm login-input-black"
                     style={{ 
-                      background: "#F9FAFB", 
-                      border: "1px solid #E5E7EB", 
+                      background: "#FFFFFF", 
+                      border: "1px solid #CBD5E1", 
                       color: "#000000",
                       WebkitTextFillColor: "#000000"
                     }}
                     onFocus={(e) => { e.target.style.borderColor = "#0EA5E9"; e.target.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
-                    onBlur={(e)  => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
+                    onBlur={(e)  => { e.target.style.borderColor = "#CBD5E1"; e.target.style.boxShadow = "none"; }}
                   />
                   <button
                     type="button"
@@ -317,7 +317,7 @@ function Login() {
                 style={{
                   background: "linear-gradient(135deg, #1D4ED8, #0EA5E9)",
                   opacity: loading ? 0.7 : 1,
-                  boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
+                  boxShadow: "0 2px 8px rgba(14,165,233,0.2)",
                 }}
               >
                 {loading ? "Signing in…" : "Sign In"}

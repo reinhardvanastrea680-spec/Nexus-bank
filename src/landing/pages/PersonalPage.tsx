@@ -32,7 +32,7 @@ export default function PersonalPage() {
                   </li>
                 ))}
               </ul>
-              <Link to="/open-account" className="btn btn-primary">Open Personal Account</Link>
+              <Link to="/landing/open-account" className="btn btn-primary">Open Personal Account</Link>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function PersonalPage() {
                 <div className="feature-icon" style={{ background: c.bg }}>{c.icon}</div>
                 <h3>{c.title}</h3>
                 <p>{c.desc}</p>
-                <Link to="/open-account" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Apply now →</Link>
+                <Link to="/landing/open-account" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Apply now →</Link>
               </div>
             ))}
           </div>
@@ -72,8 +72,8 @@ export default function PersonalPage() {
               <h2 className="cta-title">Open your account in under 10 minutes</h2>
               <p className="cta-desc">No branch visit needed. Fully digital, fully secure. Open your Nexsus Bank personal account today and start banking smarter.</p>
               <div className="cta-actions">
-                <Link to="/open-account" className="btn btn-gold btn-lg">Open Account Now</Link>
-                <Link to="/contact" className="btn btn-outline-white">Ask a Question</Link>
+                <Link to="/landing/open-account" className="btn btn-gold btn-lg">Open Account Now</Link>
+                <Link to="/landing/contact" className="btn btn-outline-white">Ask a Question</Link>
               </div>
             </div>
             <div className="cta-img">

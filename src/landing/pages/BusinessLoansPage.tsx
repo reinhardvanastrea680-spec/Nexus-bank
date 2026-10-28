@@ -38,7 +38,7 @@ export default function BusinessLoansPage() {
                   </div>
                 ))}
               </div>
-              <Link to="/contact" className="btn btn-primary">Apply for a Loan</Link>
+              <Link to="/landing/contact" className="btn btn-primary">Apply for a Loan</Link>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function BusinessLoansPage() {
                 <div className="feature-icon" style={{ background: c.bg }}>{c.icon}</div>
                 <h3>{c.title}</h3>
                 <p>{c.desc}</p>
-                <Link to="/contact" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Learn more →</Link>
+                <Link to="/landing/contact" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Learn more →</Link>
               </div>
             ))}
           </div>

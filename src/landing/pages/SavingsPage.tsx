@@ -29,7 +29,7 @@ export default function SavingsPage() {
                 <div style={{ fontFamily: "var(--font-head)", fontSize: 48, fontWeight: 800, color: "var(--blue)", lineHeight: 1 }}>4.75% <span style={{ fontSize: 18, color: "var(--text-muted)" }}>APY</span></div>
                 <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>Rate as of June 2025 · No minimum balance required · FDIC Insured</div>
               </div>
-              <Link to="/open-account" className="btn btn-primary">Open Savings Account</Link>
+              <Link to="/landing/open-account" className="btn btn-primary">Open Savings Account</Link>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function SavingsPage() {
                 <div className="feature-icon" style={{ background: c.bg }}>{c.icon}</div>
                 <h3>{c.title}</h3>
                 <p>{c.desc}</p>
-                <Link to="/open-account" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Open account →</Link>
+                <Link to="/landing/open-account" style={{ color: "var(--blue)", fontSize: 13, fontWeight: 600 }}>Open account →</Link>
               </div>
             ))}
           </div>

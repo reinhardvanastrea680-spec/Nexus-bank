@@ -31,7 +31,7 @@ export default function CooperatePage() {
                   </div>
                 ))}
               </div>
-              <Link to="/open-account" className="btn btn-primary">Open Business Account</Link>
+              <Link to="/landing/open-account" className="btn btn-primary">Open Business Account</Link>
             </div>
             <div className="two-col-img">
               <PageScene theme="business" />

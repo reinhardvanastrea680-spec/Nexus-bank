@@ -41,7 +41,6 @@ export function LandingHeader({ user, onLogout }: { user?: any; onLogout?: () =>
 
           <nav className="main-nav">
             <a href="/landing/about" className="nav-link">About</a>
-            <a href="/landing/services" className="nav-link">Services</a>
             <a href="/landing/open-account" className="nav-link btn-link">Open Account</a>
             {user && (
               <>
@@ -75,7 +74,6 @@ export function LandingFooter() {
             <div className="footer-links">
               <strong>Legal</strong>
               <a href="/landing/privacy-policy">Privacy Policy</a>
-              <a href="/landing/terms">Terms of Service</a>
             </div>
           </div>
           <div>
@@ -83,7 +81,7 @@ export function LandingFooter() {
             <a href="/landing/personal">Personal</a>
             <a href="/landing/cooperate">Business</a>
             <a href="/landing/insurance">Insurance</a>
-            <a href="/landing/mortgages">Mortgages</a>
+            <a href="/landing/mortgage">Mortgages</a>
           </div>
           <div>
             <div className="footer-title">Banking</div>

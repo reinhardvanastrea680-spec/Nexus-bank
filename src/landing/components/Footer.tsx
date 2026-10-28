@@ -21,30 +21,30 @@ export default function Footer() {
           <div className="footer-col">
             <h4>Personal Banking</h4>
             <ul>
-              <li><Link to="/personal">Personal Accounts</Link></li>
-              <li><Link to="/savings">Savings</Link></li>
-              <li><Link to="/credit-cards">Credit Cards</Link></li>
-              <li><Link to="/mortgages">Mortgages</Link></li>
+              <li><Link to="/landing/personal">Personal Accounts</Link></li>
+              <li><Link to="/landing/savings">Savings</Link></li>
+              <li><Link to="/landing/credit-cards">Credit Cards</Link></li>
+              <li><Link to="/landing/mortgage">Mortgages</Link></li>
             </ul>
           </div>
 
           <div className="footer-col">
             <h4>Business</h4>
             <ul>
-              <li><Link to="/cooperate">Business Banking</Link></li>
-              <li><Link to="/business-loans">Business Loans</Link></li>
-              <li><Link to="/insurance">Insurance</Link></li>
-              <li><Link to="/about">About Us</Link></li>
+              <li><Link to="/landing/cooperate">Business Banking</Link></li>
+              <li><Link to="/landing/business-loans">Business Loans</Link></li>
+              <li><Link to="/landing/insurance">Insurance</Link></li>
+              <li><Link to="/landing/about">About Us</Link></li>
             </ul>
           </div>
 
           <div className="footer-col">
             <h4>Resources</h4>
             <ul>
-              <li><Link to="/contact">Support Center</Link></li>
-              <li><Link to="/about">About Us</Link></li>
+              <li><Link to="/landing/contact">Support Center</Link></li>
+              <li><Link to="/landing/about">About Us</Link></li>
               <li><Link to="/">Security</Link></li>
-              <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+              <li><Link to="/landing/privacy-policy">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>

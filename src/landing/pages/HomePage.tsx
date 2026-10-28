@@ -58,36 +58,8 @@ const tabs = [
   },
 ];
 
-const faqs = [
-  {
-    q: "How do I open a Nexsus Bank account online?",
-    a: "Opening an account is quick and paperless. Click 'Open Account', complete our 4 step digital application, and submit your identification documents. Once approved, your account details will be sent directly to you. Most applications are reviewed within 1 to 3 business days.",
-  },
-  {
-    q: "Is Nexsus Bank FDIC insured?",
-    a: "Yes. Nexsus Bank is a Member FDIC institution. Your deposits are insured up to $250,000 per depositor, per ownership category, as backed by the full faith and credit of the United States Government.",
-  },
-  {
-    q: "What do I need to apply for a mortgage with Nexsus Bank?",
-    a: "You'll need proof of income (pay stubs, W2s or tax returns), a government issued photo ID, details of any existing debts, and a credit score check. Our mortgage specialists will guide you through the entire process at no cost.",
-  },
-  {
-    q: "Is this a real bank?",
-    a: "No. This is a demonstration/portfolio project showcasing banking interface design. This is NOT a real financial institution. No real banking services, accounts, or transactions are provided. All content is for demonstration purposes only.",
-  },
-  {
-    q: "How do I get access to the demo?",
-    a: "Access to the demonstration banking interface is provided for authorized users only. This is a private portfolio project. If you're interested in similar work, please use the contact form.",
-  },
-  {
-    q: "Can I access Nexsus Bank internationally?",
-    a: "Yes. Nexsus Bank offers international wire transfers and our mobile app works globally. Currency exchange services are available for 40+ currencies with competitive mid market rates and no hidden fees.",
-  },
-];
-
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("financial");
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const tab = tabs.find((t) => t.id === activeTab)!;
 
   return (
@@ -108,7 +80,7 @@ export default function HomePage() {
                 secure, digital and built around your life.
               </p>
               <div className="hero-actions">
-                <Link to="/open-account" className="btn btn-gold btn-lg">Open Account</Link>
+                <Link to="/landing/open-account" className="btn btn-gold btn-lg">Open Account</Link>
                 <Link to="/login" className="btn btn-outline-white btn-lg">Log In</Link>
               </div>
               <div className="hero-stats">
@@ -260,7 +232,7 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-                <Link to="/open-account" className="btn btn-teal">Get Started</Link>
+                <Link to="/landing/open-account" className="btn btn-teal">Get Started</Link>
               </div>
               <div className="expertise-img">
                 <img src={tab.image} alt={tab.label} />
@@ -373,37 +345,13 @@ export default function HomePage() {
                 Nexsus Bank has made it easy for everyone to harness their financial potential. Open your account in minutes — no branch visit required.
               </p>
               <div className="cta-actions">
-                <Link to="/open-account" className="btn btn-gold btn-lg">Get Started Today</Link>
-                <Link to="/personal" className="btn btn-outline-white btn-lg">Explore Services</Link>
+                <Link to="/landing/open-account" className="btn btn-gold btn-lg">Get Started Today</Link>
+                <Link to="/landing/personal" className="btn btn-outline-white btn-lg">Explore Services</Link>
               </div>
             </div>
             <div className="cta-img">
               <img src={`${UNSPLASH}/photo-1579621970588-a35d0e7ab9b6?auto=format&fit=crop&w=800&q=80`} alt="Banking" />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="section-pad dark-bg" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <div className="section-header" style={{ marginBottom: 32 }}>
-            <div>
-              <div className="section-label">FAQ</div>
-              <h2 className="section-title">Common questions answered</h2>
-            </div>
-            <Link to="/contact" className="btn btn-outline-white">Contact Support</Link>
-          </div>
-          <div className="faq-list">
-            {faqs.map((faq, i) => (
-              <div key={i} className={`faq-item${openFaq === i ? " open" : ""}`}>
-                <div className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                  <h3>{faq.q}</h3>
-                  <div className="faq-toggle">+</div>
-                </div>
-                <div className="faq-a"><p>{faq.a}</p></div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
