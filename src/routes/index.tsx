@@ -378,7 +378,7 @@ function HomePage() {
                         {isCredit ? <TrendingUp size={18} style={{ color: "#00E676" }} /> : <Send size={18} style={{ color: "#FF4D6A" }} />}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: textPrimary }}>{desc}</p>
+                        <p className="text-sm font-semibold" style={{ color: textPrimary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>{desc}</p>
                         <p className="text-xs" style={{ color: textMuted }}>{timeStr}</p>
                       </div>
                     </div>

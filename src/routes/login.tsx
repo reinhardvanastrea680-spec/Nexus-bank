@@ -175,7 +175,7 @@ function Login() {
         style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.07)" }}
       >
         {/* ── Back to landing page ── */}
-        <div className="px-8 pt-5 pb-0">
+        <div className="px-4 sm:px-8 pt-5 pb-0">
           <a
             href={import.meta.env.VITE_LANDING_URL || "/landing"}
             className="inline-flex items-center gap-2 text-sm font-medium hover:opacity-70 transition-opacity"
@@ -191,7 +191,7 @@ function Login() {
 
         {/* ── Header band ── */}
         <div
-          className="px-8 pt-6 pb-6 text-center"
+          className="px-4 sm:px-8 pt-6 pb-6 text-center"
           style={{ background: "linear-gradient(135deg, #1D4ED8 0%, #0EA5E9 100%)" }}
         >
           <div className="flex items-center justify-center gap-3 mb-3">
@@ -217,7 +217,7 @@ function Login() {
         </div>
 
         {/* ── Form ── */}
-        <div className="px-8 py-8">
+        <div className="px-4 sm:px-8 py-8">
           {error && (
             <div
               className="mb-5 p-3 rounded-xl text-sm flex items-center gap-2"

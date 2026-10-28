@@ -185,7 +185,7 @@ function Settings() {
               <div key={label} className="flex justify-between items-center py-2"
                 style={{ borderBottom: `1px solid ${t.inputBg}` }}>
                 <span className="text-xs font-medium" style={{ color: t.textMuted }}>{label}</span>
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary, maxWidth: "60%", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary, maxWidth: "60%", textAlign: "right", wordBreak: "break-word" }}>{value}</span>
               </div>
             ))}
             <p className="text-xs pt-1" style={{ color: t.textMuted, opacity: 0.7 }}>

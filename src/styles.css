@@ -276,6 +276,12 @@ html, body {
   text-size-adjust: 100%;
 }
 
+/* ── Mobile responsiveness baseline ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+img, video, canvas, svg { max-width: 100%; height: auto; }
+input, textarea, select, button { max-width: 100%; }
+body { word-wrap: break-word; overflow-wrap: break-word; }
+
 /* ── Additional animations for dashboard ───────────────────────────────── */
 @keyframes nx-ripple {
   0% { transform: scale(1); opacity: 0.6; }
