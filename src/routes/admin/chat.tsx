@@ -8,7 +8,7 @@ import {
   collection, addDoc, doc, orderBy, query,
   onSnapshot, serverTimestamp, updateDoc, increment, deleteDoc,
 } from "firebase/firestore";
-import { requestNotificationPermission, hasNotificationsEnabled, setupForegroundNotifications, disableNotifications } from "../../utils/notificationService";
+import { requestNotificationPermission, hasNotificationsEnabled, disableNotifications, showNotification } from "../../utils/notificationService";
 import { useAdminAuth } from "../../admin/hooks/useAdminAuth";
 import { toast } from "sonner";
 
@@ -49,7 +49,6 @@ function AdminChatPage() {
   useEffect(() => {
     if (admin?.uid) {
       hasNotificationsEnabled(admin.uid).then(setNotificationsEnabled);
-      setupForegroundNotifications();
     }
   }, [admin?.uid]);
 
@@ -126,6 +125,50 @@ function AdminChatPage() {
     });
     return unsub;
   }, []);
+
+  // Listen for new messages across ALL chats and show notifications
+  useEffect(() => {
+    if (!notificationsEnabled || !admin?.uid) return;
+
+    // Listen to all chats
+    const unsubscribers: (() => void)[] = [];
+    
+    const setupListeners = () => {
+      chats.forEach((chat) => {
+        const q = query(
+          collection(db, "chats", chat.id, "messages"),
+          orderBy("createdAt", "desc")
+        );
+        
+        const unsub = onSnapshot(q, (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              const msg = change.doc.data();
+              const isFromUser = msg.sender === "user";
+              const isRecent = Date.now() - (msg.createdAt?.toMillis() || 0) < 5000; // Within last 5 seconds
+              
+              // Show notification only for new user messages
+              if (isFromUser && isRecent) {
+                showNotification(
+                  `New message from ${chat.userFullName}`,
+                  msg.text.substring(0, 100),
+                  chat.id
+                );
+              }
+            }
+          });
+        });
+        
+        unsubscribers.push(unsub);
+      });
+    };
+
+    setupListeners();
+
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+    };
+  }, [notificationsEnabled, chats, admin?.uid]);
 
   // Load messages
   useEffect(() => {

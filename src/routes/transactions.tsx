@@ -20,7 +20,7 @@ export function isTransactionCredit(tx: any): boolean {
   const type = tx.type || "";
   // Explicit credit types
   if (type === "credit" || type === "check_deposit" || type === "crypto_deposit") return true;
-  // Explicit debit types — always outgoing regardless of status
+  // Explicit debit types ï¿½ always outgoing regardless of status
   if (
     type === "debit" ||
     type === "wire_transfer" ||
@@ -49,7 +49,7 @@ function formatDate(dateInput: any) {
     d = new Date(dateInput);
   }
 
-  if (!d || isNaN(d.getTime())) return "—";
+  if (!d || isNaN(d.getTime())) return "ï¿½";
 
   // Show time only (e.g. "3:42 PM")
   return d.toLocaleTimeString("en-US", {
@@ -73,7 +73,7 @@ function getStatusBadge(status: string, tl: (key: string) => string) {
     case "cancelled":
       return { text: tl("Cancelled"), color: "#8A9BB5", icon: XCircle       };
     default:
-      // Admin-posted transactions with no status field — show completed
+      // Admin-posted transactions with no status field ï¿½ show completed
       return { text: tl("Completed"), color: "#00E676", icon: CheckCircle2  };
   }
 }

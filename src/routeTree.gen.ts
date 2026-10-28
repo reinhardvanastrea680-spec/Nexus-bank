@@ -9,116 +9,61 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WireTransferRouteImport } from './routes/wire-transfer'
-import { Route as TransactionsRouteImport } from './routes/transactions'
-import { Route as SupportRouteImport } from './routes/support'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as PayBillsRouteImport } from './routes/pay-bills'
-import { Route as NotificationsRouteImport } from './routes/notifications'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as LocalTransferRouteImport } from './routes/local-transfer'
-import { Route as InternalTransferRouteImport } from './routes/internal-transfer'
-import { Route as CryptoDepositRouteImport } from './routes/crypto-deposit'
-import { Route as CheckDepositRouteImport } from './routes/check-deposit'
-import { Route as CardDepositRouteImport } from './routes/card-deposit'
-import { Route as BuyCryptoRouteImport } from './routes/buy-crypto'
-import { Route as AdminLoginRouteImport } from './routes/admin-login'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AddBeneficiaryRouteImport } from './routes/add-beneficiary'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminUsersListRouteImport } from './routes/admin/users-list'
-import { Route as AdminUsersRouteImport } from './routes/admin/users'
-import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
-import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
-import { Route as AdminProspectiveUsersRouteImport } from './routes/admin/prospective-users'
-import { Route as AdminPendingTransactionsRouteImport } from './routes/admin/pending-transactions'
-import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
-import { Route as AdminNotificationsRouteImport } from './routes/admin/notifications'
-import { Route as AdminChatRouteImport } from './routes/admin/chat'
-import { Route as AdminBeneficiaryRequestsRouteImport } from './routes/admin/beneficiary-requests'
-import { Route as AdminActivityRouteImport } from './routes/admin/activity'
+import { Route as AddBeneficiaryRouteImport } from './routes/add-beneficiary'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
+import { Route as BuyCryptoRouteImport } from './routes/buy-crypto'
+import { Route as CardDepositRouteImport } from './routes/card-deposit'
+import { Route as CheckDepositRouteImport } from './routes/check-deposit'
+import { Route as CryptoDepositRouteImport } from './routes/crypto-deposit'
+import { Route as InternalTransferRouteImport } from './routes/internal-transfer'
+import { Route as LocalTransferRouteImport } from './routes/local-transfer'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as PayBillsRouteImport } from './routes/pay-bills'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SupportRouteImport } from './routes/support'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as TransactionsRouteImport } from './routes/transactions'
+import { Route as WireTransferRouteImport } from './routes/wire-transfer'
 import { Route as AdminAccountsRouteImport } from './routes/admin/accounts'
+import { Route as AdminActivityRouteImport } from './routes/admin/activity'
+import { Route as AdminBeneficiaryRequestsRouteImport } from './routes/admin/beneficiary-requests'
+import { Route as AdminChatRouteImport } from './routes/admin/chat'
+import { Route as AdminCleanupBeneficiariesRouteImport } from './routes/admin/cleanup-beneficiaries'
+import { Route as AdminNotificationsRouteImport } from './routes/admin/notifications'
+import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
+import { Route as AdminPendingTransactionsRouteImport } from './routes/admin/pending-transactions'
+import { Route as AdminProspectiveUsersRouteImport } from './routes/admin/prospective-users'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminUsersListRouteImport } from './routes/admin/users-list'
+import { Route as LandingIndexRouteImport } from './routes/landing/index'
+import { Route as LandingAboutRouteImport } from './routes/landing/about'
+import { Route as LandingAccountPendingRouteImport } from './routes/landing/account-pending'
+import { Route as LandingAdminSupportRouteImport } from './routes/landing/admin-support'
+import { Route as LandingBusinessLoansRouteImport } from './routes/landing/business-loans'
+import { Route as LandingContactRouteImport } from './routes/landing/contact'
+import { Route as LandingCooperateRouteImport } from './routes/landing/cooperate'
+import { Route as LandingCreditCardsRouteImport } from './routes/landing/credit-cards'
+import { Route as LandingInsuranceRouteImport } from './routes/landing/insurance'
+import { Route as LandingLandingRouteImport } from './routes/landing/landing'
+import { Route as LandingLoginRouteImport } from './routes/landing/login'
+import { Route as LandingMortgageRouteImport } from './routes/landing/mortgage'
+import { Route as LandingNotFoundRouteImport } from './routes/landing/not-found'
+import { Route as LandingOpenAccountRouteImport } from './routes/landing/open-account'
+import { Route as LandingPersonalRouteImport } from './routes/landing/personal'
+import { Route as LandingPrivacyPolicyRouteImport } from './routes/landing/privacy-policy'
+import { Route as LandingSavingsRouteImport } from './routes/landing/savings'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin/users.$userId'
 
-const WireTransferRoute = WireTransferRouteImport.update({
-  id: '/wire-transfer',
-  path: '/wire-transfer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TransactionsRoute = TransactionsRouteImport.update({
-  id: '/transactions',
-  path: '/transactions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SupportRoute = SupportRouteImport.update({
-  id: '/support',
-  path: '/support',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PayBillsRoute = PayBillsRouteImport.update({
-  id: '/pay-bills',
-  path: '/pay-bills',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocalTransferRoute = LocalTransferRouteImport.update({
-  id: '/local-transfer',
-  path: '/local-transfer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InternalTransferRoute = InternalTransferRouteImport.update({
-  id: '/internal-transfer',
-  path: '/internal-transfer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CryptoDepositRoute = CryptoDepositRouteImport.update({
-  id: '/crypto-deposit',
-  path: '/crypto-deposit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckDepositRoute = CheckDepositRouteImport.update({
-  id: '/check-deposit',
-  path: '/check-deposit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CardDepositRoute = CardDepositRouteImport.update({
-  id: '/card-deposit',
-  path: '/card-deposit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BuyCryptoRoute = BuyCryptoRouteImport.update({
-  id: '/buy-crypto',
-  path: '/buy-crypto',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin-login',
-  path: '/admin-login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AddBeneficiaryRoute = AddBeneficiaryRouteImport.update({
@@ -126,55 +71,104 @@ const AddBeneficiaryRoute = AddBeneficiaryRouteImport.update({
   path: '/add-beneficiary',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersListRoute = AdminUsersListRouteImport.update({
-  id: '/users-list',
-  path: '/users-list',
-  getParentRoute: () => AdminRoute,
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
+const BuyCryptoRoute = BuyCryptoRouteImport.update({
+  id: '/buy-crypto',
+  path: '/buy-crypto',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
-  id: '/transactions',
-  path: '/transactions',
-  getParentRoute: () => AdminRoute,
+const CardDepositRoute = CardDepositRouteImport.update({
+  id: '/card-deposit',
+  path: '/card-deposit',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
+const CheckDepositRoute = CheckDepositRouteImport.update({
+  id: '/check-deposit',
+  path: '/check-deposit',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminProspectiveUsersRoute = AdminProspectiveUsersRouteImport.update({
-  id: '/prospective-users',
-  path: '/prospective-users',
-  getParentRoute: () => AdminRoute,
+const CryptoDepositRoute = CryptoDepositRouteImport.update({
+  id: '/crypto-deposit',
+  path: '/crypto-deposit',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPendingTransactionsRoute =
-  AdminPendingTransactionsRouteImport.update({
-    id: '/pending-transactions',
-    path: '/pending-transactions',
-    getParentRoute: () => AdminRoute,
-  } as any)
-const AdminOverviewRoute = AdminOverviewRouteImport.update({
-  id: '/overview',
-  path: '/overview',
-  getParentRoute: () => AdminRoute,
+const InternalTransferRoute = InternalTransferRouteImport.update({
+  id: '/internal-transfer',
+  path: '/internal-transfer',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+const LocalTransferRoute = LocalTransferRouteImport.update({
+  id: '/local-transfer',
+  path: '/local-transfer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayBillsRoute = PayBillsRouteImport.update({
+  id: '/pay-bills',
+  path: '/pay-bills',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsRoute = TransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WireTransferRoute = WireTransferRouteImport.update({
+  id: '/wire-transfer',
+  path: '/wire-transfer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAccountsRoute = AdminAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminChatRoute = AdminChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBeneficiaryRequestsRoute =
@@ -183,15 +177,142 @@ const AdminBeneficiaryRequestsRoute =
     path: '/beneficiary-requests',
     getParentRoute: () => AdminRoute,
   } as any)
-const AdminActivityRoute = AdminActivityRouteImport.update({
-  id: '/activity',
-  path: '/activity',
+const AdminChatRoute = AdminChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAccountsRoute = AdminAccountsRouteImport.update({
-  id: '/accounts',
-  path: '/accounts',
+const AdminCleanupBeneficiariesRoute =
+  AdminCleanupBeneficiariesRouteImport.update({
+    id: '/cleanup-beneficiaries',
+    path: '/cleanup-beneficiaries',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminOverviewRoute = AdminOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPendingTransactionsRoute =
+  AdminPendingTransactionsRouteImport.update({
+    id: '/pending-transactions',
+    path: '/pending-transactions',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminProspectiveUsersRoute = AdminProspectiveUsersRouteImport.update({
+  id: '/prospective-users',
+  path: '/prospective-users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersListRoute = AdminUsersListRouteImport.update({
+  id: '/users-list',
+  path: '/users-list',
+  getParentRoute: () => AdminRoute,
+} as any)
+const LandingIndexRoute = LandingIndexRouteImport.update({
+  id: '/landing/',
+  path: '/landing/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingAboutRoute = LandingAboutRouteImport.update({
+  id: '/landing/about',
+  path: '/landing/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingAccountPendingRoute = LandingAccountPendingRouteImport.update({
+  id: '/landing/account-pending',
+  path: '/landing/account-pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingAdminSupportRoute = LandingAdminSupportRouteImport.update({
+  id: '/landing/admin-support',
+  path: '/landing/admin-support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingBusinessLoansRoute = LandingBusinessLoansRouteImport.update({
+  id: '/landing/business-loans',
+  path: '/landing/business-loans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingContactRoute = LandingContactRouteImport.update({
+  id: '/landing/contact',
+  path: '/landing/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingCooperateRoute = LandingCooperateRouteImport.update({
+  id: '/landing/cooperate',
+  path: '/landing/cooperate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingCreditCardsRoute = LandingCreditCardsRouteImport.update({
+  id: '/landing/credit-cards',
+  path: '/landing/credit-cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingInsuranceRoute = LandingInsuranceRouteImport.update({
+  id: '/landing/insurance',
+  path: '/landing/insurance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingLandingRoute = LandingLandingRouteImport.update({
+  id: '/landing/landing',
+  path: '/landing/landing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingLoginRoute = LandingLoginRouteImport.update({
+  id: '/landing/login',
+  path: '/landing/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingMortgageRoute = LandingMortgageRouteImport.update({
+  id: '/landing/mortgage',
+  path: '/landing/mortgage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingNotFoundRoute = LandingNotFoundRouteImport.update({
+  id: '/landing/not-found',
+  path: '/landing/not-found',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingOpenAccountRoute = LandingOpenAccountRouteImport.update({
+  id: '/landing/open-account',
+  path: '/landing/open-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingPersonalRoute = LandingPersonalRouteImport.update({
+  id: '/landing/personal',
+  path: '/landing/personal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingPrivacyPolicyRoute = LandingPrivacyPolicyRouteImport.update({
+  id: '/landing/privacy-policy',
+  path: '/landing/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingSavingsRoute = LandingSavingsRouteImport.update({
+  id: '/landing/savings',
+  path: '/landing/savings',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   id: '/$userId',
@@ -213,15 +334,18 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/pay-bills': typeof PayBillsRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/transactions': typeof TransactionsRoute
   '/wire-transfer': typeof WireTransferRoute
   '/admin/accounts': typeof AdminAccountsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/beneficiary-requests': typeof AdminBeneficiaryRequestsRoute
   '/admin/chat': typeof AdminChatRoute
+  '/admin/cleanup-beneficiaries': typeof AdminCleanupBeneficiariesRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/pending-transactions': typeof AdminPendingTransactionsRoute
@@ -230,6 +354,23 @@ export interface FileRoutesByFullPath {
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/admin/users-list': typeof AdminUsersListRoute
+  '/landing/about': typeof LandingAboutRoute
+  '/landing/account-pending': typeof LandingAccountPendingRoute
+  '/landing/admin-support': typeof LandingAdminSupportRoute
+  '/landing/business-loans': typeof LandingBusinessLoansRoute
+  '/landing/contact': typeof LandingContactRoute
+  '/landing/cooperate': typeof LandingCooperateRoute
+  '/landing/credit-cards': typeof LandingCreditCardsRoute
+  '/landing/insurance': typeof LandingInsuranceRoute
+  '/landing/landing': typeof LandingLandingRoute
+  '/landing/login': typeof LandingLoginRoute
+  '/landing/mortgage': typeof LandingMortgageRoute
+  '/landing/not-found': typeof LandingNotFoundRoute
+  '/landing/open-account': typeof LandingOpenAccountRoute
+  '/landing/personal': typeof LandingPersonalRoute
+  '/landing/privacy-policy': typeof LandingPrivacyPolicyRoute
+  '/landing/savings': typeof LandingSavingsRoute
+  '/landing/': typeof LandingIndexRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
 }
 export interface FileRoutesByTo {
@@ -246,15 +387,18 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/pay-bills': typeof PayBillsRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/transactions': typeof TransactionsRoute
   '/wire-transfer': typeof WireTransferRoute
   '/admin/accounts': typeof AdminAccountsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/beneficiary-requests': typeof AdminBeneficiaryRequestsRoute
   '/admin/chat': typeof AdminChatRoute
+  '/admin/cleanup-beneficiaries': typeof AdminCleanupBeneficiariesRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/pending-transactions': typeof AdminPendingTransactionsRoute
@@ -263,6 +407,23 @@ export interface FileRoutesByTo {
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/admin/users-list': typeof AdminUsersListRoute
+  '/landing/about': typeof LandingAboutRoute
+  '/landing/account-pending': typeof LandingAccountPendingRoute
+  '/landing/admin-support': typeof LandingAdminSupportRoute
+  '/landing/business-loans': typeof LandingBusinessLoansRoute
+  '/landing/contact': typeof LandingContactRoute
+  '/landing/cooperate': typeof LandingCooperateRoute
+  '/landing/credit-cards': typeof LandingCreditCardsRoute
+  '/landing/insurance': typeof LandingInsuranceRoute
+  '/landing/landing': typeof LandingLandingRoute
+  '/landing/login': typeof LandingLoginRoute
+  '/landing/mortgage': typeof LandingMortgageRoute
+  '/landing/not-found': typeof LandingNotFoundRoute
+  '/landing/open-account': typeof LandingOpenAccountRoute
+  '/landing/personal': typeof LandingPersonalRoute
+  '/landing/privacy-policy': typeof LandingPrivacyPolicyRoute
+  '/landing/savings': typeof LandingSavingsRoute
+  '/landing': typeof LandingIndexRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
 }
 export interface FileRoutesById {
@@ -280,15 +441,18 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/pay-bills': typeof PayBillsRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/transactions': typeof TransactionsRoute
   '/wire-transfer': typeof WireTransferRoute
   '/admin/accounts': typeof AdminAccountsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/beneficiary-requests': typeof AdminBeneficiaryRequestsRoute
   '/admin/chat': typeof AdminChatRoute
+  '/admin/cleanup-beneficiaries': typeof AdminCleanupBeneficiariesRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/pending-transactions': typeof AdminPendingTransactionsRoute
@@ -297,6 +461,23 @@ export interface FileRoutesById {
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/admin/users-list': typeof AdminUsersListRoute
+  '/landing/about': typeof LandingAboutRoute
+  '/landing/account-pending': typeof LandingAccountPendingRoute
+  '/landing/admin-support': typeof LandingAdminSupportRoute
+  '/landing/business-loans': typeof LandingBusinessLoansRoute
+  '/landing/contact': typeof LandingContactRoute
+  '/landing/cooperate': typeof LandingCooperateRoute
+  '/landing/credit-cards': typeof LandingCreditCardsRoute
+  '/landing/insurance': typeof LandingInsuranceRoute
+  '/landing/landing': typeof LandingLandingRoute
+  '/landing/login': typeof LandingLoginRoute
+  '/landing/mortgage': typeof LandingMortgageRoute
+  '/landing/not-found': typeof LandingNotFoundRoute
+  '/landing/open-account': typeof LandingOpenAccountRoute
+  '/landing/personal': typeof LandingPersonalRoute
+  '/landing/privacy-policy': typeof LandingPrivacyPolicyRoute
+  '/landing/savings': typeof LandingSavingsRoute
+  '/landing/': typeof LandingIndexRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
 }
 export interface FileRouteTypes {
@@ -315,15 +496,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/pay-bills'
+    | '/privacy'
     | '/profile'
     | '/settings'
     | '/support'
+    | '/terms'
     | '/transactions'
     | '/wire-transfer'
     | '/admin/accounts'
     | '/admin/activity'
     | '/admin/beneficiary-requests'
     | '/admin/chat'
+    | '/admin/cleanup-beneficiaries'
     | '/admin/notifications'
     | '/admin/overview'
     | '/admin/pending-transactions'
@@ -332,6 +516,23 @@ export interface FileRouteTypes {
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/users-list'
+    | '/landing/about'
+    | '/landing/account-pending'
+    | '/landing/admin-support'
+    | '/landing/business-loans'
+    | '/landing/contact'
+    | '/landing/cooperate'
+    | '/landing/credit-cards'
+    | '/landing/insurance'
+    | '/landing/landing'
+    | '/landing/login'
+    | '/landing/mortgage'
+    | '/landing/not-found'
+    | '/landing/open-account'
+    | '/landing/personal'
+    | '/landing/privacy-policy'
+    | '/landing/savings'
+    | '/landing/'
     | '/admin/users/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -348,15 +549,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/pay-bills'
+    | '/privacy'
     | '/profile'
     | '/settings'
     | '/support'
+    | '/terms'
     | '/transactions'
     | '/wire-transfer'
     | '/admin/accounts'
     | '/admin/activity'
     | '/admin/beneficiary-requests'
     | '/admin/chat'
+    | '/admin/cleanup-beneficiaries'
     | '/admin/notifications'
     | '/admin/overview'
     | '/admin/pending-transactions'
@@ -365,6 +569,23 @@ export interface FileRouteTypes {
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/users-list'
+    | '/landing/about'
+    | '/landing/account-pending'
+    | '/landing/admin-support'
+    | '/landing/business-loans'
+    | '/landing/contact'
+    | '/landing/cooperate'
+    | '/landing/credit-cards'
+    | '/landing/insurance'
+    | '/landing/landing'
+    | '/landing/login'
+    | '/landing/mortgage'
+    | '/landing/not-found'
+    | '/landing/open-account'
+    | '/landing/personal'
+    | '/landing/privacy-policy'
+    | '/landing/savings'
+    | '/landing'
     | '/admin/users/$userId'
   id:
     | '__root__'
@@ -381,15 +602,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/pay-bills'
+    | '/privacy'
     | '/profile'
     | '/settings'
     | '/support'
+    | '/terms'
     | '/transactions'
     | '/wire-transfer'
     | '/admin/accounts'
     | '/admin/activity'
     | '/admin/beneficiary-requests'
     | '/admin/chat'
+    | '/admin/cleanup-beneficiaries'
     | '/admin/notifications'
     | '/admin/overview'
     | '/admin/pending-transactions'
@@ -398,6 +622,23 @@ export interface FileRouteTypes {
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/users-list'
+    | '/landing/about'
+    | '/landing/account-pending'
+    | '/landing/admin-support'
+    | '/landing/business-loans'
+    | '/landing/contact'
+    | '/landing/cooperate'
+    | '/landing/credit-cards'
+    | '/landing/insurance'
+    | '/landing/landing'
+    | '/landing/login'
+    | '/landing/mortgage'
+    | '/landing/not-found'
+    | '/landing/open-account'
+    | '/landing/personal'
+    | '/landing/privacy-policy'
+    | '/landing/savings'
+    | '/landing/'
     | '/admin/users/$userId'
   fileRoutesById: FileRoutesById
 }
@@ -415,125 +656,39 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   PayBillsRoute: typeof PayBillsRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
+  TermsRoute: typeof TermsRoute
   TransactionsRoute: typeof TransactionsRoute
   WireTransferRoute: typeof WireTransferRoute
+  LandingAboutRoute: typeof LandingAboutRoute
+  LandingAccountPendingRoute: typeof LandingAccountPendingRoute
+  LandingAdminSupportRoute: typeof LandingAdminSupportRoute
+  LandingBusinessLoansRoute: typeof LandingBusinessLoansRoute
+  LandingContactRoute: typeof LandingContactRoute
+  LandingCooperateRoute: typeof LandingCooperateRoute
+  LandingCreditCardsRoute: typeof LandingCreditCardsRoute
+  LandingInsuranceRoute: typeof LandingInsuranceRoute
+  LandingLandingRoute: typeof LandingLandingRoute
+  LandingLoginRoute: typeof LandingLoginRoute
+  LandingMortgageRoute: typeof LandingMortgageRoute
+  LandingNotFoundRoute: typeof LandingNotFoundRoute
+  LandingOpenAccountRoute: typeof LandingOpenAccountRoute
+  LandingPersonalRoute: typeof LandingPersonalRoute
+  LandingPrivacyPolicyRoute: typeof LandingPrivacyPolicyRoute
+  LandingSavingsRoute: typeof LandingSavingsRoute
+  LandingIndexRoute: typeof LandingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/wire-transfer': {
-      id: '/wire-transfer'
-      path: '/wire-transfer'
-      fullPath: '/wire-transfer'
-      preLoaderRoute: typeof WireTransferRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/transactions': {
-      id: '/transactions'
-      path: '/transactions'
-      fullPath: '/transactions'
-      preLoaderRoute: typeof TransactionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/support': {
-      id: '/support'
-      path: '/support'
-      fullPath: '/support'
-      preLoaderRoute: typeof SupportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pay-bills': {
-      id: '/pay-bills'
-      path: '/pay-bills'
-      fullPath: '/pay-bills'
-      preLoaderRoute: typeof PayBillsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/local-transfer': {
-      id: '/local-transfer'
-      path: '/local-transfer'
-      fullPath: '/local-transfer'
-      preLoaderRoute: typeof LocalTransferRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/internal-transfer': {
-      id: '/internal-transfer'
-      path: '/internal-transfer'
-      fullPath: '/internal-transfer'
-      preLoaderRoute: typeof InternalTransferRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/crypto-deposit': {
-      id: '/crypto-deposit'
-      path: '/crypto-deposit'
-      fullPath: '/crypto-deposit'
-      preLoaderRoute: typeof CryptoDepositRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/check-deposit': {
-      id: '/check-deposit'
-      path: '/check-deposit'
-      fullPath: '/check-deposit'
-      preLoaderRoute: typeof CheckDepositRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/card-deposit': {
-      id: '/card-deposit'
-      path: '/card-deposit'
-      fullPath: '/card-deposit'
-      preLoaderRoute: typeof CardDepositRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/buy-crypto': {
-      id: '/buy-crypto'
-      path: '/buy-crypto'
-      fullPath: '/buy-crypto'
-      preLoaderRoute: typeof BuyCryptoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-login': {
-      id: '/admin-login'
-      path: '/admin-login'
-      fullPath: '/admin-login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/add-beneficiary': {
@@ -543,81 +698,137 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AddBeneficiaryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/users-list': {
-      id: '/admin/users-list'
-      path: '/users-list'
-      fullPath: '/admin/users-list'
-      preLoaderRoute: typeof AdminUsersListRouteImport
-      parentRoute: typeof AdminRoute
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
+    '/buy-crypto': {
+      id: '/buy-crypto'
+      path: '/buy-crypto'
+      fullPath: '/buy-crypto'
+      preLoaderRoute: typeof BuyCryptoRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/transactions': {
-      id: '/admin/transactions'
-      path: '/transactions'
-      fullPath: '/admin/transactions'
-      preLoaderRoute: typeof AdminTransactionsRouteImport
-      parentRoute: typeof AdminRoute
+    '/card-deposit': {
+      id: '/card-deposit'
+      path: '/card-deposit'
+      fullPath: '/card-deposit'
+      preLoaderRoute: typeof CardDepositRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
+    '/check-deposit': {
+      id: '/check-deposit'
+      path: '/check-deposit'
+      fullPath: '/check-deposit'
+      preLoaderRoute: typeof CheckDepositRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/prospective-users': {
-      id: '/admin/prospective-users'
-      path: '/prospective-users'
-      fullPath: '/admin/prospective-users'
-      preLoaderRoute: typeof AdminProspectiveUsersRouteImport
-      parentRoute: typeof AdminRoute
+    '/crypto-deposit': {
+      id: '/crypto-deposit'
+      path: '/crypto-deposit'
+      fullPath: '/crypto-deposit'
+      preLoaderRoute: typeof CryptoDepositRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/pending-transactions': {
-      id: '/admin/pending-transactions'
-      path: '/pending-transactions'
-      fullPath: '/admin/pending-transactions'
-      preLoaderRoute: typeof AdminPendingTransactionsRouteImport
-      parentRoute: typeof AdminRoute
+    '/internal-transfer': {
+      id: '/internal-transfer'
+      path: '/internal-transfer'
+      fullPath: '/internal-transfer'
+      preLoaderRoute: typeof InternalTransferRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/overview': {
-      id: '/admin/overview'
-      path: '/overview'
-      fullPath: '/admin/overview'
-      preLoaderRoute: typeof AdminOverviewRouteImport
-      parentRoute: typeof AdminRoute
+    '/local-transfer': {
+      id: '/local-transfer'
+      path: '/local-transfer'
+      fullPath: '/local-transfer'
+      preLoaderRoute: typeof LocalTransferRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/notifications': {
-      id: '/admin/notifications'
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
       path: '/notifications'
-      fullPath: '/admin/notifications'
-      preLoaderRoute: typeof AdminNotificationsRouteImport
-      parentRoute: typeof AdminRoute
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/chat': {
-      id: '/admin/chat'
-      path: '/chat'
-      fullPath: '/admin/chat'
-      preLoaderRoute: typeof AdminChatRouteImport
-      parentRoute: typeof AdminRoute
+    '/pay-bills': {
+      id: '/pay-bills'
+      path: '/pay-bills'
+      fullPath: '/pay-bills'
+      preLoaderRoute: typeof PayBillsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/beneficiary-requests': {
-      id: '/admin/beneficiary-requests'
-      path: '/beneficiary-requests'
-      fullPath: '/admin/beneficiary-requests'
-      preLoaderRoute: typeof AdminBeneficiaryRequestsRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions': {
+      id: '/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wire-transfer': {
+      id: '/wire-transfer'
+      path: '/wire-transfer'
+      fullPath: '/wire-transfer'
+      preLoaderRoute: typeof WireTransferRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/accounts': {
+      id: '/admin/accounts'
+      path: '/accounts'
+      fullPath: '/admin/accounts'
+      preLoaderRoute: typeof AdminAccountsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/activity': {
@@ -627,12 +838,201 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivityRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/accounts': {
-      id: '/admin/accounts'
-      path: '/accounts'
-      fullPath: '/admin/accounts'
-      preLoaderRoute: typeof AdminAccountsRouteImport
+    '/admin/beneficiary-requests': {
+      id: '/admin/beneficiary-requests'
+      path: '/beneficiary-requests'
+      fullPath: '/admin/beneficiary-requests'
+      preLoaderRoute: typeof AdminBeneficiaryRequestsRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/chat': {
+      id: '/admin/chat'
+      path: '/chat'
+      fullPath: '/admin/chat'
+      preLoaderRoute: typeof AdminChatRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cleanup-beneficiaries': {
+      id: '/admin/cleanup-beneficiaries'
+      path: '/cleanup-beneficiaries'
+      fullPath: '/admin/cleanup-beneficiaries'
+      preLoaderRoute: typeof AdminCleanupBeneficiariesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/notifications': {
+      id: '/admin/notifications'
+      path: '/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/overview': {
+      id: '/admin/overview'
+      path: '/overview'
+      fullPath: '/admin/overview'
+      preLoaderRoute: typeof AdminOverviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pending-transactions': {
+      id: '/admin/pending-transactions'
+      path: '/pending-transactions'
+      fullPath: '/admin/pending-transactions'
+      preLoaderRoute: typeof AdminPendingTransactionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/prospective-users': {
+      id: '/admin/prospective-users'
+      path: '/prospective-users'
+      fullPath: '/admin/prospective-users'
+      preLoaderRoute: typeof AdminProspectiveUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/transactions': {
+      id: '/admin/transactions'
+      path: '/transactions'
+      fullPath: '/admin/transactions'
+      preLoaderRoute: typeof AdminTransactionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users-list': {
+      id: '/admin/users-list'
+      path: '/users-list'
+      fullPath: '/admin/users-list'
+      preLoaderRoute: typeof AdminUsersListRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/landing/': {
+      id: '/landing/'
+      path: '/landing'
+      fullPath: '/landing/'
+      preLoaderRoute: typeof LandingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/about': {
+      id: '/landing/about'
+      path: '/landing/about'
+      fullPath: '/landing/about'
+      preLoaderRoute: typeof LandingAboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/account-pending': {
+      id: '/landing/account-pending'
+      path: '/landing/account-pending'
+      fullPath: '/landing/account-pending'
+      preLoaderRoute: typeof LandingAccountPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/admin-support': {
+      id: '/landing/admin-support'
+      path: '/landing/admin-support'
+      fullPath: '/landing/admin-support'
+      preLoaderRoute: typeof LandingAdminSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/business-loans': {
+      id: '/landing/business-loans'
+      path: '/landing/business-loans'
+      fullPath: '/landing/business-loans'
+      preLoaderRoute: typeof LandingBusinessLoansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/contact': {
+      id: '/landing/contact'
+      path: '/landing/contact'
+      fullPath: '/landing/contact'
+      preLoaderRoute: typeof LandingContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/cooperate': {
+      id: '/landing/cooperate'
+      path: '/landing/cooperate'
+      fullPath: '/landing/cooperate'
+      preLoaderRoute: typeof LandingCooperateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/credit-cards': {
+      id: '/landing/credit-cards'
+      path: '/landing/credit-cards'
+      fullPath: '/landing/credit-cards'
+      preLoaderRoute: typeof LandingCreditCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/insurance': {
+      id: '/landing/insurance'
+      path: '/landing/insurance'
+      fullPath: '/landing/insurance'
+      preLoaderRoute: typeof LandingInsuranceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/landing': {
+      id: '/landing/landing'
+      path: '/landing/landing'
+      fullPath: '/landing/landing'
+      preLoaderRoute: typeof LandingLandingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/login': {
+      id: '/landing/login'
+      path: '/landing/login'
+      fullPath: '/landing/login'
+      preLoaderRoute: typeof LandingLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/mortgage': {
+      id: '/landing/mortgage'
+      path: '/landing/mortgage'
+      fullPath: '/landing/mortgage'
+      preLoaderRoute: typeof LandingMortgageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/not-found': {
+      id: '/landing/not-found'
+      path: '/landing/not-found'
+      fullPath: '/landing/not-found'
+      preLoaderRoute: typeof LandingNotFoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/open-account': {
+      id: '/landing/open-account'
+      path: '/landing/open-account'
+      fullPath: '/landing/open-account'
+      preLoaderRoute: typeof LandingOpenAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/personal': {
+      id: '/landing/personal'
+      path: '/landing/personal'
+      fullPath: '/landing/personal'
+      preLoaderRoute: typeof LandingPersonalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/privacy-policy': {
+      id: '/landing/privacy-policy'
+      path: '/landing/privacy-policy'
+      fullPath: '/landing/privacy-policy'
+      preLoaderRoute: typeof LandingPrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/savings': {
+      id: '/landing/savings'
+      path: '/landing/savings'
+      fullPath: '/landing/savings'
+      preLoaderRoute: typeof LandingSavingsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/users/$userId': {
       id: '/admin/users/$userId'
@@ -661,6 +1061,7 @@ interface AdminRouteChildren {
   AdminActivityRoute: typeof AdminActivityRoute
   AdminBeneficiaryRequestsRoute: typeof AdminBeneficiaryRequestsRoute
   AdminChatRoute: typeof AdminChatRoute
+  AdminCleanupBeneficiariesRoute: typeof AdminCleanupBeneficiariesRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminOverviewRoute: typeof AdminOverviewRoute
   AdminPendingTransactionsRoute: typeof AdminPendingTransactionsRoute
@@ -676,6 +1077,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminActivityRoute: AdminActivityRoute,
   AdminBeneficiaryRequestsRoute: AdminBeneficiaryRequestsRoute,
   AdminChatRoute: AdminChatRoute,
+  AdminCleanupBeneficiariesRoute: AdminCleanupBeneficiariesRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminOverviewRoute: AdminOverviewRoute,
   AdminPendingTransactionsRoute: AdminPendingTransactionsRoute,
@@ -702,11 +1104,30 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   PayBillsRoute: PayBillsRoute,
+  PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
+  TermsRoute: TermsRoute,
   TransactionsRoute: TransactionsRoute,
   WireTransferRoute: WireTransferRoute,
+  LandingAboutRoute: LandingAboutRoute,
+  LandingAccountPendingRoute: LandingAccountPendingRoute,
+  LandingAdminSupportRoute: LandingAdminSupportRoute,
+  LandingBusinessLoansRoute: LandingBusinessLoansRoute,
+  LandingContactRoute: LandingContactRoute,
+  LandingCooperateRoute: LandingCooperateRoute,
+  LandingCreditCardsRoute: LandingCreditCardsRoute,
+  LandingInsuranceRoute: LandingInsuranceRoute,
+  LandingLandingRoute: LandingLandingRoute,
+  LandingLoginRoute: LandingLoginRoute,
+  LandingMortgageRoute: LandingMortgageRoute,
+  LandingNotFoundRoute: LandingNotFoundRoute,
+  LandingOpenAccountRoute: LandingOpenAccountRoute,
+  LandingPersonalRoute: LandingPersonalRoute,
+  LandingPrivacyPolicyRoute: LandingPrivacyPolicyRoute,
+  LandingSavingsRoute: LandingSavingsRoute,
+  LandingIndexRoute: LandingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

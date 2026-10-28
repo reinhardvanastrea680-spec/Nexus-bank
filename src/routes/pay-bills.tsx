@@ -197,7 +197,7 @@ function PayBills() {
               <div className="p-4 rounded-xl flex items-center gap-3"
                 style={{ background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.3)" }}>
                 <CheckCircle2 size={20} style={{ color: t.accentGreen }} />
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Customer Verified — {customerName.trim()}</span>
+                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>Customer Verified ï¿½ {customerName.trim()}</span>
               </div>
             )}
           </div>
@@ -259,7 +259,7 @@ function PayBills() {
                 style={{ background: t.inputBg, color: t.textMuted }}>Cancel</button>
               <button onClick={handleConfirm} disabled={loading} className="py-4 rounded-xl font-semibold text-white"
                 style={{ background: t.gradientBtn, opacity: loading ? 0.6 : 1 }}>
-                {loading ? "Submitting…" : "Confirm"}
+                {loading ? "Submittingï¿½" : "Confirm"}
               </button>
             </div>
           </div>
@@ -329,7 +329,7 @@ function PayBills() {
               </div>
               <div className="text-sm font-semibold" style={{ color: t.textPrimary }}>{biller.name}</div>
               <div className="text-xs mt-1" style={{ color: t.textMuted }}>
-                {categories.find((c) => c.id === biller.category)?.name} • {biller.country}
+                {categories.find((c) => c.id === biller.category)?.name} ï¿½ {biller.country}
               </div>
             </button>
           ))}

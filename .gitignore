@@ -41,3 +41,5 @@ dist-ssr
 
 pnpm-lock.yaml
 pnpm-workspace.yaml
+.vercel
+.env*
