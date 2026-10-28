@@ -138,7 +138,7 @@ function HomePage() {
       const isAdminPWA =
         window.matchMedia("(display-mode: standalone)").matches &&
         (document.referrer.includes("/admin") || localStorage.getItem("nexus-pwa-type") === "admin");
-      navigate({ to: isAdminPWA ? "/admin-login" : "/login" });
+      navigate({ to: isAdminPWA ? "/admin-login" : "/landing" });
     }
   }, [authLoading, user, navigate]);
 
