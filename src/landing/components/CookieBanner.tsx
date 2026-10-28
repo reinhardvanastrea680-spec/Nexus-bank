@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -63,9 +62,9 @@ export default function CookieBanner() {
           <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.55)", margin: 0, lineHeight: 1.6 }}>
             We use cookies to enhance your browsing experience and analyse site traffic.
             By clicking "Accept", you consent to our use of cookies.{" "}
-            <Link to="/landing/privacy-policy" style={{ color: "#38BDF8", textDecoration: "underline" }}>
+            <a href="/landing/privacy-policy" style={{ color: "#38BDF8", textDecoration: "underline" }}>
               Learn more
-            </Link>
+            </a>
           </p>
         </div>
       </div>

@@ -3,6 +3,7 @@ import "./index.css";
 import { Link as TanStackLink } from "@tanstack/react-router";
 import { cn } from "./lib/utils";
 import { Toaster } from "sonner";
+import CookieBanner from "./components/CookieBanner";
 
 export function LandingGlobalDisclaimer({ children }: { children: React.ReactNode }) {
   return (
@@ -115,6 +116,7 @@ export function LandingLayout({
         <main>{children}</main>
         <LandingFooter />
       </div>
+      <CookieBanner />
       <Toaster position="top-right" />
     </>
   );
