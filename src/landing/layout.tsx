@@ -1,6 +1,5 @@
 // Landing shell — reused by every folded landing route.
-// All navigation below is same-origin (TanStack Link), so no page can
-// perform a cross-origin redirect like the old Vite + wouter landing did.
+import "./index.css";
 import { Link as TanStackLink } from "@tanstack/react-router";
 import { cn } from "./lib/utils";
 import { Toaster } from "sonner";
@@ -113,8 +112,7 @@ export function LandingLayout({
 }) {
   return (
     <>
-      <LandingGlobalDisclaimer />
-      <div style={{ marginTop: "48px" }}>
+      <div>
         <LandingHeader user={user} onLogout={onLogout} />
         <main>{children}</main>
         <LandingFooter />
