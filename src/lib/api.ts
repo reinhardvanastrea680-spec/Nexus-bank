@@ -472,17 +472,6 @@ export const api = {
     return { ok: res.ok, data: await res.json() };
   },
 
-  // OTP
-  async generateOtp() {
-    const res = await apiFetch("/otp/generate", { method: "POST" });
-    return { ok: res.ok, data: await res.json() };
-  },
-
-  async verifyOtp(code: string) {
-    const res = await apiFetch("/otp/verify", { method: "POST", body: JSON.stringify({ code }) });
-    return { ok: res.ok, data: await res.json() };
-  },
-
   // Admin
   async adminGetAccounts() {
     const res = await apiFetch("/admin/accounts");

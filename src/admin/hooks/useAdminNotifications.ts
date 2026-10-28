@@ -32,6 +32,7 @@ export interface AdminNotification {
 export function useAdminNotifications() {
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const q = query(
@@ -53,6 +54,7 @@ export function useAdminNotifications() {
 
       setNotifications(notifs);
       setUnreadCount(notifs.filter((n) => n.status === "unread").length);
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -70,5 +72,5 @@ export function useAdminNotifications() {
     await Promise.all(unread.map((n) => markRead(n.id)));
   }
 
-  return { notifications, unreadCount, markRead, markAllRead };
+  return { notifications, unreadCount, loading, markRead, markAllRead };
 }

@@ -3,7 +3,7 @@ import { db } from "../../firebase/config";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 
 export function useAllTransactions() {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

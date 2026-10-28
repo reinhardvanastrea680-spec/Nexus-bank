@@ -104,7 +104,7 @@ function Login() {
       const userCredential = await userLogin(email, password);
       
       // Save user data to localStorage for next visit
-      if (userCredential?.user && userProfile) {
+      if (userCredential && userProfile) {
         localStorage.setItem("nexus-remembered-user", JSON.stringify(userProfile));
       }
       

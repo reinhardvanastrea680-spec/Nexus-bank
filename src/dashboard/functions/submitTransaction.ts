@@ -177,7 +177,6 @@ export async function submitTransaction({
     userNotifiedOfResult: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    transactionRef,
   };
 
   // Write the transaction document
@@ -223,7 +222,6 @@ export async function submitTransaction({
         userFullName: userData.fullName,
         amount,
         transactionType: type,
-        status: "failed",
       });
       // Also notify the user
       await createNotification({
@@ -237,9 +235,7 @@ export async function submitTransaction({
         userFullName: userData.fullName,
         amount,
         transactionType: type,
-        status: "failed",
         declineReason: null,
-        transactionRef,
       });
     } else if (initialStatus === "completed") {
       // Auto-approved: notify admin of completed transaction
@@ -254,7 +250,6 @@ export async function submitTransaction({
         userFullName: userData.fullName,
         amount,
         transactionType: type,
-        status: "completed",
       });
       // Notify user of approval
       await createNotification({
@@ -268,8 +263,6 @@ export async function submitTransaction({
         userFullName: userData.fullName,
         amount,
         transactionType: type,
-        status: "completed",
-        transactionRef,
       });
     } else {
       // Manual/pending: notify admin of new pending transaction

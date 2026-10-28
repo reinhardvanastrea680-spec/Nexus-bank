@@ -12,7 +12,6 @@ import { formatInCurrency, type CurrencyCode } from "../../utils/currency";
 
 export const Route = createFileRoute("/admin/overview")({
   component: AdminOverviewPage,
-  getParentRoute: () => AdminRootRoute,
 });
 
 function formatCurrency(v: number) {
@@ -327,7 +326,7 @@ function AdminOverviewPage() {
                 }
 
                 return sortedUsers.map((user, index) => (
-                  <Link key={user.id} to={`/admin/accounts?user=${user.id}`}
+                  <Link key={user.id} to="/admin/accounts" search={{ userId: user.id }}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all group">
                     <div className="w-7 h-7 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                       {index + 1}
@@ -392,7 +391,7 @@ function AdminOverviewPage() {
                 <MessageSquare size={16} className="text-cyan-400" />
                 Live Chat Preview
               </CardTitle>
-              <Link to="/admin/chat">
+              <Link to="/admin/chat" search={{ userId: undefined }}>
                 <Button variant="ghost" className="h-8 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10">
                   Open Chat Centre →
                 </Button>
@@ -411,7 +410,7 @@ function AdminOverviewPage() {
                 <p className="text-xs text-blue-300/40 text-center max-w-[180px]">
                   Chat sessions will appear here when customers start a conversation
                 </p>
-                <Link to="/admin/chat">
+                <Link to="/admin/chat" search={{ userId: undefined }}>
                   <button className="mt-1 px-4 py-2 rounded-xl text-xs font-semibold text-cyan-400 transition-all"
                     style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.2)" }}>
                     Go to Chat Centre
@@ -427,7 +426,7 @@ function AdminOverviewPage() {
                     ? chat.lastMessageAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                     : "";
                   return (
-                    <Link key={chat.id} to="/admin/chat"
+                    <Link key={chat.id} to="/admin/chat" search={{ userId: undefined }}
                       className="flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/5"
                       style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
                       {/* Avatar */}

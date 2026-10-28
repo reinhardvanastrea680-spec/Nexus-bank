@@ -3,7 +3,7 @@ import { db } from "../../firebase/config";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 
 export function useActivityLog() {
-  const [log, setLog] = useState([]);
+  const [log, setLog] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

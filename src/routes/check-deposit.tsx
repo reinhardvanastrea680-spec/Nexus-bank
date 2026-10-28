@@ -103,7 +103,7 @@ function CheckDeposit() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = useCamera ? "image/*" : "image/*,.pdf";
-    input.capture = useCamera ? "environment" : undefined;
+    if (useCamera) input.capture = "environment";
 
     input.onchange = (e: any) => {
       const file = e.target.files[0];

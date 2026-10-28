@@ -34,7 +34,6 @@ import { exportToCSV } from "../../utils/exportToCSV";
 
 export const Route = createFileRoute("/admin/activity")({
   component: AdminActivityPage,
-  getParentRoute: () => AdminRootRoute,
 });
 
 function AdminActivityPage() {

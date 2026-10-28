@@ -24,6 +24,7 @@ export interface Transaction {
   recipientName?: string;
   recipientAccount?: string;
   recipientBank?: string;
+  cryptoSymbol?: string;
   note?: string;
   status: "pending" | "approved" | "declined" | "cancelled" | "completed" | "failed";
   statusHistory: Array<{

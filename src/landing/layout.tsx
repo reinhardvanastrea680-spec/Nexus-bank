@@ -105,8 +105,8 @@ export function LandingLayout({
   onLogout,
   children,
 }: {
-  user: any;
-  onLogout: () => void;
+  user?: any;
+  onLogout?: () => void;
   children: React.ReactNode;
 }) {
   return (

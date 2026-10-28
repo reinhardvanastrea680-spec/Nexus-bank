@@ -220,7 +220,7 @@ function HomePage() {
   if (!user) return null;
 
   const photoURL = account?.photoURL || null;
-  const initials = (account?.fullName || "U").split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
+  const initials = (account?.fullName || "U").split(" ").slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join("");
   const cardSlideStyle = cardSlideDir
     ? { animation: `nx-slideLeft 0.22s cubic-bezier(0.22,1,0.36,1) both${cardSlideDir === "right" ? " reverse" : ""}` }
     : (mounted ? { animation: "nx-scaleIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both", opacity: 0 } : { opacity: 0 } as any);

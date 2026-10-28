@@ -46,7 +46,7 @@ function AdminAccountsPage() {
   const { users, loading } = useUsers();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm]   = useState("");
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(search.user ? String(search.user) : null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(search.userId ? String(search.userId) : null);
 
   // Standard account edit
   const [stdEdit, setStdEdit]         = useState<StdEditState | null>(null);

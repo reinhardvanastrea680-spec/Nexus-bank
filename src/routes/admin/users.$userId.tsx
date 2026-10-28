@@ -345,7 +345,7 @@ function UserDetailPage() {
       userRef,
       (snap) => {
         if (snap.exists()) {
-          const userData = { id: snap.id, ...snap.data() };
+          const userData = { id: snap.id, ...snap.data() } as any;
           console.log("📊 User data loaded:", {
             email: userData.email,
             hasPassword: !!userData.password,

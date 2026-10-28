@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 
 export function useChats() {
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

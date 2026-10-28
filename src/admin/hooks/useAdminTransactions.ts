@@ -23,6 +23,11 @@ export interface Transaction {
   recipientName?: string;
   recipientAccount?: string;
   recipientBank?: string;
+  toAccount?: string;
+  toBank?: string;
+  toCountry?: string;
+  purpose?: string;
+  cryptoSymbol?: string;
   note?: string;
   status: "pending" | "approved" | "declined" | "cancelled";
   statusHistory: Array<{

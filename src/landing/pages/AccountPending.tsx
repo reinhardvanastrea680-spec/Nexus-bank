@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 
 export default function AccountPending() {
   // Prevent search engines from indexing or following links on this page
@@ -14,7 +15,7 @@ export default function AccountPending() {
   const [dots, setDots] = useState(1);
 
   useEffect(() => {
-    const interval = setInterval(() => setDots((d) => (d % 3) + 1), 700);
+    const interval = setInterval(() => setDots((d: number) => (d % 3) + 1), 700);
     return () => clearInterval(interval);
   }, []);
 

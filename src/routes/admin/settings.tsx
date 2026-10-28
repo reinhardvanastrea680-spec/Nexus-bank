@@ -40,11 +40,10 @@ const initialSystemSettings = {
 };
 
 // Empty quick replies
-const initialQuickReplies = [];
+const initialQuickReplies: any[] = [];
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
-  getParentRoute: () => AdminRootRoute,
 });
 
 function AdminSettingsPage() {
