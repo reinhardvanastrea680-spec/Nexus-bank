@@ -28,7 +28,7 @@
 }
 
 html { scroll-behavior: smooth; }
-html, body { width: 100%; overflow-x: hidden; cursor: none; }
+html, body { width: 100%; overflow-x: hidden; cursor: auto; }
 body { font-family: var(--font-body); font-size: 15px; line-height: 1.6; color: var(--text-body); background: var(--bg-white); }
 
 /* === Custom Cursor === */
@@ -175,7 +175,7 @@ input, select, textarea { font-family: inherit; }
   border-radius: 100px;
   padding: 13px 26px;
   transition: all 0.25s ease;
-  cursor: none;
+  cursor: auto;
   white-space: nowrap;
   border: none;
   position: relative;
